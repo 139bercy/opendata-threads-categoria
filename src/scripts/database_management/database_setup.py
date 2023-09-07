@@ -1,0 +1,1 @@
+# Script configuration database/tables
