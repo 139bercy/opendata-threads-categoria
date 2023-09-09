@@ -91,4 +91,5 @@ target/
 # Fichiers que je souhaite ignorer
 *.zip
 src/trained_models/
-data_output/
+data/
+logs/
