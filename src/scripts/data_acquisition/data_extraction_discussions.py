@@ -7,7 +7,7 @@ from datetime import datetime
 import os
 
 # Spécifier le chemin relatif vers le dossier logs
-log_folder_path = '../../../logs/data_acquisition/extract_discussions'  # Le nom du dossier que vous avez créé
+log_folder_path = '../../../logs/data_acquisition/extraction_discussions/'  # Le nom du dossier que vous avez créé
 
 # Générer un nom de fichier de journal unique basé sur la date et l'heure
 log_filename = datetime.now().strftime("%Y-%m-%d") + "_extract_discussions.log"
@@ -92,7 +92,7 @@ def main():
     grouped_df['message_count'] = grouped_df['id_discussion'].map(message_counts)
 
     # Créer un dataframe à partir des nouvelles données
-    grouped_df.to_csv('../../../data/raw/data_acquisition/discussions.csv', index=False)
+    grouped_df.to_csv('../../../data/raw/data_acquisition/extraction_discussions/discussions.csv', index=False)
     #print("Les données ont été exportées avec succès vers 'discussions.csv'.")
     logging.info("Les données ont été exportées avec succès vers 'discussions.csv'.")
     print("Les données ont été exportées avec succès vers 'discussions.csv'.")
