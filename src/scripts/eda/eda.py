@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 # Spécifier le chemin relatif vers le dossier logs
-log_folder_path = '../logs/eda'  # Le nom du dossier que vous avez créé
+log_folder_path = '../../../logs/eda'  # Le nom du dossier que vous avez créé
 # Générer un nom de fichier de journal unique basé sur la date et l'heure
 log_filename = datetime.now().strftime("%Y-%m-%d") + "_eda.log"
 # Spécifier le chemin complet du fichier de journal
@@ -13,7 +13,7 @@ log_file_path = os.path.join(log_folder_path, log_filename)
 logging.basicConfig(filename=log_file_path, level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
 
 # Chargez le fichier CSV généré par le script d'inférence
-input_csv_file = '../data/raw/inference/predicted_data_model2.csv'
+input_csv_file = '../../../data/raw/inference/predicted_data_model2.csv'
 df = pd.read_csv(input_csv_file)
 
 # Nombre total de lignes dans le DataFrame

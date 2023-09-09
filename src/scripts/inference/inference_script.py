@@ -10,7 +10,7 @@ import categories
 from preprocess import preprocess_data, preprocess_data2
 
 # Spécifier le chemin relatif vers le dossier logs
-log_folder_path = '../logs/inference'  # Le nom du dossier que vous avez créé
+log_folder_path = '../../../logs/inference'  # Le nom du dossier que vous avez créé
 # Générer un nom de fichier de journal unique basé sur la date et l'heure
 log_filename = datetime.now().strftime("%Y-%m-%d") + "_inference.log"
 # Spécifier le chemin complet du fichier de journal
@@ -19,18 +19,18 @@ log_file_path = os.path.join(log_folder_path, log_filename)
 logging.basicConfig(filename=log_file_path, level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
 
 # Accédez aux dictionnaires définis dans categories.py
-labels = categories.labels
-id2label = categories.id2label
-label2id = categories.label2id
+labels = categories.LABELS
+id2label = categories.ID2LABEL
+label2id = categories.LABEL2ID
 
-sslabels = categories.sslabels
-id2sslabel = categories.id2sslabel
-sslabel2id = categories.sslabel2id
+sslabels = categories.SSLABELS
+id2sslabel = categories.ID2SSLABEL
+sslabel2id = categories.SSLABEL2ID
 
 def load_and_prepare_models(model1_zip, model2_zip):
     # Charger du model 1 pré-entrainé (zippé)
     # Extraire le contenu du fichier .zip dans un répertoire temporaire
-    extract_dir1 = "../models/extracted_model"
+    extract_dir1 = "../../trained_models/extracted_model1"
     with zipfile.ZipFile(model1_zip, 'r') as zip_ref:
         zip_ref.extractall(extract_dir1)
     logging.info("Modèle 1 extrait avec succès dans %s", extract_dir1)
@@ -43,7 +43,7 @@ def load_and_prepare_models(model1_zip, model2_zip):
 
     # Chargement du modèle 2 (zippé)
     # Extraire le contenu du fichier .zip dans un répertoire temporaire
-    extract_dir2 = "../models/extracted_model2"
+    extract_dir2 = "../../trained_models/extracted_model2"
     with zipfile.ZipFile(model2_zip, 'r') as zip_ref:
         zip_ref.extractall(extract_dir2)
     logging.info("Modèle 2 extrait avec succès dans %s", extract_dir2)
@@ -187,12 +187,12 @@ if __name__ == "__main__":
     script_directory = os.path.dirname(os.path.abspath(__file__))
 
     # Spécifiez les noms de fichiers et répertoires relatifs
-    model1_zip_file = os.path.join(script_directory, "../models/bert-finetuned-my-data-final_archive.zip")
-    model2_zip_file = os.path.join(script_directory, "../models/bert-finetuned-my-data-final2_archive2.zip")
-    input_csv_file1 = os.path.join(script_directory, "../data/raw/merging/merged_data.csv")
-    input_csv_file2 = os.path.join(script_directory, "../data/raw/inference/predicted_data_model1.csv")
-    output_csv_file_model1 = os.path.join(script_directory, "../data/raw/inference/predicted_data_model1.csv")
-    output_csv_file_model2 = os.path.join(script_directory, "../data/raw/inference/predicted_data_model2.csv")
+    model1_zip_file = os.path.join(script_directory, "../../trained_models/bert-finetuned-my-data-final_archive.zip")
+    model2_zip_file = os.path.join(script_directory, "../../trained_models/bert-finetuned-my-data-final2_archive2.zip")
+    input_csv_file1 = os.path.join(script_directory, "../../../data/raw/data_acquisition/merged_data.csv")
+    input_csv_file2 = os.path.join(script_directory, "../../../data/raw/inference/predicted_data_model1.csv")
+    output_csv_file_model1 = os.path.join(script_directory, "../../../data/raw/inference/predicted_data_model1.csv")
+    output_csv_file_model2 = os.path.join(script_directory, "../../../data/raw/inference/predicted_data_model2.csv")
 
     # Chargez et préparez les modèles
     model1, tokenizer1, model2, tokenizer2 = load_and_prepare_models(model1_zip_file, model2_zip_file)

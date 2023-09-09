@@ -9,7 +9,7 @@ import os
 nltk.download('stopwords')
 
 # Spécifier le chemin relatif vers le dossier logs
-log_folder_path = '../logs/preprocessing'  # Le nom du dossier que vous avez créé
+log_folder_path = '../../../logs/inference'  # Le nom du dossier que vous avez créé
 # Générer un nom de fichier de journal unique basé sur la date et l'heure
 log_filename = datetime.now().strftime("%Y-%m-%d") + "_preprocessing.log"
 # Spécifier le chemin complet du fichier de journal
@@ -20,10 +20,10 @@ logging.basicConfig(filename=log_file_path, level=logging.INFO, format='%(asctim
 # Obtenez le chemin du dossier du script en cours d'exécution
 script_directory = os.path.dirname(__file__)
 # Chemin du dossier contenant les fichiers CSV relativement au script
-csv_folder_path = os.path.join(script_directory, '../data/raw/')
+csv_folder_path = os.path.join(script_directory, '../../../data/raw/')
 
 # Charger le fichier CSV
-df_MEFSIN = pd.read_csv(os.path.join(csv_folder_path, 'merging/dataset_MEFSIN.csv'))
+df_MEFSIN = pd.read_csv(os.path.join(csv_folder_path, 'data_acquisition/dataset_MEFSIN.csv'))
 
 # LABEL
 # df_MEFSIN['combined_text'] = df_MEFSIN['title_discussion'] + ' ' + df_MEFSIN['message']

@@ -4,7 +4,7 @@ from datetime import datetime
 import os
 
 # Spécifier le chemin relatif vers le dossier logs
-log_folder_path = '../logs/merging'  # Le nom du dossier que vous avez créé
+log_folder_path = '../../../logs/data_acquisition/merging'  # Le nom du dossier que vous avez créé
 # Générer un nom de fichier de journal unique basé sur la date et l'heure
 log_filename = datetime.now().strftime("%Y-%m-%d") + "_merging.log"
 # Spécifier le chemin complet du fichier de journal
@@ -31,7 +31,7 @@ def load_and_merge_data():
         logging.info("Fusion des DataFrames terminée.")
         
         # Enregistrer le DataFrame fusionné dans un fichier CSV
-        merged_csv_path = os.path.join(csv_folder_path, 'merging/merged_data.csv')
+        merged_csv_path = os.path.join(csv_folder_path, '../../../data/raw/data_acquisition/merged_data.csv')
         df_merged.to_csv(merged_csv_path, index=False)
         logging.info("Données fusionnées exportées avec succès au fichier merged_data.csv.")
 
@@ -50,7 +50,7 @@ def filter_and_export_data(df_merged):
         logging.info("Filtrage des données terminé.")
 
         # Export des données filtrées au format CSV
-        csv_export_path = os.path.join(csv_folder_path, 'merging/dataset_MEFSIN.csv')
+        csv_export_path = os.path.join(csv_folder_path, '../../../data/raw/data_acquisition/dataset_MEFSIN.csv')
         df_filtered.to_csv(csv_export_path, index=False)
         logging.info("Données filtrées exportées avec succès au fichier dataset_MEFSIN.csv.")
     

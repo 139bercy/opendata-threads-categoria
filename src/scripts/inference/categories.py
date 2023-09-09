@@ -2,8 +2,8 @@
 LABELS = ['Fiabilité', 'Autre', 'Actualisation', 'Accessibilité', 'Compréhension', 'Exploitabilité']
 
 # Créer des dictionnaires pour convertir les identifiants de label et les labels
-ID2LABEL = {idx:label for idx, label in enumerate(labels)}
-LABEL2ID = {label:idx for idx, label in enumerate(labels)}
+ID2LABEL = {idx:label for idx, label in enumerate(LABELS)}
+LABEL2ID = {label:idx for idx, label in enumerate(LABELS)}
 
 SSLABELS = ['Incohérence des données',
             "Questions ou remarques d'usagers",
@@ -33,5 +33,5 @@ SSLABELS = ['Incohérence des données',
             'Harmonisation des données']
 
 # Créer des dictionnaires pour convertir les identifiants de label et les labels
-ID2SSLABEL = {id:sslabel for id, sslabel in enumerate(sslabels)}
-SSLABEL2ID = {sslabel:id for id, sslabel in enumerate(sslabels)}
+ID2SSLABEL = {id:sslabel for id, sslabel in enumerate(SSLABELS)}
+SSLABEL2ID = {sslabel:id for id, sslabel in enumerate(SSLABELS)}
