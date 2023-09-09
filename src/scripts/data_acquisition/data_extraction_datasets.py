@@ -6,7 +6,7 @@ from datetime import datetime
 import os
 
 # Spécifier le chemin relatif vers le dossier logs
-log_folder_path = '../../../logs/data_acquisition/extract_datasets'  # Le nom du dossier que vous avez créé
+log_folder_path = '../../../logs/data_acquisition/'  # Le nom du dossier que vous avez créé
 
 # Générer un nom de fichier de journal unique basé sur la date et l'heure
 log_filename = datetime.now().strftime("%Y-%m-%d") + "_extract_datasets.log"
