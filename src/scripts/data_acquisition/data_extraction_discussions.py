@@ -1,6 +1,5 @@
 # Script d'extraction des discussions
 import requests
-from datetime import datetime
 import pandas as pd
 import logging
 from datetime import datetime
@@ -85,11 +84,17 @@ def main():
         'closed': 'first'
     }).reset_index()
     
+    ################################################################################################
+    ################################################################################################
+    ################################################################################################
     # Utiliser value_counts pour compter le nombre de messages pour chaque id_discussion
-    message_counts = df['id_discussion'].value_counts()
+    #message_counts = df['id_discussion'].value_counts()
 
     # Ajouter une colonne pour le nombre de messages dans grouped_df
-    grouped_df['message_count'] = grouped_df['id_discussion'].map(message_counts)
+    #grouped_df['message_count'] = grouped_df['id_discussion'].map(message_counts)
+    ################################################################################################
+    ################################################################################################
+    ################################################################################################
 
     # Créer un dataframe à partir des nouvelles données
     grouped_df.to_csv('../../../data/raw/data_acquisition/extraction_discussions/discussions.csv', index=False)
