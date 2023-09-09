@@ -7,16 +7,6 @@ from datetime import datetime
 import os
 
 # Spécifier le chemin relatif vers le dossier logs
-##log_folder_path = '../logs'  # Le nom du dossier que vous avez créé
-
-# Spécifier le chemin complet du fichier de journal
-##log_file_path = f'{log_folder_path}/extract_discussions.log'
-
-# Configurer les paramètres de journalisation
-##logging.basicConfig(filename=log_file_path, level=logging.DEBUG, format='%(levelname)s: %(message)s')
-#logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s: %(message)s')
-
-# Spécifier le chemin relatif vers le dossier logs
 log_folder_path = '../../../logs/data_acquisition/extract_discussions'  # Le nom du dossier que vous avez créé
 
 # Générer un nom de fichier de journal unique basé sur la date et l'heure
