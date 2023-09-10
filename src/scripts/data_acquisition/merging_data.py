@@ -65,6 +65,8 @@ if __name__ == "__main__":
     if df_merged is not None:
         # Filtrage et export des données
         filter_and_export_data(df_merged)
+        logging.info("Les données ont été merge et filtrées avec succès !")
+        print("Les données ont été merge et filtrées avec succès !")
         
     else:
         logging.error("Impossible de continuer sans données valides.")
