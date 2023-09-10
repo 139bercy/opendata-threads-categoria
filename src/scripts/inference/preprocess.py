@@ -9,13 +9,13 @@ import os
 nltk.download('stopwords')
 
 # Spécifier le chemin relatif vers le dossier logs
-log_folder_path = '../../../logs/inference/preprocessing/'  # Le nom du dossier que vous avez créé
+#log_folder_path = '../../../logs/inference/preprocessing/'  # Le nom du dossier que vous avez créé
 # Générer un nom de fichier de journal unique basé sur la date et l'heure
-log_filename = datetime.now().strftime("%Y-%m-%d") + "_preprocessing.log"
+#log_filename = datetime.now().strftime("%Y-%m-%d") + "_preprocessing.log"
 # Spécifier le chemin complet du fichier de journal
-log_file_path = os.path.join(log_folder_path, log_filename)
+#log_file_path = os.path.join(log_folder_path, log_filename)
 # Configurer les paramètres de journalisation avec le chemin complet
-logging.basicConfig(filename=log_file_path, level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
+#logging.basicConfig(filename=log_file_path, level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
 
 # Obtenez le chemin du dossier du script en cours d'exécution
 script_directory = os.path.dirname(__file__)
