@@ -10,7 +10,7 @@ import categories
 from preprocess import preprocess_data, preprocess_data2
 
 # Spécifier le chemin relatif vers le dossier logs
-log_folder_path = '../../../logs/inference'  # Le nom du dossier que vous avez créé
+log_folder_path = '../../../logs/inference/model_inference/'  # Le nom du dossier que vous avez créé
 # Générer un nom de fichier de journal unique basé sur la date et l'heure
 log_filename = datetime.now().strftime("%Y-%m-%d") + "_inference.log"
 # Spécifier le chemin complet du fichier de journal
@@ -189,7 +189,7 @@ if __name__ == "__main__":
     # Spécifiez les noms de fichiers et répertoires relatifs
     model1_zip_file = os.path.join(script_directory, "../../trained_models/bert-finetuned-my-data-final_archive.zip")
     model2_zip_file = os.path.join(script_directory, "../../trained_models/bert-finetuned-my-data-final2_archive2.zip")
-    input_csv_file1 = os.path.join(script_directory, "../../../data/raw/data_acquisition/merged_data.csv")
+    input_csv_file1 = os.path.join(script_directory, "../../../data/raw/data_acquisition/merging_data/dataset_mefsin.csv")
     input_csv_file2 = os.path.join(script_directory, "../../../data/raw/inference/predicted_data_model1.csv")
     output_csv_file_model1 = os.path.join(script_directory, "../../../data/raw/inference/predicted_data_model1.csv")
     output_csv_file_model2 = os.path.join(script_directory, "../../../data/raw/inference/predicted_data_model2.csv")
@@ -201,5 +201,8 @@ if __name__ == "__main__":
     perform_inference1(model1, tokenizer1, input_csv_file1, output_csv_file_model1)
     perform_inference2(model2, tokenizer2, input_csv_file2, output_csv_file_model2)
     
+    logging.info("Les données ont été annotées avec succès !")
+    print("Les données ont été annotées avec succès !")
+        
     # Fermez le système de journalisation
     logging.shutdown()

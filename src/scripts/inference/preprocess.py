@@ -9,7 +9,7 @@ import os
 nltk.download('stopwords')
 
 # Spécifier le chemin relatif vers le dossier logs
-log_folder_path = '../../../logs/inference'  # Le nom du dossier que vous avez créé
+log_folder_path = '../../../logs/inference/preprocessing/'  # Le nom du dossier que vous avez créé
 # Générer un nom de fichier de journal unique basé sur la date et l'heure
 log_filename = datetime.now().strftime("%Y-%m-%d") + "_preprocessing.log"
 # Spécifier le chemin complet du fichier de journal
@@ -23,10 +23,7 @@ script_directory = os.path.dirname(__file__)
 csv_folder_path = os.path.join(script_directory, '../../../data/raw/')
 
 # Charger le fichier CSV
-df_MEFSIN = pd.read_csv(os.path.join(csv_folder_path, 'data_acquisition/dataset_MEFSIN.csv'))
-
-# LABEL
-# df_MEFSIN['combined_text'] = df_MEFSIN['title_discussion'] + ' ' + df_MEFSIN['message']
+df_MEFSIN = pd.read_csv(os.path.join(csv_folder_path, 'data_acquisition/merging_data/dataset_mefsin.csv'))
 
 # Fonction de prétraitement pour encoder les exemples et ajouter les labels
 def preprocess_data(examples):
@@ -35,7 +32,6 @@ def preprocess_data(examples):
         combined_text = examples["title_discussion"] + ' ' + examples["message"]
         
         # Nettoyage du texte
-        #combined_text = examples["combined_text"]
         # Convertir chaque texte en minuscules
         combined_text = [text.lower() for text in combined_text]
         # Supprimer les chiffres
@@ -60,9 +56,6 @@ def preprocess_data(examples):
         return None
     
 
-# SOUS LABEL
-# df_MEFSIN['combined_text_2'] = df_MEFSIN['predictions_motifs_label'] + ' ' + df_MEFSIN['predictions_motifs_label'] + ' ' + df_MEFSIN['predictions_motifs_label'] + ' ' + df_MEFSIN['title_discussion'] + ' ' + df_MEFSIN['message']
-
 # Fonction de prétraitement pour encoder les exemples et ajouter les labels
 def preprocess_data2(examples):
     try:
@@ -70,7 +63,6 @@ def preprocess_data2(examples):
         combined_text2 = examples["predictions_motifs_label"] + ' ' + examples["title_discussion"] + ' ' + examples["message"]
         
         # Nettoyage du texte
-        #combined_text2 = examples["combined_text_2"]
         # Convertir chaque texte en minuscules
         combined_text2 = [text.lower() for text in combined_text2]
         # Supprimer les chiffres
