@@ -10,7 +10,7 @@ import categories
 from preprocess import preprocess_data, preprocess_data2
 
 # Spécifier le chemin relatif vers le dossier logs
-log_folder_path = '../../../logs/inference/model_inference/'  # Le nom du dossier que vous avez créé
+log_folder_path = '../../../logs/inference/'  # Le nom du dossier que vous avez créé
 # Générer un nom de fichier de journal unique basé sur la date et l'heure
 log_filename = datetime.now().strftime("%Y-%m-%d") + "_inference.log"
 # Spécifier le chemin complet du fichier de journal
