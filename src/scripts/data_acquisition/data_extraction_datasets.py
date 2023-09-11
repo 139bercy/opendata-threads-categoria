@@ -59,6 +59,7 @@ def main():
         metrics_followers = item['metrics']['followers'] if item['metrics'] else None
         metrics_reuses = item['metrics']['reuses'] if item['metrics'] else None
         metrics_views = item['metrics']['views'] if item['metrics'] else None
+        remote_id = item['harvest']['remote_id'] if item['harvest'] and 'remote_id' in item['harvest'] else None
         extracted_data.append({
             'id_dataset': item['id'],
             'title_dataset': item['title'],
@@ -69,6 +70,7 @@ def main():
             'nb_followers': metrics_followers,
             'nb_reuses': metrics_reuses,
             'nb_views': metrics_views,
+            'remote_id': remote_id,
         })
 
     df = pd.DataFrame(extracted_data)
