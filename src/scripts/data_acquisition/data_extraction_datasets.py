@@ -68,7 +68,7 @@ def main():
     extracted_data = []
     for item in extracted_dataset_data:
         # Comparez la date de dernière mise à jour avec la date du jeu de données
-        dataset_updated_date = datetime.strptime(item['last_update'], "%Y-%m-%dT%H:%M:%S.%f%z")
+        dataset_updated_date = datetime.strptime(item['last_update'], "%Y-%m-%dT%H:%M:%S%z")
         if dataset_updated_date >= last_update_date:
             organization = item['organization']['name'] if item['organization'] else None
             metrics_discussions = item['metrics']['discussions'] if item['metrics'] else None

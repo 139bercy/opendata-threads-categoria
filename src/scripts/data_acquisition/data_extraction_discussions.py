@@ -76,7 +76,7 @@ def main():
         # Si le fichier CSV existe, chargez les données existantes
         existing_data = load_existing_data(existing_data_path)
         # Obtenez la date de dernière mise à jour à partir du fichier CSV existant
-        last_update_date_str = existing_data['created'].max()
+        last_update_date_str = existing_data['posted_on'].max()
         # Convertissez la date en objet datetime conscient du fuseau horaire UTC
         last_update_date = parse_datetime(last_update_date_str).replace(tzinfo=timezone.utc)
     else:
