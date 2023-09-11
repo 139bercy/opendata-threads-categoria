@@ -3,6 +3,7 @@ import pandas as pd
 import logging
 from datetime import datetime
 import os
+import pytz
 
 # Spécifier le chemin relatif vers le dossier logs
 log_folder_path = '../../../logs/data_acquisition/extraction_datasets/'  # Le nom du dossier que vous avez créé
@@ -54,9 +55,12 @@ def main():
 
     # Obtenez la date de dernière modification du fichier CSV existant s'il existe
     if os.path.exists(existing_data_path):
-        last_update_date = datetime.fromtimestamp(os.path.getmtime(existing_data_path))
+        existing_data = load_existing_data(existing_data_path)
+        last_update_date = existing_data['last_update'].max()
+        last_update_date = last_update_date.replace(tzinfo=pytz.UTC)  # Rendre la date consciente du fuseau horaire
     else:
-        last_update_date = datetime.min  # Utilisez une date minimale si le fichier n'existe pas encore
+        existing_data = pd.DataFrame()
+        last_update_date = datetime.min.replace(tzinfo=pytz.UTC)  # Utilisez une date minimale consciente du fuseau horaire si le fichier n'existe pas encore
 
     extracted_dataset_data = fetch_dataset_data(datasets_url)
 
@@ -64,7 +68,7 @@ def main():
     extracted_data = []
     for item in extracted_dataset_data:
         # Comparez la date de dernière mise à jour avec la date du jeu de données
-        dataset_updated_date = datetime.strptime(item['last_update'], "%Y-%m-%dT%H:%M:%S.%fZ")
+        dataset_updated_date = datetime.strptime(item['last_update'], "%Y-%m-%dT%H:%M:%S.%f%z")
         if dataset_updated_date >= last_update_date:
             organization = item['organization']['name'] if item['organization'] else None
             metrics_discussions = item['metrics']['discussions'] if item['metrics'] else None
@@ -83,12 +87,10 @@ def main():
                 'nb_reuses': metrics_reuses,
                 'nb_views': metrics_views,
                 'remote_id': remote_id,
+                'last_update': dataset_updated_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
             })
 
     df = pd.DataFrame(extracted_data)
-
-    # Charger les données existantes
-    existing_data = load_existing_data(existing_data_path)
 
     # Fusionner les nouvelles données avec les données existantes
     combined_data = pd.concat([existing_data, df], ignore_index=True)
@@ -96,9 +98,14 @@ def main():
     # Enregistrez les données fusionnées dans le fichier CSV
     combined_data.to_csv(existing_data_path, index=False)
 
-    logging.info("Les nouvelles données ont été fusionnées avec succès avec les données existantes.")
-    print("Les nouvelles données ont été fusionnées avec succès avec les données existantes.")
-
+    # Enregistrez les données fusionnées dans le fichier CSV
+    try:
+        combined_data.to_csv(existing_data_path, index=False)
+        logging.info("Les nouvelles données ont été fusionnées avec succès avec les données existantes.")
+        print("Les nouvelles données ont été fusionnées avec succès avec les données existantes.")
+    except Exception as e:
+        logging.error(f"Erreur lors de l'enregistrement des données : {e}")
+        print(f"Erreur lors de l'enregistrement des données : {e}")
 
 if __name__ == "__main__":
     try:
