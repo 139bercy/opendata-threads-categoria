@@ -145,6 +145,8 @@ def main():
 if __name__ == "__main__":
     try:
         main()
+        logging.info("Les données ont été exportées avec succès vers 'discussions.csv'.")
+        print("Les données ont été exportées avec succès vers 'discussions.csv'.")
     finally:
         # Fermez le fichier de journal
         logging.shutdown()
