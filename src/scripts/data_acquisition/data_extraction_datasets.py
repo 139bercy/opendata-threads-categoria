@@ -89,7 +89,7 @@ def process_data(existing_data, extracted_dataset_data):
                 'nb_reuses': metrics_reuses,
                 'nb_views': metrics_views,
                 'remote_id': remote_id,
-                'last_update': dataset_updated_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+                'last_update_datasets': dataset_updated_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
             })
             
     return pd.DataFrame(extracted_data)
@@ -98,8 +98,8 @@ def process_data(existing_data, extracted_dataset_data):
 def save_data_to_csv(data, file_path):
     try:
         data.to_csv(file_path, index=False)
-        logging.info("Les nouvelles données ont été fusionnées avec succès avec les données existantes.")
-        print("Les nouvelles données ont été fusionnées avec succès avec les données existantes.")
+        logging.info("Les nouvelles données ont été fusionnées avec succès !")
+        print("Les nouvelles données ont été fusionnées avec succès !")
     except Exception as e:
         logging.error(f"Erreur lors de l'enregistrement des données : {e}")
         print(f"Erreur lors de l'enregistrement des données : {e}")
