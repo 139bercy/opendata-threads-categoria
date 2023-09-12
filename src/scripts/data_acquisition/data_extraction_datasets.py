@@ -5,70 +5,61 @@ from datetime import datetime
 import os
 import pytz
 
-# Spécifier le chemin relatif vers le dossier logs
-log_folder_path = '../../../logs/data_acquisition/extraction_datasets/'  # Le nom du dossier que vous avez créé
+# Configuration de la journalisation
+def configure_logging(log_folder_path):
+    log_filename = datetime.now().strftime("%Y-%m-%d") + "_extract_datasets.log"
+    log_file_path = os.path.join(log_folder_path, log_filename)
+    logging.basicConfig(filename=log_file_path, level=logging.DEBUG, format='%(asctime)s - %(levelname)s: %(message)s')
 
-# Générer un nom de fichier de journal unique basé sur la date et l'heure
-log_filename = datetime.now().strftime("%Y-%m-%d") + "_extract_datasets.log"
-
-# Spécifier le chemin complet du fichier de journal
-log_file_path = os.path.join(log_folder_path, log_filename)
-
-# Configurer les paramètres de journalisation avec le chemin complet
-logging.basicConfig(filename=log_file_path, level=logging.DEBUG, format='%(asctime)s - %(levelname)s: %(message)s')
-
-def fetch_dataset_data(url):
+# Récupération des données depuis l'URL
+def fetch_data_from_url(url):
     data_list = []
     page = 1
     while url:
         try:
             response = requests.get(url)
             response_json = response.json()
-        except ValueError:
-            logging.error("Erreur de décodage JSON. Ignorer cette page.")
+        except ValueError as e:
+            logging.error(f"Erreur de décodage JSON. Ignorer cette page. Erreur : {e}")
             continue
 
         if response.ok:
-            data = response_json["data"]
+            data = response_json.get("data", [])
             data_list.extend(data)
 
-            next_page = response_json["next_page"]
+            next_page = response_json.get("next_page")
             url = next_page if next_page else None
 
             logging.info(f"Page {page} traitée !")
             page += 1
         else:
-            logging.error(f"Request error: {response.status_code}.")
+            logging.error(f"Request error: {response.status_code} - URL : {url}")
             break
 
     return data_list
 
+# Chargement des données existantes depuis un fichier CSV
 def load_existing_data(file_path):
     if os.path.exists(file_path):
-        return pd.read_csv(file_path)
+        try:
+            existing_data = pd.read_csv(file_path)
+            # Convertir la colonne 'last_update' en datetimes conscientes du fuseau horaire
+            existing_data['last_update'] = pd.to_datetime(existing_data['last_update']).dt.tz_localize(pytz.UTC)
+            return existing_data
+        except Exception as e:
+            logging.error(f"Erreur lors de la lecture du fichier CSV. Erreur : {e}")
+            return pd.DataFrame()
     else:
         return pd.DataFrame()
 
-def main():
-    datasets_url = "https://www.data.gouv.fr/api/1/datasets/"
-    existing_data_path = '../../../data/raw/data_acquisition/extraction_datasets/datasets.csv'
-
-    # Obtenez la date de dernière modification du fichier CSV existant s'il existe
-    if os.path.exists(existing_data_path):
-        existing_data = load_existing_data(existing_data_path)
-        last_update_date = existing_data['last_update'].max()
-        last_update_date = last_update_date.replace(tzinfo=pytz.UTC)  # Rendre la date consciente du fuseau horaire
-    else:
-        existing_data = pd.DataFrame()
-        last_update_date = datetime.min.replace(tzinfo=pytz.UTC)  # Utilisez une date minimale consciente du fuseau horaire si le fichier n'existe pas encore
-
-    extracted_dataset_data = fetch_dataset_data(datasets_url)
-
-    # Code de traitement et enregistrement
+# Traitement des données
+def process_data(existing_data, extracted_dataset_data):
     extracted_data = []
+    last_update_date = existing_data['last_update'].max() if not existing_data.empty else datetime.min.replace(tzinfo=pytz.UTC)
+
     for item in extracted_dataset_data:
-        # Comparez la date de dernière mise à jour avec la date du jeu de données
-        dataset_updated_date = datetime.strptime(item['last_update'], "%Y-%m-%dT%H:%M:%S%z")
+        dataset_updated_date = datetime.strptime(item['last_update'], "%Y-%m-%dT%H:%M:%S.%f+00:00").replace(tzinfo=pytz.UTC)
+        
         if dataset_updated_date >= last_update_date:
             organization = item['organization']['name'] if item['organization'] else None
             metrics_discussions = item['metrics']['discussions'] if item['metrics'] else None
@@ -76,6 +67,7 @@ def main():
             metrics_reuses = item['metrics']['reuses'] if item['metrics'] else None
             metrics_views = item['metrics']['views'] if item['metrics'] else None
             remote_id = item['harvest']['remote_id'] if item['harvest'] and 'remote_id' in item['harvest'] else None
+            
             extracted_data.append({
                 'id_dataset': item['id'],
                 'title_dataset': item['title'],
@@ -87,29 +79,46 @@ def main():
                 'nb_reuses': metrics_reuses,
                 'nb_views': metrics_views,
                 'remote_id': remote_id,
-                'last_update': dataset_updated_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+                'last_update': dataset_updated_date.strftime("%Y-%m-%dT%H:%M:%S.%f+00:00")
             })
+            
+    return pd.DataFrame(extracted_data)
 
-    df = pd.DataFrame(extracted_data)
-
-    # Fusionner les nouvelles données avec les données existantes
-    combined_data = pd.concat([existing_data, df], ignore_index=True)
-
-    # Enregistrez les données fusionnées dans le fichier CSV
-    combined_data.to_csv(existing_data_path, index=False)
-
-    # Enregistrez les données fusionnées dans le fichier CSV
+# Enregistrement des données dans un fichier CSV
+def save_data_to_csv(data, file_path):
     try:
-        combined_data.to_csv(existing_data_path, index=False)
+        data.to_csv(file_path, index=False)
         logging.info("Les nouvelles données ont été fusionnées avec succès avec les données existantes.")
         print("Les nouvelles données ont été fusionnées avec succès avec les données existantes.")
     except Exception as e:
         logging.error(f"Erreur lors de l'enregistrement des données : {e}")
         print(f"Erreur lors de l'enregistrement des données : {e}")
 
+def main():
+    log_folder_path = '../../../logs/data_acquisition/extraction_datasets/'
+    configure_logging(log_folder_path)
+
+    datasets_url = "https://www.data.gouv.fr/api/1/datasets/"
+    existing_data_path = '../../../data/raw/data_acquisition/extraction_datasets/datasets.csv'
+
+    # Chargement des données existantes
+    existing_data = load_existing_data(existing_data_path)
+
+    # Récupération des nouvelles données
+    extracted_dataset_data = fetch_data_from_url(datasets_url)
+
+    # Traitement des données
+    df = process_data(existing_data, extracted_dataset_data)
+
+    # Fusionner les nouvelles données avec les données existantes
+    combined_data = pd.concat([existing_data, df], ignore_index=True)
+
+    # Enregistrement des données dans un fichier CSV
+    save_data_to_csv(combined_data, existing_data_path)
+
 if __name__ == "__main__":
     try:
         main()
     finally:
-        # Fermez le fichier de journal
+        # Fermeture du fichier de journal
         logging.shutdown()
