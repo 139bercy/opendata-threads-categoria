@@ -44,7 +44,7 @@ def load_existing_data(file_path):
         try:
             existing_data = pd.read_csv(file_path)
             # Convertir la colonne 'last_update' en datetimes conscientes du fuseau horaire
-            existing_data['last_update'] = pd.to_datetime(existing_data['last_update']).dt.tz_localize(pytz.UTC)
+            existing_data['last_update'] = pd.to_datetime(existing_data['last_update']).dt.tz_convert(pytz.UTC)
             return existing_data
         except Exception as e:
             logging.error(f"Erreur lors de la lecture du fichier CSV. Erreur : {e}")
@@ -52,13 +52,23 @@ def load_existing_data(file_path):
     else:
         return pd.DataFrame()
 
-# Traitement des données
 def process_data(existing_data, extracted_dataset_data):
     extracted_data = []
     last_update_date = existing_data['last_update'].max() if not existing_data.empty else datetime.min.replace(tzinfo=pytz.UTC)
 
     for item in extracted_dataset_data:
-        dataset_updated_date = datetime.strptime(item['last_update'], "%Y-%m-%dT%H:%M:%S.%f+00:00").replace(tzinfo=pytz.UTC)
+        dataset_updated_date_str = item['last_update']
+        
+        # Check if milliseconds are present in the last_update field
+        if "." in dataset_updated_date_str:
+            # Handle milliseconds if present
+            dataset_updated_date_format = "%Y-%m-%dT%H:%M:%S.%f%z"
+        else:
+            # If no milliseconds, use a format without milliseconds
+            dataset_updated_date_format = "%Y-%m-%dT%H:%M:%S%z"
+        
+        dataset_updated_date = datetime.strptime(dataset_updated_date_str, dataset_updated_date_format)
+        dataset_updated_date = dataset_updated_date.replace(tzinfo=pytz.UTC)
         
         if dataset_updated_date >= last_update_date:
             organization = item['organization']['name'] if item['organization'] else None
@@ -79,7 +89,7 @@ def process_data(existing_data, extracted_dataset_data):
                 'nb_reuses': metrics_reuses,
                 'nb_views': metrics_views,
                 'remote_id': remote_id,
-                'last_update': dataset_updated_date.strftime("%Y-%m-%dT%H:%M:%S.%f+00:00")
+                'last_update': dataset_updated_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
             })
             
     return pd.DataFrame(extracted_data)
