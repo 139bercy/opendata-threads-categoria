@@ -89,7 +89,8 @@ def process_data(existing_data, extracted_dataset_data):
                 'nb_reuses': metrics_reuses,
                 'nb_views': metrics_views,
                 'remote_id': remote_id,
-                'last_update_datasets': dataset_updated_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+                'created_dataset': item['created_at'],
+                'last_update_dataset': dataset_updated_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
             })
             
     return pd.DataFrame(extracted_data)
