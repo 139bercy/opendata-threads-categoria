@@ -1,0 +1,13 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:latest
+    container_name: mon_postgresql
+    environment:
+      POSTGRES_USER: mon_utilisateur
+      POSTGRES_PASSWORD: mon_mot_de_passe
+      POSTGRES_DB: ma_base_de_donnees
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
