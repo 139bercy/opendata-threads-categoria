@@ -76,7 +76,7 @@ def process_data(existing_data, extracted_dataset_data):
             metrics_followers = item['metrics']['followers'] if item['metrics'] else None
             metrics_reuses = item['metrics']['reuses'] if item['metrics'] else None
             metrics_views = item['metrics']['views'] if item['metrics'] else None
-            remote_id = item['harvest']['remote_id'] if item['harvest'] and 'remote_id' in item['harvest'] else None
+            #remote_id = item['harvest']['remote_id'] if item['harvest'] and 'remote_id' in item['harvest'] else None
             
             extracted_data.append({
                 'id_dataset': item['id'],
@@ -88,7 +88,7 @@ def process_data(existing_data, extracted_dataset_data):
                 'nb_followers': metrics_followers,
                 'nb_reuses': metrics_reuses,
                 'nb_views': metrics_views,
-                'remote_id': remote_id,
+                #'remote_id': remote_id,
                 'slug': item['slug'],
                 'created_dataset': item['created_at'],
                 'last_update_dataset': dataset_updated_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
