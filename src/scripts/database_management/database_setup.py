@@ -1,4 +1,15 @@
 import mysql.connector
+import logging
+import os
+
+# Vérification et création du répertoire de logs
+log_directory = "../../../logs/data_management/"
+if not os.path.exists(log_directory):
+    os.makedirs(log_directory)
+
+# Configuration du logging
+log_file = os.path.join(log_directory, 'database_setup.log')
+logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def create_database_and_tables():
     try:
@@ -70,9 +81,14 @@ def create_database_and_tables():
         conn.close()
 
         print("Base de données et tables créées avec succès !")
+        # Logging : Enregistrement d'un message de succès
+        logging.info("Base de données et tables créées avec succès !")
 
     except mysql.connector.Error as err:
         print(f"Erreur lors de la création de la base de données : {err}")
+        # Logging : Enregistrement d'une erreur
+        logging.error(f"Erreur lors de la création de la base de données : {err}")
 
 if __name__ == "__main__":
+    logging.info("Création de la Base de données...")
     create_database_and_tables()

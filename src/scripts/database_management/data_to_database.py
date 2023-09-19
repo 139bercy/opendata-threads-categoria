@@ -1,5 +1,15 @@
 import mysql.connector
 import pandas as pd
+import logging
+import os
+
+# Configuration du logging
+log_directory = "../../../logs/data_management/"
+log_file = os.path.join(log_directory, 'data_to_database.log')
+if not os.path.exists(log_directory):
+    os.makedirs(log_directory)
+
+logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def import_data_from_csv():
     try:
