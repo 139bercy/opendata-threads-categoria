@@ -1,10 +1,20 @@
 import mysql.connector
+import os
+
+# Récupérer le host, le nom d'utilisateur et le mot de passe à partir des variables d'environnement
+db_host = os.environ.get("DB_HOST")
+db_user = os.environ.get("DB_USER")
+db_password = os.environ.get("DB_PASSWORD")
+
+# On s'assure que les variables d'environnement existent
+if db_host is None or db_user is None or db_password is None:
+    raise Exception("Les variables d'environnement DB_USER et DB_PASSWORD ne sont pas définies.")
 
 # Configuration de la connexion à la base de données
 config = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'BercyHub2023',
+    'host': db_host,
+    'user': db_user,
+    'password': db_password,
     'database': 'database_discussions'
 }
 

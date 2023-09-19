@@ -3,7 +3,7 @@ import logging
 import os
 
 # Vérification et création du répertoire de logs
-log_directory = "../../../logs/data_management/"
+log_directory = "../../../logs/database_management/"
 if not os.path.exists(log_directory):
     os.makedirs(log_directory)
 
@@ -11,13 +11,22 @@ if not os.path.exists(log_directory):
 log_file = os.path.join(log_directory, 'database_setup.log')
 logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+# Récupérer le host, le nom d'utilisateur et le mot de passe à partir des variables d'environnement
+db_host = os.environ.get("DB_HOST")
+db_user = os.environ.get("DB_USER")
+db_password = os.environ.get("DB_PASSWORD")
+
+# On s'assure que les variables d'environnement existent
+if db_host is None or db_user is None or db_password is None:
+    raise Exception("Les variables d'environnement DB_USER et DB_PASSWORD ne sont pas définies.")
+
 def create_database_and_tables():
     try:
         # Connexion à MySQL
         conn = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="BercyHub2023"
+            host= db_host,
+            user= db_user,
+            password= db_password
         )
 
         # Création de la base de données
@@ -30,9 +39,9 @@ def create_database_and_tables():
 
         # Connexion à la base de données nouvellement créée
         conn = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="BercyHub2023",
+            host= db_host,
+            user= db_user,
+            password= db_password,
             database="database_discussions"
         )
 

@@ -6,20 +6,29 @@ from datetime import datetime
 from dateutil import parser
 
 # Configuration du logging
-log_directory = "../../../logs/data_management/"
+log_directory = "../../../logs/database_management/"
 log_file = os.path.join(log_directory, 'data_to_database.log')
 if not os.path.exists(log_directory):
     os.makedirs(log_directory)
 
 logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+# Récupérer le host, le nom d'utilisateur et le mot de passe à partir des variables d'environnement
+db_host = os.environ.get("DB_HOST")
+db_user = os.environ.get("DB_USER")
+db_password = os.environ.get("DB_PASSWORD")
+
+# On s'assure que les variables d'environnement existent
+if db_host is None or db_user is None or db_password is None:
+    raise Exception("Les variables d'environnement DB_USER et DB_PASSWORD ne sont pas définies.")
+
 def import_data_from_csv():
     try:
         # Connexion à la base de données
         conn = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="BercyHub2023",
+            host= db_host,
+            user= db_user,
+            password= db_password,
             database="database_discussions"
         )
 
