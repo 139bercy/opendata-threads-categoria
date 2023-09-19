@@ -102,9 +102,9 @@ def main():
                     'title_discussion': item['title'],
                     'user': full_name,
                     'message': discussion['content'],
-                    'created': created_date,
-                    'closed': closed_date,
-                    'posted_on': discussion['posted_on']
+                    'created_discussion': created_date,
+                    'closed_discussion': closed_date,
+                    'discussion_posted_on': discussion['posted_on']
                 })
                 
         ################################################################################################

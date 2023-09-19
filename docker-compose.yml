@@ -1,13 +1,22 @@
-version: '3'
+version: '3.8'
+
 services:
-  postgres:
-    image: postgres:latest
-    container_name: mon_postgresql
+  mysql:
+    image: mysql:latest
+    container_name: my-mysql-container
     environment:
-      POSTGRES_USER: mon_utilisateur
-      POSTGRES_PASSWORD: mon_mot_de_passe
-      POSTGRES_DB: ma_base_de_donnees
+      MYSQL_ROOT_PASSWORD: my-secret-password
+      MYSQL_DATABASE: database_discussions
     ports:
-      - "8000:8000"
+      - "3306:3306"
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - ./database_management/mysql-data:/var/lib/mysql
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Chemin vers le Dockerfile de votre application
+    volumes:
+      - ./data/raw/data_acquisition:/app/data/raw  # Chemin vers vos fichiers CSV
+    depends_on:
+      - mysql
