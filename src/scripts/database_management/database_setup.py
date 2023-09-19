@@ -17,7 +17,7 @@ def create_database_and_tables():
         conn = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="BercyHub"
+            password="BercyHub2023"
         )
 
         # Création de la base de données
@@ -32,7 +32,7 @@ def create_database_and_tables():
         conn = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="BercyHub",
+            password="BercyHub2023",
             database="database_discussions"
         )
 
@@ -40,22 +40,7 @@ def create_database_and_tables():
         cursor = conn.cursor()
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS Utilisateur (
-            user VARCHAR(255) PRIMARY KEY,
-        )
-        """)
-
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Discussion (
-            id_discussion INT PRIMARY KEY,
-            created_discussion DATETIME,
-            closed_discussion DATETIME,
-            discussion_posted_on DATE,
-            title_discussion VARCHAR(255),
-            message TEXT,
-            user VARCHAR(255),
-            id_dataset INT,
-            FOREIGN KEY (user) REFERENCES Utilisateur(user),
-            FOREIGN KEY (id_dataset) REFERENCES Dataset(id_dataset)
+            user VARCHAR(255) PRIMARY KEY
         )
         """)
 
@@ -73,6 +58,21 @@ def create_database_and_tables():
             nb_followers INT,
             nb_reuses INT,
             nb_views INT
+        )
+        """)
+        
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS Discussion (
+            id_discussion INT PRIMARY KEY,
+            created_discussion DATETIME,
+            closed_discussion DATETIME,
+            discussion_posted_on DATE,
+            title_discussion VARCHAR(255),
+            message TEXT,
+            user VARCHAR(255),
+            id_dataset INT,
+            FOREIGN KEY (user) REFERENCES Utilisateur(user),
+            FOREIGN KEY (id_dataset) REFERENCES Dataset(id_dataset)
         )
         """)
 
