@@ -49,7 +49,15 @@ def create_database_and_tables():
         cursor = conn.cursor()
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS Utilisateur (
-            user VARCHAR(255) PRIMARY KEY
+            id_user INT AUTO_INCREMENT PRIMARY KEY, (voir pour ajouter le vrai user_id de la requete api)
+            user VARCHAR(255) 
+        )
+        """)
+        
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS Organization (
+            id_organization INT AUTO_INCREMENT PRIMARY KEY,
+            organization VARCHAR(255)
         )
         """)
 
@@ -58,15 +66,16 @@ def create_database_and_tables():
             id_dataset INT PRIMARY KEY,
             title_dataset VARCHAR(255),
             description_dataset TEXT,
-            organization VARCHAR(255),
             url_dataset VARCHAR(255),
             created_dataset DATE,
-            last_update_dataset DATE,
+            last_update_dataset DATE, (datetimestemp)
             slug VARCHAR(255),
             nb_discussions INT,
             nb_followers INT,
             nb_reuses INT,
-            nb_views INT
+            nb_views INT, 
+            id_organization INT,
+            FOREIGN KEY (id_organization) REFERENCES Organization(id_organization)
         )
         """)
         
@@ -78,9 +87,9 @@ def create_database_and_tables():
             discussion_posted_on DATE,
             title_discussion VARCHAR(255),
             message TEXT,
-            user VARCHAR(255),
+            id_user VARCHAR(255),
             id_dataset INT,
-            FOREIGN KEY (user) REFERENCES Utilisateur(user),
+            FOREIGN KEY (user) REFERENCES Utilisateur(id_user),
             FOREIGN KEY (id_dataset) REFERENCES Dataset(id_dataset)
         )
         """)

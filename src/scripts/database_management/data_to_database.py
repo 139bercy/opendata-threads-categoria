@@ -33,33 +33,43 @@ def import_data_from_csv():
         )
 
         # Charger les données CSV dans un DataFrame
-        data = pd.read_csv("../../../data/raw/data_acquisition/merging_data/dataset_mefsin.csv")
-
+        if os.path.exists("../../../data/raw/data_acquisition/merging_data/dataset_mefsin.csv"):
+            data = pd.read_csv("../../../data/raw/data_acquisition/merging_data/dataset_mefsin.csv")
+        else:
+            raise Exception("Le fichier CSV n'existe pas...")
+        
         # Créer un curseur
         cursor = conn.cursor()
 
         # Itérer sur les lignes du DataFrame et insérer les données dans la table Utilisateur
         for index, row in data.iterrows():
+            # Insérer des données dans la table Utilisateur
             cursor.execute("""
-            INSERT INTO Utilisateur (user)
+            INSERT INTO Utilisateur (id_user, user)
             VALUES (%s)
             """, (row["user"],))
             
-            # Supprimer la partie du fuseau horaire et convertir la date
+            # Insérer des données dans la table Organization
+            cursor.execute("""
+            INSERT IGNORE INTO Organization (id_organization, organization)
+            VALUES (%s)
+            """, (row["organization"],))
+            
+            """# Supprimer la partie du fuseau horaire et convertir la date
             original_date = '2023-09-13T09:04:58.310000+0000'
             date_without_timezone = original_date.split('+')[0]  # Supprime le fuseau horaire
-            formatted_last_update_date = datetime.strptime(date_without_timezone, '%Y-%m-%dT%H:%M:%S.%f').strftime('%Y-%m-%d %H:%M:%S')
+            formatted_last_update_date = datetime.strptime(date_without_timezone, '%Y-%m-%dT%H:%M:%S.%f').strftime('%Y-%m-%d %H:%M:%S')"""
 
             # Insérer des données dans la table Dataset
             cursor.execute("""
-            INSERT INTO Dataset (title_dataset, description_dataset, organization, url_dataset, created_dataset, last_update_dataset, slug, nb_discussions, nb_followers, nb_reuses, nb_views)
+            INSERT INTO Dataset (id_dataset, title_dataset, description_dataset, url_dataset, created_dataset, last_update_dataset, slug, nb_discussions, nb_followers, nb_reuses, nb_views, organization_id)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (row["title_dataset"], row["description_dataset"], row["organization"], row["url_dataset"], row["created_dataset"], row["last_update_dataset"], row["slug"], row["nb_discussions"], row["nb_followers"], row["nb_reuses"], row["nb_views"]))
+            """, (row["title_dataset"], row["description_dataset"], row["url_dataset"], row["created_dataset"], row["last_update_dataset"], row["slug"], row["nb_discussions"], row["nb_followers"], row["nb_reuses"], row["nb_views"], row["organization"]))
 
             # Insérer des données dans la table Discussion
             cursor.execute("""
-            INSERT INTO Discussion (created_discussion, closed_discussion, discussion_posted_on, title_discussion, message, user, id_dataset)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO Discussion (id_discussion, created_discussion, closed_discussion, discussion_posted_on, title_discussion, message, user_id, id_dataset)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """, (row["created_discussion"], row["closed_discussion"], row["discussion_posted_on"], row["title_discussion"], row["message"], row["user"], row["id_dataset"]))
 
         # Valider les changements et fermer la connexion
