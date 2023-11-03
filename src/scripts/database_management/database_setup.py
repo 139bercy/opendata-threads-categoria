@@ -56,7 +56,7 @@ def create_database_and_tables():
         # Création de tables (Utilisateur, Discussion, Dataset)
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS Utilisateur (
-            id_user INT AUTO_INCREMENT PRIMARY KEY, (voir pour ajouter le vrai user_id de la requete api)
+            id_user INT AUTO_INCREMENT PRIMARY KEY,
             user VARCHAR(100) 
         )
         """)
@@ -75,7 +75,7 @@ def create_database_and_tables():
             description_dataset TEXT,
             url_dataset VARCHAR(100),
             created_dataset DATE,
-            last_update_dataset DATE, (datetimestemp)
+            last_update_dataset DATE,
             slug VARCHAR(100),
             nb_discussions INT,
             nb_followers INT,
@@ -85,6 +85,7 @@ def create_database_and_tables():
             FOREIGN KEY (id_organization) REFERENCES Organization(id_organization)
         )
         """)
+        #last_update_dataset DATE, (datetimestemp)
         
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS Discussion (
@@ -94,9 +95,9 @@ def create_database_and_tables():
             discussion_posted_on DATE,
             title_discussion VARCHAR(100),
             message TEXT,
-            id_user VARCHAR(100),
+            id_user INT,
             id_dataset INT,
-            FOREIGN KEY (user) REFERENCES Utilisateur(id_user),
+            FOREIGN KEY (id_user) REFERENCES Utilisateur(id_user),
             FOREIGN KEY (id_dataset) REFERENCES Dataset(id_dataset)
         )
         """)
