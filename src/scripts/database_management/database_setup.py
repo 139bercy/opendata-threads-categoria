@@ -2,15 +2,21 @@ import mysql.connector
 import logging
 import os
 import json
+from datetime import datetime
 
-# Vérification et création du répertoire de logs
-log_directory = "../../../logs/database_management/"
-if not os.path.exists(log_directory):
-    os.makedirs(log_directory)
+import sys
+sys.path.append('..')
+from logging_config import configure_logging
 
-# Configuration du logging
-log_file = os.path.join(log_directory, 'database_setup.log')
-logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+"""# Vérification et création du répertoire de logs
+def configure_logging(log_directory, log_file_name):
+    if not os.path.exists(log_directory):
+        os.makedirs(log_directory)
+        
+    # Configuration du logging
+    timestamp = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
+    log_file = os.path.join(log_directory, f"{log_file_name}_{timestamp}.log")
+    logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')"""
 
 # Récupérer le host, le nom d'utilisateur et le mot de passe à partir des variables d'environnement situées dans le fichier de conf.
 def load_db_config():
@@ -116,5 +122,10 @@ def create_database_and_tables():
         logging.error(f"Erreur lors de la création de la base de données : {err}")
 
 if __name__ == "__main__":
+    # Utilisation de la fonction pour configurer le logging
+    log_directory = "../../../logs/database_management/"
+    log_file_name = 'database_setup'
+    configure_logging(log_directory, log_file_name)
+
     logging.info("Création de la Base de données...")
     create_database_and_tables()
