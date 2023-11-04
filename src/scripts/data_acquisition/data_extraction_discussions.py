@@ -5,7 +5,11 @@ import logging
 from datetime import datetime, timezone
 import time
 
-# Spécifier le chemin relatif vers le dossier logs
+import sys
+sys.path.append('..')
+from logging_config import configure_logging
+
+"""# Spécifier le chemin relatif vers le dossier logs
 log_folder_path = '../../../logs/data_acquisition/extraction_discussions/'  # Le nom du dossier que vous avez créé
 
 # Générer un nom de fichier de journal unique basé sur la date et l'heure
@@ -16,7 +20,7 @@ log_file_path = os.path.join(log_folder_path, log_filename)
 
 # Configurer les paramètres de journalisation avec le chemin complet
 logging.basicConfig(filename=log_file_path, level=logging.DEBUG, format='%(asctime)s - %(levelname)s: %(message)s')
-
+"""
 
 def fetch_discussion_data(url, last_update_date, max_retries=3):
     data_list = []
@@ -144,6 +148,11 @@ def main():
 
 if __name__ == "__main__":
     try:
+        # Utilisation de la fonction pour configurer le logging
+        log_directory = '../../../logs/data_acquisition/extraction_discussions/'
+        log_file_name = 'extract_discussions'
+        configure_logging(log_directory, log_file_name)
+
         main()
         logging.info("Les données ont été exportées avec succès vers 'discussions.csv'.")
         print("Les données ont été exportées avec succès vers 'discussions.csv'.")

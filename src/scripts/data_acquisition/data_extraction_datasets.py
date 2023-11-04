@@ -5,11 +5,15 @@ from datetime import datetime
 import os
 import pytz
 
-# Configuration de la journalisation
+import sys
+sys.path.append('..')
+from logging_config import configure_logging
+
+"""# Configuration de la journalisation
 def configure_logging(log_folder_path):
     log_filename = datetime.now().strftime("%Y-%m-%d") + "_extract_datasets.log"
     log_file_path = os.path.join(log_folder_path, log_filename)
-    logging.basicConfig(filename=log_file_path, level=logging.DEBUG, format='%(asctime)s - %(levelname)s: %(message)s')
+    logging.basicConfig(filename=log_file_path, level=logging.DEBUG, format='%(asctime)s - %(levelname)s: %(message)s')"""
 
 # Récupération des données depuis l'URL
 def fetch_data_from_url(url):
@@ -107,8 +111,10 @@ def save_data_to_csv(data, file_path):
         print(f"Erreur lors de l'enregistrement des données : {e}")
 
 def main():
-    log_folder_path = '../../../logs/data_acquisition/extraction_datasets/'
-    configure_logging(log_folder_path)
+    # Utilisation de la fonction pour configurer le logging
+    log_directory = '../../../logs/data_acquisition/extraction_datasets/'
+    log_file_name = 'extract_datasets'
+    configure_logging(log_directory, log_file_name)
 
     datasets_url = "https://www.data.gouv.fr/api/1/datasets/"
     existing_data_path = '../../../data/raw/data_acquisition/extraction_datasets/datasets.csv'

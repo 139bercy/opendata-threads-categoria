@@ -123,7 +123,7 @@ def create_database_and_tables():
 
 if __name__ == "__main__":
     # Utilisation de la fonction pour configurer le logging
-    log_directory = "../../../logs/database_management/"
+    log_directory = "../../../logs/database_management/database_setup/"
     log_file_name = 'database_setup'
     configure_logging(log_directory, log_file_name)
 

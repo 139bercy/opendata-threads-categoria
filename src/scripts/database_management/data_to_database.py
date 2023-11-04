@@ -6,13 +6,18 @@ import json
 from datetime import datetime
 from dateutil import parser
 
-# Configuration du logging
+import sys
+sys.path.append('..')
+from logging_config import configure_logging
+
+"""# Configuration du logging
 log_directory = "../../../logs/database_management/"
 log_file = os.path.join(log_directory, 'data_to_database.log')
 if not os.path.exists(log_directory):
     os.makedirs(log_directory)
 
 logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+"""
 
 # Charger les informations de connexion depuis le fichier de configuration
 with open('../../../config.json') as config_file:
@@ -114,5 +119,10 @@ def import_data_from_csv():
             conn.close()  # Fermeture de la connexion
 
 if __name__ == "__main__":
+    # Utilisation de la fonction pour configurer le logging
+    log_directory = "../../../logs/database_management/data_to_database/"
+    log_file_name = 'data_to_database'
+    configure_logging(log_directory, log_file_name)
+
     logging.info("Importation des données csv et remplissage des tables...")
     import_data_from_csv()

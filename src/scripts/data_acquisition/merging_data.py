@@ -3,14 +3,18 @@ import logging
 from datetime import datetime
 import os
 
-# Spécifier le chemin relatif vers le dossier logs
+import sys
+sys.path.append('..')
+from logging_config import configure_logging
+
+"""# Spécifier le chemin relatif vers le dossier logs
 log_folder_path = '../../../logs/data_acquisition/merging_data'  # Le nom du dossier que vous avez créé
 # Générer un nom de fichier de journal unique basé sur la date et l'heure
 log_filename = datetime.now().strftime("%Y-%m-%d") + "_merging_data.log"
 # Spécifier le chemin complet du fichier de journal
 log_file_path = os.path.join(log_folder_path, log_filename)
 # Configurer les paramètres de journalisation avec le chemin complet
-logging.basicConfig(filename=log_file_path, level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')
+logging.basicConfig(filename=log_file_path, level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')"""
 
 # Obtenez le chemin du dossier du script en cours d'exécution
 script_directory = os.path.dirname(__file__)
@@ -59,6 +63,11 @@ def filter_and_export_data(df_merged):
         
 
 if __name__ == "__main__":
+    # Utilisation de la fonction pour configurer le logging
+    log_directory = '../../../logs/data_acquisition/merging_data/'
+    log_file_name = 'merging_data'
+    configure_logging(log_directory, log_file_name)
+
     # Chargement et fusion des données
     df_merged = load_and_merge_data()
 
