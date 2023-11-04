@@ -185,7 +185,6 @@ def perform_inference2(model2, tokenizer2, csv_file_path, output_csv_path):
 
     logging.info("Inférence avec le modèle 2 terminée et résultats sauvegardés dans %s", output_csv_path)
     
-
 if __name__ == "__main__":
     # Utilisation de la fonction pour configurer le logging
     log_directory = '../../../logs/inference/'
