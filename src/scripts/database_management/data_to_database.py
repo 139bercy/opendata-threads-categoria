@@ -29,11 +29,12 @@ db_user = config['DB_USER']
 db_name = config['DB_NAME']
 
 def format_datetime_mysql(date_fuseau_horaire):
-    # Convertir la chaîne de date en objet datetime
-    date_object = parser.parse(date_fuseau_horaire)
-    # Reformater la date
-    formatted_date = date_object.strftime('%Y-%m-%d %H:%M:%S')
-    return formatted_date
+    if pd.notnull(date_fuseau_horaire):  # Vérification des valeurs nulles ou NaN
+        date_object = parser.parse(str(date_fuseau_horaire))  # Conversion en chaîne de caractères pour les valeurs non-chaîne
+        formatted_date = date_object.strftime('%Y-%m-%d %H:%M:%S')
+        return formatted_date
+    else:
+        return None  # Gérer les valeurs nulles ou NaN dans les dates
 
 def import_data_from_csv():
     conn = None
