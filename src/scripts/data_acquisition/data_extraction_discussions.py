@@ -64,7 +64,7 @@ def parse_datetime(datetime_str):
 def load_existing_data(file_path):
     if os.path.exists(file_path):
         # Lire les données CSV en spécifiant le type des colonnes de dates
-        date_columns = ['created', 'closed']
+        date_columns = ['created_discussion', 'closed_discussion']
         return pd.read_csv(file_path, parse_dates=date_columns)
     else:
         return pd.DataFrame()
@@ -80,7 +80,7 @@ def main():
         # Si le fichier CSV existe, chargez les données existantes
         existing_data = load_existing_data(existing_data_path)
         # Obtenez la date de dernière mise à jour à partir du fichier CSV existant
-        last_update_date_str = existing_data['posted_on'].max()
+        last_update_date_str = existing_data['discussion_posted_on'].max()
         # Convertissez la date en objet datetime conscient du fuseau horaire UTC
         last_update_date = parse_datetime(last_update_date_str).replace(tzinfo=timezone.utc)
     else:
