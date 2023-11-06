@@ -107,9 +107,9 @@ def main():
                     'user': full_name,
                     'message': discussion['content'],
                     #'created_discussion': created_date,
-                    'created_discussion': discussion['created_date'],
+                    'created_discussion': discussion['created_discussion'],
                     #'closed_discussion': closed_date,
-                    'closed_discussion': discussion['closed_date'],
+                    'closed_discussion': discussion['closed_discussion'],
                     'discussion_posted_on': discussion['posted_on']
                 })
                 
