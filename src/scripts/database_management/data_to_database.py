@@ -3,7 +3,6 @@ import pandas as pd
 import logging
 import os
 import json
-from datetime import datetime
 from dateutil import parser
 
 import sys
@@ -28,6 +27,13 @@ db_host = config['DB_HOST']
 db_user = config['DB_USER']
 #db_password = config['DB_PASSWORD']
 db_name = config['DB_NAME']
+
+def format_datetime_mysql(date_fuseau_horaire):
+    # Convertir la chaîne de date en objet datetime
+    date_object = parser.parse(date_fuseau_horaire)
+    # Reformater la date
+    formatted_date = date_object.strftime('%Y-%m-%d %H:%M:%S')
+    return formatted_date
 
 def import_data_from_csv():
     conn = None
@@ -64,6 +70,11 @@ def import_data_from_csv():
         # Itérer sur les lignes du DataFrame et insérer les données dans la table Utilisateur
         for index, row in data.iterrows():
             try:
+                # Reformater les dates avec fuseau horaire en format DATETIME AAAA-MM-DD HH:MI:SS
+                created_dataset_formatted = format_datetime_mysql(row["created_dataset"])
+                last_update_dataset_formatted = format_datetime_mysql(row["last_update_dataset"])
+                discussion_posted_on_formatted = format_datetime_mysql(row["discussion_posted_on"])
+
                 # Insérer des données dans la table User
                 cursor.execute("""
                 INSERT INTO User (username)
@@ -85,13 +96,13 @@ def import_data_from_csv():
                 cursor.execute("""
                 INSERT INTO Dataset (id_dataset, title_dataset, description_dataset, url_dataset, created_dataset, last_update_dataset, slug, nb_discussions, nb_followers, nb_reuses, nb_views, id_organization)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """, (row["id_dataset"], row["title_dataset"], row["description_dataset"], row["url_dataset"], row["created_dataset"], row["last_update_dataset"], row["slug"], row["nb_discussions"], row["nb_followers"], row["nb_reuses"], row["nb_views"], row["id_organization"]))
+                """, (row["id_dataset"], row["title_dataset"], row["description_dataset"], row["url_dataset"], row["created_dataset_formatted"], row["last_update_dataset_formatted"], row["slug"], row["nb_discussions"], row["nb_followers"], row["nb_reuses"], row["nb_views"], row["id_organization"]))
 
                 # Insérer des données dans la table Discussion
                 cursor.execute("""
                 INSERT INTO Discussion (id_discussion, created_discussion, closed_discussion, discussion_posted_on, title_discussion, message, id_user, id_dataset)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                """, (row["id_discussion"], row["created_discussion"], row["closed_discussion"], row["discussion_posted_on"], row["title_discussion"], row["message"], row["id_user"], row["id_dataset"]))
+                """, (row["id_discussion"], row["created_discussion"], row["closed_discussion"], row["discussion_posted_on_formatted"], row["title_discussion"], row["message"], row["id_user"], row["id_dataset"]))
             
             except mysql.connector.Error as err:
                 print(f"Erreur lors de l'insertion des données : {err}")
