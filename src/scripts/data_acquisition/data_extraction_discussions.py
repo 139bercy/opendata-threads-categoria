@@ -94,8 +94,8 @@ def main():
         # Extraction et traitement des nouvelles données
         extracted_data = []
         for item in new_discussion_data:
-            created_date = datetime.strptime(item['created'][:10], "%Y-%m-%d").strftime("%d/%m/%Y")
-            closed_date = datetime.strptime(item['closed'][:10], "%Y-%m-%d").strftime("%d/%m/%Y") if item['closed'] else None
+            #created_date = datetime.strptime(item['created'][:10], "%Y-%m-%d").strftime("%d/%m/%Y")
+            #closed_date = datetime.strptime(item['closed'][:10], "%Y-%m-%d").strftime("%d/%m/%Y") if item['closed'] else None
             user = item['user']
             full_name = user['first_name'] + ' ' + user['last_name']
             discussion_list = item['discussion']
@@ -106,8 +106,10 @@ def main():
                     'title_discussion': item['title'],
                     'user': full_name,
                     'message': discussion['content'],
-                    'created_discussion': created_date,
-                    'closed_discussion': closed_date,
+                    #'created_discussion': created_date,
+                    'created_discussion': discussion['created_date'],
+                    #'closed_discussion': closed_date,
+                    'closed_discussion': discussion['closed_date'],
                     'discussion_posted_on': discussion['posted_on']
                 })
                 
