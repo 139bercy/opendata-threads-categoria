@@ -61,28 +61,28 @@ def create_database_and_tables():
         
         # Création de tables (Utilisateur, Discussion, Dataset)
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Utilisateur (
+        CREATE TABLE IF NOT EXISTS User (
             id_user INT AUTO_INCREMENT PRIMARY KEY,
-            user VARCHAR(100) 
+            username VARCHAR(100) NOT NULL 
         )
         """)
         
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS Organization (
             id_organization INT AUTO_INCREMENT PRIMARY KEY,
-            organization VARCHAR(100)
+            organization VARCHAR(100) NOT NULL
         )
         """)
 
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS Dataset (
-            id_dataset INT NOT NULL PRIMARY KEY,
-            title_dataset VARCHAR(100),
+            id_dataset VARCHAR(50) NOT NULL PRIMARY KEY,
+            title_dataset VARCHAR(255),
             description_dataset TEXT,
-            url_dataset VARCHAR(100),
-            created_dataset DATE,
-            last_update_dataset DATE,
-            slug VARCHAR(100),
+            url_dataset VARCHAR(255),
+            created_dataset DATETIME,
+            last_update_dataset DATETIME,
+            slug VARCHAR(255),
             nb_discussions INT,
             nb_followers INT,
             nb_reuses INT,
@@ -91,19 +91,18 @@ def create_database_and_tables():
             FOREIGN KEY (id_organization) REFERENCES Organization(id_organization)
         )
         """)
-        #last_update_dataset DATE, (datetimestemp)
         
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS Discussion (
-            id_discussion INT NOT NULL PRIMARY KEY,
-            created_discussion DATETIME,
-            closed_discussion DATETIME,
-            discussion_posted_on DATE,
-            title_discussion VARCHAR(100),
+            id_discussion VARCHAR(50) NOT NULL PRIMARY KEY,
+            created_discussion DATE,
+            closed_discussion DATE,
+            discussion_posted_on DATETIME,
+            title_discussion VARCHAR(255),
             message TEXT,
             id_user INT,
-            id_dataset INT,
-            FOREIGN KEY (id_user) REFERENCES Utilisateur(id_user),
+            id_dataset VARCHAR(50),
+            FOREIGN KEY (id_user) REFERENCES User(id_user),
             FOREIGN KEY (id_dataset) REFERENCES Dataset(id_dataset)
         )
         """)
