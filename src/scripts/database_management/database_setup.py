@@ -63,21 +63,22 @@ def create_database_and_tables():
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS User (
             id_user INT AUTO_INCREMENT PRIMARY KEY,
-            username VARCHAR(100) NOT NULL 
+            username VARCHAR(250) NOT NULL 
         )
         """)
         
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS Organization (
             id_organization INT AUTO_INCREMENT PRIMARY KEY,
-            organization VARCHAR(100) NOT NULL
+            organization VARCHAR(250) NOT NULL
         )
         """)
 
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS Dataset (
-            id_dataset VARCHAR(50) NOT NULL PRIMARY KEY,
-            title_dataset VARCHAR(255),
+            id_data INT AUTO_INCREMENT PRIMARY KEY,
+            id_dataset VARCHAR(50) NOT NULL,
+            title_dataset VARCHAR(400),
             description_dataset TEXT,
             url_dataset VARCHAR(255),
             created_dataset DATETIME,
@@ -94,16 +95,17 @@ def create_database_and_tables():
         
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS Discussion (
-            id_discussion VARCHAR(50) NOT NULL PRIMARY KEY,
+            id_disc INT AUTO_INCREMENT PRIMARY KEY,
+            id_discussion VARCHAR(50) NOT NULL,
             created_discussion DATETIME,
             closed_discussion DATETIME,
             discussion_posted_on DATETIME,
-            title_discussion VARCHAR(255),
+            title_discussion VARCHAR(400),
             message TEXT,
             id_user INT,
-            id_dataset VARCHAR(50),
+            id_data INT,
             FOREIGN KEY (id_user) REFERENCES User(id_user),
-            FOREIGN KEY (id_dataset) REFERENCES Dataset(id_dataset)
+            FOREIGN KEY (id_data) REFERENCES Dataset(id_data)
         )
         """)
 

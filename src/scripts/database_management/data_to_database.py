@@ -108,12 +108,17 @@ def import_data_from_csv():
                 # Exécution de la requête d'insertion pour chaque ligne du DataFrame
                 cursor.execute(query, (row["id_dataset"], row["title_dataset"], row["description_dataset"], row["url_dataset"], created_dataset_formatted, last_update_dataset_formatted, row["slug"], row["nb_discussions"], row["nb_followers"], row["nb_reuses"], row["nb_views"], id_organization_auto))
                 
+                # Récupérer l'ID auto-incrémenté de la table Organization
+                #cursor.execute("SELECT id_organization FROM Organization")
+                #id_organization_auto = cursor.fetchall()
+                id_data_auto = cursor.lastrowid  # Récupérer l'ID auto-incrémenté
+                
                 #################################################################################################################################################
                 # Insérer des données dans la table Discussion
-                query = "INSERT INTO Discussion (id_discussion, created_discussion, closed_discussion, discussion_posted_on, title_discussion, message, id_user, id_dataset) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                query = "INSERT INTO Discussion (id_discussion, created_discussion, closed_discussion, discussion_posted_on, title_discussion, message, id_user, id_data) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
                 # Exécution de la requête d'insertion pour chaque ligne du DataFrame
-                cursor.execute(query, (row["id_discussion"], created_discussion_formatted, closed_discussion_formatted, discussion_posted_on_formatted, row["title_discussion"], row["message"], id_user_auto, row['id_dataset']))
-            
+                cursor.execute(query, (row["id_discussion"], created_discussion_formatted, closed_discussion_formatted, discussion_posted_on_formatted, row["title_discussion"], row["message"], id_user_auto, id_data_auto))
+                
             except mysql.connector.Error as err:
                 print(f"Erreur lors de l'insertion des données : {err}")
                 # Logging : Enregistrement d'une erreur d'insertion
