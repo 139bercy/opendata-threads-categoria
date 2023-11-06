@@ -95,8 +95,8 @@ def create_database_and_tables():
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS Discussion (
             id_discussion VARCHAR(50) NOT NULL PRIMARY KEY,
-            created_discussion DATE,
-            closed_discussion DATE,
+            created_discussion DATETIME,
+            closed_discussion DATETIME,
             discussion_posted_on DATETIME,
             title_discussion VARCHAR(255),
             message TEXT,

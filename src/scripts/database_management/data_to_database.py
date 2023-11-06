@@ -74,35 +74,39 @@ def import_data_from_csv():
                 created_dataset_formatted = format_datetime_mysql(row["created_dataset"])
                 last_update_dataset_formatted = format_datetime_mysql(row["last_update_dataset"])
                 discussion_posted_on_formatted = format_datetime_mysql(row["discussion_posted_on"])
+                created_discussion_formatted = format_datetime_mysql(row["created_discussion"])
+                closed_discussion_formatted = format_datetime_mysql(row["closed_discussion"])
 
                 # Insérer des données dans la table User
-                cursor.execute("""
-                INSERT INTO User (username)
-                VALUES (%s)
-                """, (row["username"]))
+                #query = "INSERT INTO nom_Table (colonne1, colonne2, colonne3) VALUES (%s, %s, %s)" 
+                query = "INSERT INTO  User (username) VALUES (%s)" 
+                # Exécution de la requête d'insertion pour chaque ligne du DataFrame
+                #cursor.execute(query, (row['colonne1'], row['colonne2'], row['colonne3']))  # Remplacer avec les noms des colonnes du dataframe csv
+                cursor.execute(query, (row['user'],))
                 
+                # Récupérer l'ID auto-incrémenté de la dernière opération d'insertion
+                id_user_auto = cursor.lastrowid
+
                 # Insérer des données dans la table Organization
-                cursor.execute("""
-                INSERT INTO Organization (organization)
-                VALUES (%s)
-                """, (row["organization"]))
+                query = "INSERT INTO Organization (organization) VALUES (%s)"
+                # Exécution de la requête d'insertion pour chaque ligne du DataFrame
+                cursor.execute(query, (row['organization'],))
                 
-                """# Supprimer la partie du fuseau horaire et convertir la date
-                original_date = '2023-09-13T09:04:58.310000+0000'
-                date_without_timezone = original_date.split('+')[0]  # Supprime le fuseau horaire
-                formatted_last_update_date = datetime.strptime(date_without_timezone, '%Y-%m-%dT%H:%M:%S.%f').strftime('%Y-%m-%d %H:%M:%S')"""
-
+                # Récupérer l'ID auto-incrémenté de la dernière opération d'insertion
+                id_organization_auto = cursor.lastrowid
+                
                 # Insérer des données dans la table Dataset
-                cursor.execute("""
-                INSERT INTO Dataset (id_dataset, title_dataset, description_dataset, url_dataset, created_dataset, last_update_dataset, slug, nb_discussions, nb_followers, nb_reuses, nb_views, id_organization)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """, (row["id_dataset"], row["title_dataset"], row["description_dataset"], row["url_dataset"], row["created_dataset_formatted"], row["last_update_dataset_formatted"], row["slug"], row["nb_discussions"], row["nb_followers"], row["nb_reuses"], row["nb_views"], row["id_organization"]))
-
+                query = "INSERT INTO Dataset (id_dataset, title_dataset, description_dataset, url_dataset, created_dataset, last_update_dataset, slug, nb_discussions, nb_followers, nb_reuses, nb_views, id_organization) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                # Exécution de la requête d'insertion pour chaque ligne du DataFrame
+                cursor.execute(query, (row["id_dataset"], row["title_dataset"], row["description_dataset"], row["url_dataset"], created_dataset_formatted, last_update_dataset_formatted, row["slug"], row["nb_discussions"], row["nb_followers"], row["nb_reuses"], row["nb_views"], id_organization_auto))
+                
+                # Récupérer l'ID auto-incrémenté de la dernière opération d'insertion
+                id_dataset_auto = cursor.lastrowid
+                
                 # Insérer des données dans la table Discussion
-                cursor.execute("""
-                INSERT INTO Discussion (id_discussion, created_discussion, closed_discussion, discussion_posted_on, title_discussion, message, id_user, id_dataset)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-                """, (row["id_discussion"], row["created_discussion"], row["closed_discussion"], row["discussion_posted_on_formatted"], row["title_discussion"], row["message"], row["id_user"], row["id_dataset"]))
+                query = "INSERT INTO Discussion (id_discussion, created_discussion, closed_discussion, discussion_posted_on, title_discussion, message, id_user, id_dataset) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+                # Exécution de la requête d'insertion pour chaque ligne du DataFrame
+                cursor.execute(query, (row["id_discussion"], created_discussion_formatted, closed_discussion_formatted, discussion_posted_on_formatted, row["title_discussion"], row["message"], id_user_auto, id_dataset_auto))
             
             except mysql.connector.Error as err:
                 print(f"Erreur lors de l'insertion des données : {err}")
