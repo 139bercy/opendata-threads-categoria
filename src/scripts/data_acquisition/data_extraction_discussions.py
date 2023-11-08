@@ -77,11 +77,11 @@ def main():
     existing_data_path = '../../../data/raw/data_acquisition/extraction_discussions/discussions.csv'
     
     if os.path.exists(existing_data_path):
-        # Si le fichier CSV existe, chargez les données existantes
+        # Si le fichier CSV existe, charger les données existantes
         existing_data = load_existing_data(existing_data_path)
-        # Obtenez la date de dernière mise à jour à partir du fichier CSV existant
+        # Obtenir la date de dernière mise à jour à partir du fichier CSV existant
         last_update_date_str = existing_data['discussion_posted_on'].max()
-        # Convertissez la date en objet datetime conscient du fuseau horaire UTC
+        # Conversion de la date en objet datetime conscient du fuseau horaire UTC
         last_update_date = parse_datetime(last_update_date_str).replace(tzinfo=timezone.utc)
     else:
         # Si le fichier CSV n'existe pas, utilisez une date de départ arbitraire (par exemple, la date minimale)
@@ -136,11 +136,11 @@ def main():
         ################################################################################################
 
         if extracted_data:
-            # Fusionnez les nouvelles données avec les données existantes
+            # Fusionner les nouvelles données avec les données existantes
             new_data = pd.DataFrame(extracted_data)
             combined_data = pd.concat([existing_data, new_data], ignore_index=True)
             
-            # Enregistrez l'ensemble complet de données dans le fichier CSV
+            # Enregistrer les données dans le fichier CSV
             save_extracted_data(combined_data, existing_data_path)
             print("Les nouvelles données ont été ajoutées au fichier CSV existant avec succès.")
         else:
@@ -159,7 +159,7 @@ if __name__ == "__main__":
         logging.info("Les données ont été exportées avec succès vers 'discussions.csv'.")
         print("Les données ont été exportées avec succès vers 'discussions.csv'.")
     finally:
-        # Fermez le fichier de journal
+        # Fermeture du fichier de journal
         logging.shutdown()
         
         
