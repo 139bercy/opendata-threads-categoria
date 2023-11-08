@@ -93,3 +93,5 @@ target/
 src/trained_models/
 data/
 logs/
+
+config.json
