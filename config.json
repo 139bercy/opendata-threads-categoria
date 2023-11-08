@@ -1,9 +1,0 @@
-{
-  "DB_HOST": "localhost",
-  "DB_USER": "root",
-  "DB_PASSWORD": "BercyHub2023",
-  "DB_NAME": "database_discussions",
-
-  "API_KEY": "23b74d10c2ec0b29db43f755f6a945cee291573015bcb568212179a0"
-  }
-  
