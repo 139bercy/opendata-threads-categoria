@@ -78,65 +78,76 @@ def import_data_from_csv():
                 created_discussion_formatted = format_datetime_mysql(row["created_discussion"])
                 closed_discussion_formatted = format_datetime_mysql(row["closed_discussion"])
                 
-                #################################################################################################################################################
-                # Insérer des données dans la table User
-                #query = "INSERT INTO nom_Table (colonne1, colonne2, colonne3) VALUES (%s, %s, %s)" 
-                query = "INSERT INTO  User (username) VALUES (%s)" 
-                # Exécution de la requête d'insertion pour chaque ligne du DataFrame
-                #cursor.execute(query, (row['colonne1'], row['colonne2'], row['colonne3']))  # Remplacer avec les noms des colonnes du dataframe csv
+                # Insérer des données dans la table Users
+                query = "SELECT id_user FROM Users WHERE username = %s"
                 cursor.execute(query, (row['user'],))
-                
-                # Récupérer l'ID auto-incrémenté de la table User
-                #cursor.execute("SELECT id_user FROM User")
-                #id_user_auto = cursor.fetchall()
-                id_user_auto = cursor.lastrowid  # Récupérer l'ID auto-incrémenté
+                existing_user = cursor.fetchone()
 
-                #################################################################################################################################################
-                # Insérer des données dans la table Organization
-                query = "INSERT INTO Organization (organization) VALUES (%s)"
-                # Exécution de la requête d'insertion pour chaque ligne du DataFrame
+                if not existing_user:
+                    # insérer utilisateur
+                    query = "INSERT INTO Users (username) VALUES (%s)"
+                    cursor.execute(query, (row['user'],))
+                    conn.commit()  # Valider pour récupérer l'ID auto-incrémenté
+                    id_user_auto = cursor.lastrowid  # Récupérer l'ID auto-incrémenté
+                else:
+                    id_user_auto = existing_user[0]
+
+                # Insérer des données dans la table Organizations
+                query = "SELECT id_organization FROM Organizations WHERE name = %s"
                 cursor.execute(query, (row['organization'],))
-                
-                # Récupérer l'ID auto-incrémenté de la table Organization
-                #cursor.execute("SELECT id_organization FROM Organization")
-                #id_organization_auto = cursor.fetchall()
-                id_organization_auto = cursor.lastrowid  # Récupérer l'ID auto-incrémenté
-                
-                #################################################################################################################################################
-                # Insérer des données dans la table Dataset
-                query = "INSERT INTO Dataset (id_dataset, title_dataset, description_dataset, url_dataset, created_dataset, last_update_dataset, slug, nb_discussions, nb_followers, nb_reuses, nb_views, id_organization) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                # Exécution de la requête d'insertion pour chaque ligne du DataFrame
-                cursor.execute(query, (row["id_dataset"], row["title_dataset"], row["description_dataset"], row["url_dataset"], created_dataset_formatted, last_update_dataset_formatted, row["slug"], row["nb_discussions"], row["nb_followers"], row["nb_reuses"], row["nb_views"], id_organization_auto))
-                
-                # Récupérer l'ID auto-incrémenté de la table Organization
-                #cursor.execute("SELECT id_organization FROM Organization")
-                #id_organization_auto = cursor.fetchall()
-                id_data_auto = cursor.lastrowid  # Récupérer l'ID auto-incrémenté
-                
-                #################################################################################################################################################
-                # Insérer des données dans la table Discussion
-                query = "INSERT INTO Discussion (id_discussion, created_discussion, closed_discussion, discussion_posted_on, title_discussion, message, id_user, id_data) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-                # Exécution de la requête d'insertion pour chaque ligne du DataFrame
-                cursor.execute(query, (row["id_discussion"], created_discussion_formatted, closed_discussion_formatted, discussion_posted_on_formatted, row["title_discussion"], row["message"], id_user_auto, id_data_auto))
-                
+                existing_organization = cursor.fetchone()
+
+                if not existing_organization:
+                    # insérer organisation
+                    query = "INSERT INTO Organizations (name) VALUES (%s)"
+                    cursor.execute(query, (row['organization'],))
+                    conn.commit()
+                    id_organization_auto = cursor.lastrowid
+                else:
+                    id_organization_auto = existing_organization[0]
+
+                # Insérer des données dans la table Datasets
+                query = "SELECT id_data FROM Datasets WHERE id_dataset = %s"
+                cursor.execute(query, (row['id_dataset'],))
+                existing_dataset = cursor.fetchone()
+
+                if not existing_dataset:
+                    # Insérer dataset
+                    query = "INSERT INTO Datasets (id_dataset, title, description, url, created, last_update, slug, nb_discussions, nb_followers, nb_reuses, nb_views, id_organization) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                    cursor.execute(query, (row["id_dataset"], row["title_dataset"], row["description_dataset"], row["url_dataset"], created_dataset_formatted, last_update_dataset_formatted, row["slug"], row["nb_discussions"], row["nb_followers"], row["nb_reuses"], row["nb_views"], id_organization_auto))
+                    conn.commit()
+                    id_data_auto = cursor.lastrowid
+                else:
+                    id_data_auto = existing_dataset[0]
+
+                # Insérer des données dans la table Discussions
+                query = "SELECT id_disc FROM Discussions WHERE id_discussion = %s"
+                cursor.execute(query, (row['id_discussion'],))
+                existing_discussion = cursor.fetchone()
+
+                if not existing_discussion:
+                    # Insérer discussion
+                    query = "INSERT INTO Discussions (id_discussion, created, closed, title, id_data) VALUES (%s, %s, %s, %s, %s)"
+                    cursor.execute(query, (row["id_discussion"], created_discussion_formatted, closed_discussion_formatted, row["title_discussion"], id_data_auto))
+                    conn.commit()
+                    id_disc_auto = cursor.lastrowid
+                else:
+                    id_disc_auto = existing_discussion[0]
+
+                # Insérer des données dans la table Messages
+                query = "INSERT INTO Messages (message, posted_on, id_disc, id_user) VALUES (%s, %s, %s, %s)"
+                cursor.execute(query, (row["message"], discussion_posted_on_formatted, id_disc_auto, id_user_auto))
+                conn.commit()
+
             except mysql.connector.Error as err:
                 print(f"Erreur lors de l'insertion des données : {err}")
-                # Logging : Enregistrement d'une erreur d'insertion
-                logging.error(f"Erreur lors de l'insertion des données : {err}")
                 if conn:
                     conn.rollback()  # Annuler la transaction en cas d'erreur
 
-        # Valider les changements
-        conn.commit()
-
         print("Données CSV importées avec succès dans les tables !")
-        # Logging : Enregistrement d'un message de succès
-        logging.info("Données CSV importées avec succès dans les tables !")
 
     except mysql.connector.Error as err:
         print(f"Erreur lors de l'importation des données CSV : {err}")
-        # Logging : Enregistrement d'une erreur
-        logging.error(f"Erreur lors de l'importation des données CSV : {err}")
         if conn:
             conn.rollback()  # Annuler la transaction en cas d'erreur
 
