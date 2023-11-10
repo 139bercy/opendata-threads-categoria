@@ -61,7 +61,7 @@ def create_database_and_tables():
         
         # Création de tables (Utilisateur, Discussion, Dataset)
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Users (
+        CREATE TABLE IF NOT EXISTS user (
             pk INT AUTO_INCREMENT PRIMARY KEY,
             firstname VARCHAR(255) NOT NULL,
             lastname VARCHAR(255) NOT NULL
@@ -69,53 +69,54 @@ def create_database_and_tables():
         """)
         
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Organizations (
-            id_organization INT AUTO_INCREMENT PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS organization (
+            pk INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(255) NOT NULL UNIQUE
         )
         """)
 
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Datasets (
-            id_data INT AUTO_INCREMENT PRIMARY KEY,
-            id_dataset VARCHAR(50) NOT NULL UNIQUE,
+        CREATE TABLE IF NOT EXISTS dataset (
+            pk INT AUTO_INCREMENT PRIMARY KEY,
+            organization_id INT,
+            dataset_buid VARCHAR(50) NOT NULL UNIQUE,
             title VARCHAR(400),
             description TEXT,
             url VARCHAR(400),
-            created DATETIME,
+            created_at DATETIME,
             last_update DATETIME,
             slug VARCHAR(255) NOT NULL UNIQUE,
+            groupe_metier VARCHAR(100) NOT NULL,
             nb_discussions INT,
             nb_followers INT,
             nb_reuses INT,
             nb_views INT, 
-            id_organization INT,
-            FOREIGN KEY (id_organization) REFERENCES Organizations(id_organization)
+            FOREIGN KEY (organization_id) REFERENCES organization(pk)
         )
         """)
         
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Discussions (
-            id_disc INT AUTO_INCREMENT PRIMARY KEY,
-            id_discussion VARCHAR(50) NOT NULL UNIQUE,
+        CREATE TABLE IF NOT EXISTS discussion (
+            pk INT AUTO_INCREMENT PRIMARY KEY,
+            dataset_id INT,
+            discussion_buid VARCHAR(50) NOT NULL UNIQUE,
             created DATETIME,
             closed DATETIME,
             title VARCHAR(400),
-            id_data INT,
-            FOREIGN KEY (id_data) REFERENCES Datasets(id_data)
+            FOREIGN KEY (dataset_id) REFERENCES dataset(pk)
         )
         """)
         
         #Table intermédiaire car relation (n,n)
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS Messages (
-            id_message INT AUTO_INCREMENT PRIMARY KEY,
+            pk INT AUTO_INCREMENT PRIMARY KEY,
+            discussion_id INT,
+            user_id INT,
             message TEXT,
             posted_on DATETIME,
-            id_disc INT,
-            id_user INT,
-            FOREIGN KEY (id_disc) REFERENCES Discussions(id_disc),
-            FOREIGN KEY (id_user) REFERENCES Users(id_user)
+            FOREIGN KEY (discussion_id) REFERENCES discussion(pk),
+            FOREIGN KEY (user_id) REFERENCES user(pk)
         )
         """)
 
