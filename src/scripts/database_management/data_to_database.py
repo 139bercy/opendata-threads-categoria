@@ -78,65 +78,70 @@ def import_data_from_csv():
                 created_discussion_formatted = format_datetime_mysql(row["created_discussion"])
                 closed_discussion_formatted = format_datetime_mysql(row["closed_discussion"])
                 
-                # Insérer des données dans la table Users
-                query = "SELECT id_user FROM Users WHERE username = %s"
-                cursor.execute(query, (row['user'],))
+                # Insérer des données dans la table user
+                #query = "SELECT pk FROM user WHERE username = %s"
+                #cursor.execute(query, (row['user'],))
+                #existing_user = cursor.fetchone()
+                query = "SELECT pk FROM user WHERE CONCAT(firstname, ' ', lastname) = %s"
+                cursor.execute(query, (row['firstname'] + ' ' + row['lastname'],))
                 existing_user = cursor.fetchone()
 
                 if not existing_user:
                     # insérer utilisateur
-                    query = "INSERT INTO Users (username) VALUES (%s)"
-                    cursor.execute(query, (row['user'],))
+                    #query = "INSERT INTO user (username) VALUES (%s)"
+                    #cursor.execute(query, (row['user'],))
+                    query = "INSERT INTO Users (firstname, lastname) VALUES (%s, %s)"
+                    cursor.execute(query, (row['firstname'], row['lastname'],))
                     conn.commit()  # Valider pour récupérer l'ID auto-incrémenté
                     id_user_auto = cursor.lastrowid  # Récupérer l'ID auto-incrémenté
                 else:
                     id_user_auto = existing_user[0]
 
-                # Insérer des données dans la table Organizations
-                query = "SELECT id_organization FROM Organizations WHERE name = %s"
+                # Insérer des données dans la table organization
+                query = "SELECT pk FROM organization WHERE name = %s"
                 cursor.execute(query, (row['organization'],))
                 existing_organization = cursor.fetchone()
 
                 if not existing_organization:
                     # insérer organisation
-                    query = "INSERT INTO Organizations (name) VALUES (%s)"
+                    query = "INSERT INTO organization (name) VALUES (%s)"
                     cursor.execute(query, (row['organization'],))
                     conn.commit()
                     id_organization_auto = cursor.lastrowid
                 else:
                     id_organization_auto = existing_organization[0]
 
-                # Insérer des données dans la table Datasets
-                query = "SELECT id_data FROM Datasets WHERE id_dataset = %s"
+                # Insérer des données dans la table dataset
+                query = "SELECT pk FROM dataset WHERE dataset_buid = %s"
                 cursor.execute(query, (row['id_dataset'],))
                 existing_dataset = cursor.fetchone()
 
                 if not existing_dataset:
                     # Insérer dataset
-                    query = "INSERT INTO Datasets (id_dataset, title, description, url, created, last_update, slug, nb_discussions, nb_followers, nb_reuses, nb_views, id_organization) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-                    cursor.execute(query, (row["id_dataset"], row["title_dataset"], row["description_dataset"], row["url_dataset"], created_dataset_formatted, last_update_dataset_formatted, row["slug"], row["nb_discussions"], row["nb_followers"], row["nb_reuses"], row["nb_views"], id_organization_auto))
+                    query = "INSERT INTO dataset (organization_id, dataset_buid, title, description, url, created_at, last_update, slug, groupe_metier, nb_discussions, nb_followers, nb_reuses, nb_views) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                    cursor.execute(query, (id_organization_auto, row["id_dataset"], row["title_dataset"], row["description_dataset"], row["url_dataset"], created_dataset_formatted, last_update_dataset_formatted, row["slug"], row["groupe_metier"], row["nb_discussions"], row["nb_followers"], row["nb_reuses"], row["nb_views"]))
                     conn.commit()
-                    id_data_auto = cursor.lastrowid
+                    id_dataset_auto = cursor.lastrowid
                 else:
-                    id_data_auto = existing_dataset[0]
+                    id_dataset_auto = existing_dataset[0]
 
-                # Insérer des données dans la table Discussions
-                query = "SELECT id_disc FROM Discussions WHERE id_discussion = %s"
+                # Insérer des données dans la table discussion
+                query = "SELECT pk FROM discussion WHERE discussion_buid = %s"
                 cursor.execute(query, (row['id_discussion'],))
                 existing_discussion = cursor.fetchone()
 
                 if not existing_discussion:
                     # Insérer discussion
-                    query = "INSERT INTO Discussions (id_discussion, created, closed, title, id_data) VALUES (%s, %s, %s, %s, %s)"
-                    cursor.execute(query, (row["id_discussion"], created_discussion_formatted, closed_discussion_formatted, row["title_discussion"], id_data_auto))
+                    query = "INSERT INTO discussion (dataset_id, discussion_buid, created_at, closed_at, title) VALUES (%s, %s, %s, %s, %s)"
+                    cursor.execute(query, (id_dataset_auto, row["id_discussion"], created_discussion_formatted, closed_discussion_formatted, row["title_discussion"]))
                     conn.commit()
-                    id_disc_auto = cursor.lastrowid
+                    id_discussion_auto = cursor.lastrowid
                 else:
-                    id_disc_auto = existing_discussion[0]
+                    id_discussion_auto = existing_discussion[0]
 
-                # Insérer des données dans la table Messages
-                query = "INSERT INTO Messages (message, posted_on, id_disc, id_user) VALUES (%s, %s, %s, %s)"
-                cursor.execute(query, (row["message"], discussion_posted_on_formatted, id_disc_auto, id_user_auto))
+                # Insérer des données dans la table message
+                query = "INSERT INTO message (discussion_id, user_id, message, created_at) VALUES (%s, %s, %s, %s)"
+                cursor.execute(query, (id_discussion_auto, id_user_auto, row["message"], discussion_posted_on_formatted))
                 conn.commit()
 
             except mysql.connector.Error as err:
