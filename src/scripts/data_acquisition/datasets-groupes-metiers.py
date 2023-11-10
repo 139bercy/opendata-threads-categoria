@@ -44,7 +44,7 @@ while 1==1:
       dataset['metadata']['admin']['groupe-metier']['value'][0] if 'admin' in dataset['metadata'] and 'groupe-metier' in dataset['metadata']['admin'] else None,
       f"https://data.economie.gouv.fr/backoffice/catalog/datasets/{dataset['dataset_id']}/#information"])
 
-with open('../../../data/raw/data_acquisition/extraction_groupes_metiers/datasets_groupes_metiers_20231030.csv', 'w') as csvfile:
+with open('../../../data/raw/data_acquisition/extraction_groupes_metiers/datasets_groupes_metiers.csv', 'w') as csvfile:
   writer = csv.writer(csvfile, delimiter=';')
   writer.writerow(['title', 'dataset_id', 'is_restricted', 'is_published', 'groupe-metier', 'url'])
   writer.writerows(output_rows)
