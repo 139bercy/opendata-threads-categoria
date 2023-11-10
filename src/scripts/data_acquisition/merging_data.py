@@ -27,11 +27,17 @@ def load_and_merge_data():
         logging.info("Chargement des fichiers CSV en cours...")
         df_discussions = pd.read_csv(os.path.join(csv_folder_path, 'extraction_discussions/discussions.csv'))
         df_datasets = pd.read_csv(os.path.join(csv_folder_path, 'extraction_datasets/datasets.csv'))
+        df_grp_metiers = pd.read_csv(os.path.join(csv_folder_path, 'extraction_groupes_metiers/datasets_groupes_metiers.csv'))
         logging.info("Fichiers CSV chargés avec succès.")
 
         # Fusionner les DataFrames en utilisant les colonnes 'id_subject' et 'id_dataset' comme clés de jointure
         logging.info("Fusion des DataFrames en cours...")
         df_merged = pd.merge(df_discussions, df_datasets, left_on='id_dataset', right_on='id_dataset', how='inner')
+        
+        # Ajouter la colonne 'groupe-metier' en fusionnant avec df_grp_metiers
+        df_merged = pd.merge(df_merged, df_grp_metiers[['dataset_id', 'groupe-metier']], left_on='slug', right_on='dataset_id', how='left')
+        #df_merged.drop(['dataset_id'], axis=1, inplace=True)  # Drop the duplicate column
+        
         logging.info("Fusion des DataFrames terminée.")
         
         # Enregistrer le DataFrame fusionné dans un fichier CSV
