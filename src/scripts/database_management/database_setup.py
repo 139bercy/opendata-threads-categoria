@@ -100,8 +100,8 @@ def create_database_and_tables():
             pk INT AUTO_INCREMENT PRIMARY KEY,
             dataset_id INT,
             discussion_buid VARCHAR(50) NOT NULL UNIQUE,
-            created DATETIME,
-            closed DATETIME,
+            created_at DATETIME,
+            closed_at DATETIME,
             title VARCHAR(400),
             FOREIGN KEY (dataset_id) REFERENCES dataset(pk)
         )
@@ -109,12 +109,12 @@ def create_database_and_tables():
         
         #Table intermédiaire car relation (n,n)
         cursor.execute("""
-        CREATE TABLE IF NOT EXISTS Messages (
+        CREATE TABLE IF NOT EXISTS message (
             pk INT AUTO_INCREMENT PRIMARY KEY,
             discussion_id INT,
             user_id INT,
             message TEXT,
-            posted_on DATETIME,
+            created_at DATETIME,
             FOREIGN KEY (discussion_id) REFERENCES discussion(pk),
             FOREIGN KEY (user_id) REFERENCES user(pk)
         )
