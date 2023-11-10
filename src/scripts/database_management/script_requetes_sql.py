@@ -1,40 +1,73 @@
 import mysql.connector
 import os
+import json
+import logging
+import pandas as pd
 
-# Récupérer le host, le nom d'utilisateur et le mot de passe à partir des variables d'environnement
-db_host = os.environ.get("DB_HOST")
-db_user = os.environ.get("DB_USER")
-db_password = os.environ.get("DB_PASSWORD")
+import sys
+sys.path.append('..')
+from logging_config import configure_logging
 
-# On s'assure que les variables d'environnement existent
-if db_host is None or db_user is None or db_password is None:
-    raise Exception("Les variables d'environnement DB_USER et DB_PASSWORD ne sont pas définies.")
+# Charger les informations de connexion depuis le fichier de configuration
+with open('../../../config.json') as config_file:
+    config = json.load(config_file)
+    
+# Connexion à la base de données
+# Utilisation des paramètres de connexion
+db_host = config['DB_HOST']
+db_user = config['DB_USER']
+#db_password = config['DB_PASSWORD']
+db_name = config['DB_NAME']
+            
+def fetch_messages_ordered():
+    conn = None
+    try:
+        # Connexion à la base de données
+        conn = mysql.connector.connect(
+            host=db_host,
+            user=db_user,
+            # password=db_password,
+            database="database_discussions"
+        )
+        
+        if conn.is_connected():
+            cursor = conn.cursor()
 
-# Configuration de la connexion à la base de données
-config = {
-    'host': db_host,
-    'user': db_user,
-    'password': db_password,
-    'database': 'database_discussions'
-}
+            # Exécuter la requête SQL pour récupérer les messages
+            query = "SELECT * FROM Messages ORDER BY id_disc ASC, posted_on ASC;"
+                    #"SELECT * FROM Messages GROUP BY id_disc ORDER BY id_disc ASC, posted_on ASC;"
+            cursor.execute(query)
 
-# Établir la connexion
-conn = mysql.connector.connect(**config)
+            # Récupérer les résultats
+            messages = cursor.fetchall()
 
-# Créer un curseur
-cursor = conn.cursor()
+            # Afficher les messages
+            #for message in messages:
+            #    print(message)  # Adapter pour afficher les colonnes souhaitées"""
+                
+            # Créer un DataFrame pandas avec les résultats
+            df = pd.DataFrame(messages, columns=[i[0] for i in cursor.description])
 
-# Exécuter une requête SQL (exemple : sélectionner toutes les lignes de la table Utilisateur)
-query = "SELECT * FROM Utilisateur"
-cursor.execute(query)
+            # Afficher le DataFrame pandas
+            print(df)
+            
+            # Save the DataFrame to CSV
+            df.to_csv("groupedby_id_discussion.csv", index=False)
 
-# Récupérer les résultats
-results = cursor.fetchall()
+    except mysql.connector.Error as e:
+        print(f"Erreur : {e}")
+        logging.error(f"Erreur : {e}")
 
-# Afficher les résultats
-for row in results:
-    print(row)
+    finally:
+        if conn:
+            conn.close()
 
-# Fermer le curseur et la connexion
-cursor.close()
-conn.close()
+
+if __name__ == "__main__":
+    # Utilisation de la fonction pour configurer le logging
+    log_directory = "../../../logs/database_management/data_to_database/"
+    log_file_name = 'script-requetes_sql.py'
+    configure_logging(log_directory, log_file_name)
+        
+    # Utilisation de la fonction pour récupérer et afficher les discussions ordonnées
+    fetch_messages_ordered()
