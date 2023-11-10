@@ -62,8 +62,9 @@ def create_database_and_tables():
         # Création de tables (Utilisateur, Discussion, Dataset)
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS Users (
-            id_user INT AUTO_INCREMENT PRIMARY KEY,
-            username VARCHAR(255) NOT NULL UNIQUE
+            pk INT AUTO_INCREMENT PRIMARY KEY,
+            firstname VARCHAR(255) NOT NULL,
+            lastname VARCHAR(255) NOT NULL
         )
         """)
         
