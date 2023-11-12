@@ -18,7 +18,7 @@ Fonctionnalités Principales :
 
 Architecture du Projet
 ------------
-'''
+```
 projet_discussions/
 │
 ├── data/
@@ -52,7 +52,7 @@ projet_discussions/
 │
 ├── config.json                       # Fichier de configuration des variables d'environnement
 └── requirements.txt                  # Liste des dépendances Python nécessaires
-'''
+```
 
 Instructions d'Utilisation :
 ------------
