@@ -53,8 +53,8 @@ projet_discussions/
 ├── config.json                       # Fichier de configuration des variables d'environnement
 └── requirements.txt                  # Liste des dépendances Python nécessaires
 
-
 Instructions d'Utilisation :
+------------
 
 - Installation des Dépendances : Exécuter pip install -r requirements.txt pour installer les librairies requises.
 - Exécution des Scripts : Utiliser les scripts et notebooks dans le dossier src/ pour exécuter différentes parties du projet.
