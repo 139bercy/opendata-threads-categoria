@@ -29,26 +29,42 @@ projet_discussions/
 │   │   │   ├── groupes_metier.csv     # Informations sur les groupes métier liés aux discussions
 │   │   │   ├── merging_data.csv       # Fusion des datasets et discussions
 │   │   │   └── dataset_mefsin.csv     # Données spécifiques au ministère des finances
-│   │   └── ...                       # Autres fichiers de sortie .csv
-│   │
-│   └── ...                           # Autres données traitées ou générées pendant le projet
+│   │   ├── data_management/          # Base de données MySQL
+│   │   └── inference/                 # Résultats des prédictions après l'inférence avec le modèle pré-entraîné
+│   └── ...                            # Autres données traitées ou générées pendant le projet
 │
 ├── logs/
-│   ├── ...                           # Fichiers de logs générés par le projet
+│   ├── ...                            # Fichiers de logs générés par le projet
 │   └── ...
 │
 ├── src/
 │   ├── notebooks/
-│   │   ├── ...                       # Notebooks d'implémentation et d'entraînement du modèle d'IA
+│   │   ├── ...                        # Notebooks d'implémentation et d'entraînement du modèle d'IA
 │   │   └── ...
 │   │
 │   ├── scripts/
-│   │   ├── ...                       # Scripts Python utilisés dans le projet
-│   │   └── ...
+│   │   ├── data_acquisition/         # Scripts d'acquisition de données
+│   │   │   └── ...
+│   │   │
+│   │   ├── database_management/     # Scripts de gestion de la base de données MySQL
+│   │   │   ├── database_setup.py     # Création de la base de données
+│   │   │   └── data_to_database.py   # Remplissage de la base de données
+│   │   │
+│   │   ├── appli/                    # Scripts pour l'application Dash (Dashboard)
+│   │   │   └── ...
+│   │   │
+│   │   ├── inference/                # Scripts d'inférence avec le modèle CamemBERT
+│   │   │   └── ...
+│   │   │
+│   │   ├── logging_config.py         # Fonction pour configurer les logs
+│   │   └── main.py                   # Main pour lancer tous les scripts
 │   │
 │   └── trained_models/
-│       ├── ...                  # Poids des modèles CamemBERT (Modèle 1 : Catégories, Modèle 2 : Sous-catégories)
+│       ├── ...                        # Poids des modèles CamemBERT (Modèle 1 : Catégories, Modèle 2 : Sous-catégories)
 │       └── ...
+│
+├── tests/                            # Fichiers de tests unitaires et de tests d'intégration
+│   └── ...
 │
 ├── config.json                       # Fichier de configuration des variables d'environnement
 └── requirements.txt                  # Liste des dépendances Python nécessaires
