@@ -93,7 +93,7 @@ target/
 src/trained_models/
 data/
 logs/
-src/scripts/ui
+src/scripts/Mon_appli
 src/scripts/eda
 src/scripts/data_acquisition/datasets.py
 src/scripts/data_acquisition/discuss.py

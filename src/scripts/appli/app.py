@@ -1,26 +1,31 @@
+from flask import Flask, send_file
 import dash
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from dash import html, dcc
 import plotly.express as px
 import pandas as pd
-# Importer les vues
-from vues import vue1, vue2  # Importez les fichiers de vue
+from dash.exceptions import PreventUpdate
 import locale
 import calendar
 import io
 import base64
-from dash.exceptions import PreventUpdate
 
-# Définir la configuration locale en français
-locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')
+# Importer les vues
+from vues import vue1
+
+# Configuration de l'application Dash
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, 'assets/styles.css'])
+server = Flask(__name__)  # Utiliser Flask en tant que serveur principal
 
 # Charger les données depuis le fichier CSV
 df = pd.read_csv('../../../data/raw/inference/predicted_data_model2.csv')
 
-# Configuration de l'application Dash
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, 'assets/styles.css'])
-server = app.server
+# Définir la fonction pour générer le contenu du fichier CSV
+def generate_csv_data():
+    csv_data = df.to_csv(index=False)
+    csv_data_bytes = csv_data.encode('utf-8')
+    return base64.b64encode(csv_data_bytes).decode('utf-8')
 
 # Mise en page principale de l'application
 app.layout = html.Div([
@@ -62,7 +67,8 @@ def display_page(pathname):
     if pathname == '/':
         return vue1.layout()  # Appel de la mise en page de vue1
     elif pathname == '/vue2':
-        return vue2.layout()  # Appel de la mise en page de vue2
+        # Vous pouvez ajouter d'autres vues ici si nécessaire
+        return 'Contenu de la vue 2'
     else:
         return '404 - Page introuvable'
 
@@ -77,25 +83,22 @@ def download_data(submit_n_clicks):
     if not submit_n_clicks:
         raise PreventUpdate
 
-    # Générer le contenu du fichier CSV (à adapter à votre besoin)
-    csv_data = df.to_csv(index=False)
-
-    # Convertissez les données CSV en bytes
-    csv_data_bytes = csv_data.encode('utf-8')
-
-    # Créez un objet io.BytesIO à partir des données
-    csv_data_io = io.BytesIO(csv_data_bytes)
-
-    # Encodez les données en base64 pour le téléchargement
-    csv_data_base64 = base64.b64encode(csv_data_io.read()).decode('utf-8')
+    csv_data_base64 = generate_csv_data()
 
     # Nom du fichier CSV pour le téléchargement
-    file_name = '../../../data/raw/inference/predicted_data_model2.csv'
+    file_name = 'predicted_data_model2.csv'
 
     # Message de téléchargement avec lien
-    download_link = html.A('Télécharger le fichier', href=f'data:text/csv;charset=utf-8;base64,{csv_data_base64}', download=file_name)
+    download_link = html.A('Télécharger le fichier', href=f'/download/{file_name}', download=file_name)
 
     return True, download_link, None
 
+# Ajouter un endpoint Flask pour le téléchargement
+@server.route('/download/<filename>')
+def download_file(filename):
+    csv_data_base64 = generate_csv_data()
+    csv_data = base64.b64decode(csv_data_base64)
+    return send_file(io.BytesIO(csv_data), mimetype='text/csv', as_attachment=True, download_name=filename)
+
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    server.run(debug=True)
