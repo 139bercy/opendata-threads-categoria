@@ -9,12 +9,7 @@ from dash import dcc
 # from auth import Utilisateur, LoginForm, InscriptionForm
 # from flask_sqlalchemy import SQLAlchemy
 # from werkzeug.security import generate_password_hash, check_password_hash
-import sys
 from pathlib import Path
-
-sys.path.append(
-    ""
-)  # Ajoutez le chemin du dossier parent au chemin de recherche des modules
 
 # from auth.auth import app as auth_app  # Importez l'application d'authentification
 from src.scripts.appli.vues import vue1, vue2
@@ -53,7 +48,7 @@ header = html.Div(
         html.Div(
             [
                 html.Img(
-                    src="/assets/images/mefsin.svg",
+                    src="static/assets/images/mefsin.svg",
                     style={
                         "height": "230px",
                         "width": "230px",
@@ -110,7 +105,7 @@ app.layout = html.Div(
 )
 
 # Intégrer le fichier CSS
-app.external_stylesheets = [dbc.themes.BOOTSTRAP, "/assets/style.css"]
+app.external_stylesheets = [dbc.themes.BOOTSTRAP, "static/assets/style.css"]
 
 """
 @login_manager.user_loader

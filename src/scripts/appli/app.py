@@ -16,7 +16,7 @@ from src.scripts.appli.vues import vue1
 
 # Configuration de l'application Dash
 app = dash.Dash(
-    __name__, external_stylesheets=[dbc.themes.BOOTSTRAP, "assets/styles.css"]
+    __name__, external_stylesheets=[dbc.themes.BOOTSTRAP, "static/assets/styles.css"]
 )
 server = Flask(__name__)  # Utiliser Flask en tant que serveur principal
 
@@ -40,7 +40,7 @@ app.layout = html.Div(
                 html.Div(
                     [
                         html.Img(
-                            src="/assets/images/mefsin.svg",
+                            src="static/assets/images/mefsin.svg",
                             style={
                                 "height": "250px",
                                 "width": "250px",
