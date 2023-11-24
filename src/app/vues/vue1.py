@@ -2,12 +2,11 @@
 
 # Import des bibliothèques nécessaires
 from dash import html, dcc
-import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
 import locale
-from src.scripts.appli.app import app
+from src.app.app import app
 import calendar
 
 # Configuration de la localisation en français

@@ -1,18 +1,15 @@
 from flask import Flask, send_file
 import dash
 import dash_bootstrap_components as dbc
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output
 from dash import html, dcc
-import plotly.express as px
 import pandas as pd
 from dash.exceptions import PreventUpdate
-import locale
-import calendar
 import io
 import base64
 
 # Importer les vues
-from src.scripts.appli.vues import vue1
+from src.app.vues import vue1
 
 # Configuration de l'application Dash
 app = dash.Dash(

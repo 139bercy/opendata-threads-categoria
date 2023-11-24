@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, request
+from flask import Flask, render_template, request
 import dash
 import dash_bootstrap_components as dbc
 from dash import html
@@ -9,16 +9,12 @@ from dash import dcc
 # from auth import Utilisateur, LoginForm, InscriptionForm
 # from flask_sqlalchemy import SQLAlchemy
 # from werkzeug.security import generate_password_hash, check_password_hash
-from pathlib import Path
 
 # from auth.auth import app as auth_app  # Importez l'application d'authentification
-from src.scripts.appli.vues import vue1, vue2
+from src.app.vues import vue1, vue2
 
 # Importer la fonction de mise en page depuis vue1
 
-
-import sys
-from pathlib import Path
 
 # Ajoutez le chemin du dossier auth au chemin de recherche du système
 # auth_path = Path(__file__).resolve().parents[2]  # Remplacez le nombre selon la structure de vos dossiers
