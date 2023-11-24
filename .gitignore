@@ -76,7 +76,7 @@ target/
 .ipynb_checkpoints/
 
 # exclude data from source control by default
-/data/
+/data
 
 # Mac OS-specific storage files
 .DS_Store
@@ -91,7 +91,6 @@ target/
 # Fichiers que je souhaite ignorer
 *.zip
 src/trained_models/
-data/
 logs/
 src/scripts/Mon_appli
 src/scripts/eda

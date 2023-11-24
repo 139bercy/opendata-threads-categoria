@@ -1,0 +1,48 @@
+version: '3.5'
+
+services:
+  db:
+    container_name: app-db
+    hostname: host
+    image: postgres
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-q', '-d', 'postgres', '-U', 'postgres']
+      timeout: 45s
+      interval: 5s
+      retries: 10
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+      - ./ci/volumes:/docker-entrypoint-initdb.d/
+    ports:
+      - '5432:5432'
+    networks:
+      - postgres
+    restart: always
+
+  pgadmin:
+    container_name: bhub-discussia-pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: 'True'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - '5050:5050'
+    networks:
+      - postgres
+    restart: always
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:
