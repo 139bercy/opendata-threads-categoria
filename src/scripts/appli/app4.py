@@ -4,41 +4,44 @@ import dash_bootstrap_components as dbc
 from dash import html
 from dash.dependencies import Input, Output
 from dash import dcc
-from flask_login import LoginManager, login_required, login_user, logout_user, current_user
-from auth import Utilisateur, LoginForm, InscriptionForm
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
+#from flask_login import LoginManager, login_required, login_user, logout_user, current_user
+#from auth import Utilisateur, LoginForm, InscriptionForm
+#from flask_sqlalchemy import SQLAlchemy
+#from werkzeug.security import generate_password_hash, check_password_hash
 import sys
 from pathlib import Path
 
 sys.path.append("../../..")  # Ajoutez le chemin du dossier parent au chemin de recherche des modules
 
-from auth.auth import app as auth_app  # Importez l'application d'authentification
+#from auth.auth import app as auth_app  # Importez l'application d'authentification
 from vues import vue1, vue2
+# Importer la fonction de mise en page depuis vue1
+from vues.vue1 import layout
+
 
 import sys
 from pathlib import Path
 
 # Ajoutez le chemin du dossier auth au chemin de recherche du système
-auth_path = Path(__file__).resolve().parents[2]  # Remplacez le nombre selon la structure de vos dossiers
-sys.path.append(str(auth_path))
+#auth_path = Path(__file__).resolve().parents[2]  # Remplacez le nombre selon la structure de vos dossiers
+#sys.path.append(str(auth_path))
 
 # Initialiser le serveur Flask
 server = Flask(__name__)
 server.config['SECRET_KEY'] = 'asma'
 server.config['WTF_CSRF_ENABLED'] = False  # Désactiver le jeton CSRF
 
-server.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///utilisateurs.db'
+"""server.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///utilisateurs.db'
 server.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(server)
 login_manager = LoginManager(server)
-login_manager.login_view = 'login'
+login_manager.login_view = 'login'"""
 
 # Initialiser l'application Dash avec Bootstrap
 app = dash.Dash(__name__, server=server, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 # Configurez la page de connexion pour être affichée si un utilisateur non authentifié tente d'accéder à une page protégée
-login_manager.login_view = 'login'
+#login_manager.login_view = 'login'
 
 # En-tête de l'application
 header = html.Div([
@@ -76,6 +79,7 @@ app.layout = html.Div([
 # Intégrer le fichier CSS
 app.external_stylesheets = [dbc.themes.BOOTSTRAP, '/assets/style.css']
 
+"""
 @login_manager.user_loader
 def load_user(user_id):
     return Utilisateur.query.get(int(user_id))
@@ -119,7 +123,7 @@ def inscription():
 def accueil():
     return f'Page d\'accueil. Bonjour, {current_user.prenom} {current_user.nom}!'
 
-
+"""
 @app.server.route('/form_traite', methods=['POST'])
 def traiter_formulaire():
     if request.method == 'POST':
@@ -146,7 +150,7 @@ def display_page(pathname):
         return vue1.layout()
     elif pathname == '/form':
         # Appliquez le décorateur @login_required uniquement à la vue associée à '/form'
-        return login_required(vue2.layout)()
+        return vue2.layout()
     else:
         return '404 - Page introuvable'
 

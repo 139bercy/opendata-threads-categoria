@@ -1,4 +1,3 @@
-# vue2.py
 from dash import html, dcc
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
@@ -25,7 +24,7 @@ def layout():
                             dcc.Location(id='url', refresh=False),
                             html.Form(
                                 method='post',
-                                action='/form_traite',
+                                action='/traiter_formulaire',
                                 children=[
                                     form.hidden_tag(),
                                     html.Div(
@@ -42,7 +41,7 @@ def layout():
                                         ],
                                         className='form-group',
                                     ),
-                                    html.Br(),
+                                    
                                     html.Button('Soumettre', type='submit', className='btn btn-primary'),
                                 ],
                             ),

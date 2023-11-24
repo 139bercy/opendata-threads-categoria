@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
 import locale
-from app import app  # Importez l'objet app depuis app.py
+from app import app
 import calendar
 
 # Configuration de la localisation en français
@@ -130,30 +130,25 @@ def layout():
 # Callback function pour mettre à jour le graphique sunburst
 @app.callback(
     Output('sunburst-graph', 'figure'),
-    [Input('filter-selector', 'value'),
-     Input('category-filter', 'value'),
+    [Input('category-filter', 'value'),
      Input('date-range-picker', 'start_date'),
      Input('date-range-picker', 'end_date'),
      Input('timeline-filter', 'value')]
 )
-def update_sunburst_chart(filter_selector, selected_categories, start_date, end_date, timeline_value):
+def update_sunburst_chart(selected_categories, start_date, end_date, timeline_value):
     try:
         start_date = pd.to_datetime(start_date)
         end_date = pd.to_datetime(end_date)
 
-        if filter_selector == 'calendar':
-            filtered_df = df[(df['predictions_motifs_label'].isin(selected_categories)) &
-                             (df['created_discussion'] >= start_date) &
-                             (df['created_discussion'] <= end_date)]
+        start_month_index, end_month_index = timeline_value
+        selected_start_month = pd.Timestamp(f"{start_month_index + 1}/1/{start_date.year}")
+        selected_end_month = pd.Timestamp(f"{end_month_index + 1}/1/{end_date.year}")
 
-        elif filter_selector == 'timeline':
-            start_month_index, end_month_index = timeline_value
-            selected_start_month = pd.Timestamp(f"{start_month_index + 1}/1/{start_date.year}")
-            selected_end_month = pd.Timestamp(f"{end_month_index + 1}/1/{end_date.year}")
-
-            filtered_df = df[(df['predictions_motifs_label'].isin(selected_categories)) &
-                             (df['created_discussion'] >= selected_start_month) &
-                             (df['created_discussion'] <= selected_end_month)]
+        filtered_df = df[(df['predictions_motifs_label'].isin(selected_categories)) &
+                         (df['created_discussion'] >= start_date) &
+                         (df['created_discussion'] <= end_date) &
+                         (df['created_discussion'].dt.month >= start_month_index + 1) &
+                         (df['created_discussion'].dt.month <= end_month_index + 1)]
 
         updated_sunburst_fig = generate_sunburst(filtered_df)
 
