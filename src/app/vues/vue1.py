@@ -8,6 +8,7 @@ import pandas as pd
 import locale
 from src.app.app import app
 import calendar
+import plotly.graph_objects as go
 
 # Configuration de la localisation en français
 locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")
@@ -58,6 +59,21 @@ df["time_response"] = df["closed"] - df["created"]
 mean_time_response = (
     df.groupby("title_discussion")["time_response"].mean().sort_values(ascending=False)
 )
+
+# Calculer le nombre total de discussions
+total_discussions = total_rows
+
+# Calculer le temps de réponse moyen total
+mean_time_response_total = df["time_response"].mean()
+
+# Calculer la médiane des temps de réponse par annotation
+median_time_response = (
+    df.groupby("title_discussion")["time_response"].median().sort_values(ascending=False)
+)
+
+# Calculer le temps de réponse moyen total
+median_time_response_total = df["time_response"].median()
+
 
 # Fonction pour générer la treemap en fonction des données filtrées
 def generate_treemap(filtered_data):
@@ -223,6 +239,67 @@ def layout():
     bar_chart_div = generate_bar_chart(jdd_counts)
 
     pie_chart_div = generate_pie_chart(discussions_ouvertes, discussions_closes)
+    
+    # Ajout des KPIs
+    kpi_div = html.Div(
+        [
+            html.Div(
+                [
+                    html.H3("Total Discussions"),
+                    html.H4(total_discussions),
+                ],
+                className="kpi-card",
+            ),
+            html.Div(
+                [
+                    html.H3("Open Discussions"),
+                    html.H4(discussions_ouvertes),
+                ],
+                className="kpi-card",
+            ),
+            html.Div(
+                [
+                    html.H3("Mean Time Response (Total)"),
+                    html.H4(str(mean_time_response_total)),
+                ],
+                className="kpi-card",
+            ),
+            html.Div(
+                [
+                    html.H3("Median Time Response"),
+                    html.H4(str(median_time_response_total)),
+                ],
+                className="kpi-card",
+            ),
+            # Ajouter le graphique de la jauge
+            dcc.Graph(
+                id="gauge-discussions-closes",
+                figure=go.Figure(go.Indicator(
+                    mode="gauge+number",
+                    value=discussions_closes,
+                    title={'text': "Discussions Closes"},
+                    domain={'x': [0, 1], 'y': [0, 1]},
+                    gauge={
+                        'axis': {'range': [0, total_discussions], 'tickwidth': 1, 'tickcolor': "darkblue"},
+                        'bar': {'color': "darkgreen"},
+                        'bgcolor': "white",
+                        'borderwidth': 2,
+                        'bordercolor': "gray",
+                        'steps': [
+                            {'range': [0, total_discussions], 'color': 'lightgray'}
+                        ],
+                        'threshold': {
+                            'line': {'color': "red", 'width': 4},
+                            'thickness': 0.75,
+                            'value': discussions_closes
+                        }
+                    }
+                )),
+                className="kpi-card",
+            ),
+        ],
+        className="kpi-container",
+    )
 
     return html.Div(
         [
@@ -233,6 +310,7 @@ def layout():
             sunburst_div,
             bar_chart_div,
             pie_chart_div,
+            kpi_div,
         ]
     )
 
