@@ -19,6 +19,35 @@ mois_en_francais = list(calendar.month_name)[1:]
 # Chargement des données depuis le fichier CSV (peut être placé dans app.py)
 df = pd.read_csv('../../../data/raw/inference/predicted_data_model2.csv')
 
+# Calculer le nombre total de lignes dans le DataFrame
+total_rows = df.shape[0]
+
+# Calculer les JDD les plus discutés
+jdd_counts = df['slug'].value_counts()
+# Trier par ordre décroissant
+jdd_counts = jdd_counts.sort_values(ascending=False)
+
+# Calculer les JDD avec le plus grand nombre de réutilisations
+jdd_reuses = df.groupby('title_dataset')['nb_reuses'].first().sort_values(ascending=False)
+
+# Calculer les JDD les plus consultés
+jdd_views = df.groupby('title_dataset')['nb_views'].first().sort_values(ascending=False)
+
+# Calculer les JDD avec le plus de followers
+jdd_followers = df.groupby('title_dataset')['nb_followers'].first().sort_values(ascending=False)
+
+# Calculer le nombre de discussions ouvertes et fermées
+discussions_closes = pd.to_datetime(df['closed_discussion'], format='%d/%m/%Y', errors='coerce').count()
+discussions_ouvertes = total_rows - discussions_closes
+
+# Calcul du temps de réponse d'un commentaire entre l'ouverture de la discussion et sa fermeture
+df['created'] = pd.to_datetime(df['created_discussion'], format='%d/%m/%Y', errors='coerce')
+df['closed'] = pd.to_datetime(df['closed_discussion'], format='%d/%m/%Y', errors='coerce')
+df['time_response'] = df['closed'] - df['created']
+
+# Calculer la moyenne des temps de réponse par annotation
+mean_time_response = df.groupby('title_discussion')['time_response'].mean().sort_values(ascending=False)
+
 # Fonction pour générer la treemap en fonction des données filtrées
 def generate_treemap(filtered_data):
     fig = px.treemap(
@@ -120,11 +149,49 @@ def layout():
         html.Hr(),
         dcc.Graph(id='sunburst-graph', figure=generate_sunburst(df))
     ])
+    
+    # Ajouter les nouveaux graphiques ici
+    bar_chart_div = html.Div([
+        html.Hr(),
+        dcc.Graph(
+            id='bar-chart-jdd-discutes',
+            figure=px.bar(
+                y=jdd_counts.index,
+                x=jdd_counts.values,
+                orientation='h',
+                title='JDD les plus discutés',
+                category_orders={'y': list(jdd_counts.index)},  # Inverser l'ordre
+                text=jdd_counts.values,  # Texte à afficher à côté des barres
+                labels={'x': 'Nombre de Discussions', 'y': 'Slug jdd'},  # Libellés des axes
+                height=800,  # Hauteur du graphique
+                width=1200,  # Largeur du graphique
+            )
+        ),
+    ])
+
+    pie_chart_div = html.Div([
+        html.Hr(),
+        dcc.Graph(
+            id='pie-chart-discussions',
+            figure=px.pie(
+                names=['Discussions Ouvertes', 'Discussions Closes'],
+                values=[discussions_ouvertes, discussions_closes],
+                title='Proportion de Discussions Ouvertes et Closes',
+                color_discrete_sequence=['#ED4646', '#33BB5C'],
+                hole=0.4,
+            ).update_traces(
+            texttemplate="<b>%{percent:.0%}</b>",  # Utiliser HTML pour mettre en gras
+            insidetextfont=dict(size=16),
+        )
+        ),
+    ])
 
     return html.Div([
         filters_div,  # Ajout de la division des filtres au-dessus de votre graphique
         dcc.Graph(id='treemap-graph', figure=treemap_fig, className='responsive-graph'),  # Graphique de la treemap
         sunburst_div,  # Ajouter le graphique sunburst
+        bar_chart_div,
+        pie_chart_div,
     ])
 
 # Callback function pour mettre à jour le graphique sunburst
