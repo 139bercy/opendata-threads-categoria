@@ -4,32 +4,35 @@ import dash_bootstrap_components as dbc
 from dash import html
 from dash.dependencies import Input, Output
 from dash import dcc
-#from flask_login import LoginManager, login_required, login_user, logout_user, current_user
-#from auth import Utilisateur, LoginForm, InscriptionForm
-#from flask_sqlalchemy import SQLAlchemy
-#from werkzeug.security import generate_password_hash, check_password_hash
+
+# from flask_login import LoginManager, login_required, login_user, logout_user, current_user
+# from auth import Utilisateur, LoginForm, InscriptionForm
+# from flask_sqlalchemy import SQLAlchemy
+# from werkzeug.security import generate_password_hash, check_password_hash
 import sys
 from pathlib import Path
 
-sys.path.append("../../..")  # Ajoutez le chemin du dossier parent au chemin de recherche des modules
+sys.path.append(
+    ""
+)  # Ajoutez le chemin du dossier parent au chemin de recherche des modules
 
-#from auth.auth import app as auth_app  # Importez l'application d'authentification
-from vues import vue1, vue2
+# from auth.auth import app as auth_app  # Importez l'application d'authentification
+from src.scripts.appli.vues import vue1, vue2
+
 # Importer la fonction de mise en page depuis vue1
-from vues.vue1 import layout
 
 
 import sys
 from pathlib import Path
 
 # Ajoutez le chemin du dossier auth au chemin de recherche du système
-#auth_path = Path(__file__).resolve().parents[2]  # Remplacez le nombre selon la structure de vos dossiers
-#sys.path.append(str(auth_path))
+# auth_path = Path(__file__).resolve().parents[2]  # Remplacez le nombre selon la structure de vos dossiers
+# sys.path.append(str(auth_path))
 
 # Initialiser le serveur Flask
 server = Flask(__name__)
-server.config['SECRET_KEY'] = 'asma'
-server.config['WTF_CSRF_ENABLED'] = False  # Désactiver le jeton CSRF
+server.config["SECRET_KEY"] = "asma"
+server.config["WTF_CSRF_ENABLED"] = False  # Désactiver le jeton CSRF
 
 """server.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///utilisateurs.db'
 server.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -41,43 +44,73 @@ login_manager.login_view = 'login'"""
 app = dash.Dash(__name__, server=server, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 # Configurez la page de connexion pour être affichée si un utilisateur non authentifié tente d'accéder à une page protégée
-#login_manager.login_view = 'login'
+# login_manager.login_view = 'login'
 
 # En-tête de l'application
-header = html.Div([
-    # Logo de l'entreprise ou de l'application (colonne 1)
-    html.Div([
-        html.Img(src='/assets/images/mefsin.svg', style={'height': '230px', 'width': '230px', 'margin-top': '-50px', 'margin-bottom': '-30px'})
-    ], className='col-lg-2 col-md-4 col-sm-4 col-12 text-right'),
-
-    # Titre de l'application (colonne 2)
-    html.Div([
-        html.H1("Tableau de bord d'analyse des discussions du MEFSIN", id='header-title', style={'margin-top': '40px'})
-    ], className='col-lg-8 col-md-4 col-sm-4 col-12 text-center'),
-
-    # Bouton de téléchargement du jeu de données (colonne 3)
-    html.Div([
-        dcc.ConfirmDialogProvider(
-            children=[
-                html.Button('Télécharger les données', id='download-button', className='btn btn-primary', style={'margin-top': '35px', 'padding': '15px'})
+header = html.Div(
+    [
+        # Logo de l'entreprise ou de l'application (colonne 1)
+        html.Div(
+            [
+                html.Img(
+                    src="/assets/images/mefsin.svg",
+                    style={
+                        "height": "230px",
+                        "width": "230px",
+                        "margin-top": "-50px",
+                        "margin-bottom": "-30px",
+                    },
+                )
             ],
-            id='download-data-confirm',
-            message='Êtes-vous sûr de vouloir télécharger les données ?'
-        )
-    ], className='col-lg-2 col-md-4 col-sm-4 col-12 text-center'),
-], className='header row')
+            className="col-lg-2 col-md-4 col-sm-4 col-12 text-right",
+        ),
+        # Titre de l'application (colonne 2)
+        html.Div(
+            [
+                html.H1(
+                    "Tableau de bord d'analyse des discussions du MEFSIN",
+                    id="header-title",
+                    style={"margin-top": "40px"},
+                )
+            ],
+            className="col-lg-8 col-md-4 col-sm-4 col-12 text-center",
+        ),
+        # Bouton de téléchargement du jeu de données (colonne 3)
+        html.Div(
+            [
+                dcc.ConfirmDialogProvider(
+                    children=[
+                        html.Button(
+                            "Télécharger les données",
+                            id="download-button",
+                            className="btn btn-primary",
+                            style={"margin-top": "35px", "padding": "15px"},
+                        )
+                    ],
+                    id="download-data-confirm",
+                    message="Êtes-vous sûr de vouloir télécharger les données ?",
+                )
+            ],
+            className="col-lg-2 col-md-4 col-sm-4 col-12 text-center",
+        ),
+    ],
+    className="header row",
+)
 
 # Mise en page principale de l'application Dash
-app.layout = html.Div([
-    header,
-    # Composant de gestion de l'URL
-    dcc.Location(id='url', refresh=False),
-    # Contenu de la page actuelle
-    html.Div(id='page-content'),
-], style={'margin': '20px'})
+app.layout = html.Div(
+    [
+        header,
+        # Composant de gestion de l'URL
+        dcc.Location(id="url", refresh=False),
+        # Contenu de la page actuelle
+        html.Div(id="page-content"),
+    ],
+    style={"margin": "20px"},
+)
 
 # Intégrer le fichier CSS
-app.external_stylesheets = [dbc.themes.BOOTSTRAP, '/assets/style.css']
+app.external_stylesheets = [dbc.themes.BOOTSTRAP, "/assets/style.css"]
 
 """
 @login_manager.user_loader
@@ -124,35 +157,36 @@ def accueil():
     return f'Page d\'accueil. Bonjour, {current_user.prenom} {current_user.nom}!'
 
 """
-@app.server.route('/form_traite', methods=['POST'])
+
+
+@app.server.route("/form_traite", methods=["POST"])
 def traiter_formulaire():
-    if request.method == 'POST':
+    if request.method == "POST":
         # Récupérer les valeurs du formulaire
-        nom = request.form.get('nom')
-        prenom = request.form.get('prenom')
+        nom = request.form.get("nom")
+        prenom = request.form.get("prenom")
 
         # Faites quelque chose avec les données (par exemple, les imprimer)
-        print(f'Nom: {nom}, Prénom: {prenom}')
+        print(f"Nom: {nom}, Prénom: {prenom}")
 
         # Ajoutez le code pour enregistrer les données dans la base de données
         # et pour alimenter le modèle d'IA avec ces données
 
         # Redirigez l'utilisateur vers une nouvelle page ou faites autre chose selon vos besoins
-        return render_template('formulaire_traite.html', nom=nom, prenom=prenom)
+        return render_template("formulaire_traite.html", nom=nom, prenom=prenom)
+
 
 # Callback pour afficher le contenu de la vue en fonction de l'URL
-@app.callback(
-    Output('page-content', 'children'),
-    [Input('url', 'pathname')]
-)
+@app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def display_page(pathname):
-    if pathname == '/' or pathname == '/accueil':
+    if pathname == "/" or pathname == "/accueil":
         return vue1.layout()
-    elif pathname == '/form':
+    elif pathname == "/form":
         # Appliquez le décorateur @login_required uniquement à la vue associée à '/form'
         return vue2.layout()
     else:
-        return '404 - Page introuvable'
+        return "404 - Page introuvable"
+
 
 # Exécuter le serveur Flask
 if __name__ == "__main__":
