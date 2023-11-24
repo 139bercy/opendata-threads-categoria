@@ -34,3 +34,8 @@
     margin-top: 20px;
 }
 
+/* Faire en sorte que les graphiques soient responsifs */
+.responsive-graph {
+    max-width: 100%;  /* Largeur maximale pour s'adapter à l'écran */
+    height: auto;     /* Hauteur automatique pour maintenir le ratio d'aspect */
+}
