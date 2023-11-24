@@ -110,6 +110,45 @@ def generate_sunburst(filtered_data):
 
     return fig
 
+# Fonction pour générer le graphique en barres des JDD les plus discutés
+def generate_bar_chart(jdd_counts):
+    return html.Div([
+        html.Hr(),
+        dcc.Graph(
+            id='bar-chart-jdd-discutes',
+            figure=px.bar(
+                y=jdd_counts.index,
+                x=jdd_counts.values,
+                orientation='h',
+                title='JDD les plus discutés',
+                category_orders={'y': list(jdd_counts.index)},
+                text=jdd_counts.values,
+                labels={'x': 'Nombre de Discussions', 'y': 'Slug jdd'},
+                height=800,
+                width=1860,
+            )
+        ),
+    ])
+
+# Fonction pour générer le graphique circulaire (pie chart) pour la proportion de discussions ouvertes et fermées
+def generate_pie_chart(discussions_ouvertes, discussions_closes):
+    return html.Div([
+        html.Hr(),
+        dcc.Graph(
+            id='pie-chart-discussions',
+            figure=px.pie(
+                names=['Discussions Ouvertes', 'Discussions Closes'],
+                values=[discussions_ouvertes, discussions_closes],
+                title='Proportion de Discussions Ouvertes et Closes',
+                color_discrete_sequence=['#ED4646', '#33BB5C'],
+                hole=0.4,
+            ).update_traces(
+                texttemplate="<b>%{percent:.0%}</b>",
+                insidetextfont=dict(size=16),
+            )
+        ),
+    ])
+
 # Fonction pour créer la mise en page de vue1
 def layout():
     # Création d'une division pour les filtres, le calendrier et la chronologie
@@ -150,46 +189,14 @@ def layout():
         dcc.Graph(id='sunburst-graph', figure=generate_sunburst(df))
     ])
     
-    # Ajouter les nouveaux graphiques ici
-    bar_chart_div = html.Div([
-        html.Hr(),
-        dcc.Graph(
-            id='bar-chart-jdd-discutes',
-            figure=px.bar(
-                y=jdd_counts.index,
-                x=jdd_counts.values,
-                orientation='h',
-                title='JDD les plus discutés',
-                category_orders={'y': list(jdd_counts.index)},  # Inverser l'ordre
-                text=jdd_counts.values,  # Texte à afficher à côté des barres
-                labels={'x': 'Nombre de Discussions', 'y': 'Slug jdd'},  # Libellés des axes
-                height=800,  # Hauteur du graphique
-                width=1200,  # Largeur du graphique
-            )
-        ),
-    ])
-
-    pie_chart_div = html.Div([
-        html.Hr(),
-        dcc.Graph(
-            id='pie-chart-discussions',
-            figure=px.pie(
-                names=['Discussions Ouvertes', 'Discussions Closes'],
-                values=[discussions_ouvertes, discussions_closes],
-                title='Proportion de Discussions Ouvertes et Closes',
-                color_discrete_sequence=['#ED4646', '#33BB5C'],
-                hole=0.4,
-            ).update_traces(
-            texttemplate="<b>%{percent:.0%}</b>",  # Utiliser HTML pour mettre en gras
-            insidetextfont=dict(size=16),
-        )
-        ),
-    ])
+    bar_chart_div = generate_bar_chart(jdd_counts)
+    
+    pie_chart_div = generate_pie_chart(discussions_ouvertes, discussions_closes)
 
     return html.Div([
         filters_div,  # Ajout de la division des filtres au-dessus de votre graphique
         dcc.Graph(id='treemap-graph', figure=treemap_fig, className='responsive-graph'),  # Graphique de la treemap
-        sunburst_div,  # Ajouter le graphique sunburst
+        sunburst_div,
         bar_chart_div,
         pie_chart_div,
     ])
