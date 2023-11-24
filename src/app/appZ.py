@@ -5,58 +5,38 @@ from datetime import datetime
 import dash
 from dash import dcc, html
 import plotly.express as px
+import plotly.graph_objects as go  # Importer la bibliothèque plotly.graph_objects
 
 # Charger le fichier CSV généré par le script d'inférence
 input_csv_file = "../../data/raw/inference/predicted_data_model2.csv"
 df = pd.read_csv(input_csv_file)
 
-# Configurer les paramètres de journalisation
-log_folder_path = "../../../logs/eda"
-log_filename = datetime.now().strftime("%Y-%m-%d") + "_eda.log"
-log_file_path = os.path.join(log_folder_path, log_filename)
-logging.basicConfig(
-    filename=log_file_path,
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s: %(message)s",
-)
-
 # Calculer le nombre total de lignes dans le DataFrame
 total_rows = df.shape[0]
-logging.info(f"Nombre total de lignes dans le DataFrame : {total_rows}")
 
 # Calculer les JDD les plus discutés
 jdd_counts = df["slug"].value_counts()
 # Trier par ordre décroissant
 jdd_counts = jdd_counts.sort_values(ascending=False)
-logging.info("JDD les plus discutés :")
-# logging.info(jdd_counts)
 
 # Calculer les JDD avec le plus grand nombre de réutilisations
 jdd_reuses = (
     df.groupby("title_dataset")["nb_reuses"].first().sort_values(ascending=False)
 )
-logging.info("JDD avec le plus grand nombre de réutilisations :")
-# logging.info(jdd_reuses)
 
 # Calculer les JDD les plus consultés
 jdd_views = df.groupby("title_dataset")["nb_views"].first().sort_values(ascending=False)
-logging.info("JDD les plus consultés :")
-# logging.info(jdd_views)
 
 # Calculer les JDD avec le plus de followers
 jdd_followers = (
     df.groupby("title_dataset")["nb_followers"].first().sort_values(ascending=False)
 )
-logging.info("JDD avec le plus de followers :")
-# logging.info(jdd_followers)
 
 # Calculer le nombre de discussions ouvertes et fermées
 discussions_closes = pd.to_datetime(
     df["closed_discussion"], format="%d/%m/%Y", errors="coerce"
 ).count()
 discussions_ouvertes = total_rows - discussions_closes
-logging.info(f"Nombre de discussions ouvertes : {discussions_ouvertes}")
-logging.info(f"Nombre de discussions closes : {discussions_closes}")
 
 # Calcul du temps de réponse d'un commentaire entre l'ouverture de la discussion et sa fermeture
 df["created"] = pd.to_datetime(
@@ -71,11 +51,20 @@ df["time_response"] = df["closed"] - df["created"]
 mean_time_response = (
     df.groupby("title_discussion")["time_response"].mean().sort_values(ascending=False)
 )
-logging.info("Moyenne des temps de réponse par annotation :")
-logging.info(mean_time_response)
 
-# Fermer le fichier de journal
-logging.shutdown()
+# Calculer le nombre total de discussions
+total_discussions = total_rows
+
+# Calculer le temps de réponse moyen total
+mean_time_response_total = df["time_response"].mean()
+
+# Calculer la médiane des temps de réponse par annotation
+median_time_response = (
+    df.groupby("title_discussion")["time_response"].median().sort_values(ascending=False)
+)
+
+# Calculer le temps de réponse moyen total
+median_time_response_total = df["time_response"].median()
 
 # Initialiser l'application Dash
 app = dash.Dash(__name__)
@@ -84,40 +73,74 @@ app = dash.Dash(__name__)
 app.layout = html.Div(
     [
         html.H1("Dashboard for Discussion Data"),
-        # Graphique en barres des JDD les plus discutés
-        dcc.Graph(
-            id="bar-chart-jdd-discutes",
-            figure=px.bar(
-                y=jdd_counts.index,
-                x=jdd_counts.values,
-                orientation="h",
-                title="JDD les plus discutés",
-                category_orders={"y": list(jdd_counts.index)},  # Inverser l'ordre
-                text=jdd_counts.values,  # Texte à afficher à côté des barres
-                labels={
-                    "x": "Nombre de Discussions",
-                    "y": "Slug jdd",
-                },  # Libellés des axes
-                height=800,  # Hauteur du graphique
-                width=1200,  # Largeur du graphique
-            ),
+        
+        # Ajout des KPIs
+        html.Div(
+            [
+                html.Div(
+                    [
+                        html.H3("Total Discussions"),
+                        html.H4(total_discussions),
+                    ],
+                    className="kpi-card",
+                ),
+                html.Div(
+                    [
+                        html.H3("Open Discussions"),
+                        html.H4(discussions_ouvertes),
+                    ],
+                    className="kpi-card",
+                ),
+                html.Div(
+                    [
+                        html.H3("Mean Time Response (Total)"),
+                        html.H4(str(mean_time_response_total)),
+                    ],
+                    className="kpi-card",
+                ),
+                 html.Div(
+                    [
+                        html.H3("Median Time Response"),
+                        html.H4(str(median_time_response_total)),
+                    ],
+                    className="kpi-card",
+                ),
+                # Ajouter le graphique de la jauge
+                dcc.Graph(
+                    id="gauge-discussions-closes",
+                    figure=go.Figure(go.Indicator(
+                        mode="gauge+number",
+                        value=discussions_closes,
+                        title={'text': "Discussions Closes"},
+                        domain={'x': [0, 1], 'y': [0, 1]},
+                        gauge={
+                            'axis': {'range': [0, total_discussions], 'tickwidth': 1, 'tickcolor': "darkblue"},
+                            'bar': {'color': "darkgreen"},
+                            'bgcolor': "white",
+                            'borderwidth': 2,
+                            'bordercolor': "gray",
+                            'steps': [
+                                {'range': [0, total_discussions], 'color': 'lightgray'}
+                            ],
+                            'threshold': {
+                                'line': {'color': "red", 'width': 4},
+                                'thickness': 0.75,
+                                'value': discussions_closes
+                            }
+                        }
+                    )),
+                    className="kpi-card",
+                ),
+            ],
+            className="kpi-container",
         ),
-        # Graphique circulaire (pie chart) pour la proportion de discussions ouvertes et fermées
-        dcc.Graph(
-            id="pie-chart-discussions",
-            figure=px.pie(
-                names=["Discussions Ouvertes", "Discussions Closes"],
-                values=[discussions_ouvertes, discussions_closes],
-                title="Proportion de Discussions Ouvertes et Closes",
-                color_discrete_sequence=["#ED4646", "#33BB5C"],
-                hole=0.4,
-            ).update_traces(
-                texttemplate="<b>%{percent:.0%}</b>",  # Utiliser HTML pour mettre en gras
-                insidetextfont=dict(size=16),
-            ),
-        ),
+
+        # ... (le reste de votre code)
+
     ]
 )
+
+# ... (le reste de votre code)
 
 # Lancer l'application
 if __name__ == "__main__":
