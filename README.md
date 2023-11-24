@@ -1,7 +1,7 @@
 Projet de dashboard d'annotation des discussions autour des jeux de données du Ministère de l'économie et des finances (data.gouv.fr)
 ==============================
 
-Description du Projet: 
+Description du Projet:
 ------------
   Ce projet s'inscrit dans le cadre de la mission OpenData du ministère. Il s'agit d'un dashboard qui permettra aux agents du ministère de comprendre quels sont les problèmes que rencontrent les utilisateurs de la plateforme data.gouv.fr avec leurs jeux de données.
 Chaque discussion autour des jeux de données sera annoté en une catégorie parmi 6 et une sous catégorie parmi 26 possiblent.
@@ -81,3 +81,11 @@ Remarques :
 - Assurez-vous d'avoir les autorisations nécessaires pour accéder aux données et effectuer des requêtes API.
 - Les modèles entraînés sont stockés dans le dossier trained_models/.
 - Les résultats des requêtes API sont disponibles dans le dossier data/raw/data_acquisition/.
+
+## Usage
+
+Pour lancer le front-end, d'un environnement virtuel :
+
+```
+$ python app.py
+```
