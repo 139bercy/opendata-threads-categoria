@@ -2,7 +2,7 @@ import pytest
 
 from src.auth.infrastructure import AccountInMemoryRepository
 from src.auth.models import hash_password
-from src.auth.usecases import retrieve_user, login, UserDoesNotExistsError
+from src.auth.usecases import retrieve_user, login, LoginError
 
 
 def test_retrieve_user():
@@ -41,29 +41,35 @@ def test_invalid_username():
     username = "Oops!"
     password = "password"
     # Act & Assert
-    with pytest.raises(UserDoesNotExistsError):
+    with pytest.raises(LoginError):
         login(repository=repository, username=username, password=password)
 
 
 def test_invalid_password():
-    pass
+    # Arrange
+    repository = AccountInMemoryRepository()
+    username = "jdoe"
+    password = "Oops!"
+    # Act & Assert
+    with pytest.raises(LoginError):
+        login(repository=repository, username=username, password=password)
 
 
 def test_empty_credentials():
-    pass
+    # Arrange
+    repository = AccountInMemoryRepository()
+    username = ""
+    password = ""
+    # Act & Assert
+    with pytest.raises(LoginError):
+        login(repository=repository, username=username, password=password)
 
 
-def test_missing_username():
-    pass
-
-
-def test_missing_password():
-    pass
-
-
-def test_long_username():
-    pass
-
-
-def test_long_password():
-    pass
+def test_credentials_not_set():
+    # Arrange
+    repository = AccountInMemoryRepository()
+    username = None
+    password = None
+    # Act & Assert
+    with pytest.raises(LoginError):
+        login(repository=repository, username=username, password=password)
