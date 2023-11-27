@@ -1,5 +1,7 @@
 import pytest
 
+from uuid import UUID
+
 from src.auth.infrastructure import AccountInMemoryRepository
 from src.auth.models import hash_password
 from src.auth.usecases import retrieve_user, login, LoginError
@@ -27,12 +29,12 @@ def test_hash_password():
 def test_valid_credentials():
     # Arrange
     repository = AccountInMemoryRepository()
-    username = "jdoe"
-    password = "password"
     # Act
-    result = login(repository=repository, username=username, password=password)
+    result = login(repository=repository, username="jdoe", password="password")
     # Assert
-    assert result is True
+    resource = repository.get_by_username("jdoe")
+    assert type(result) == UUID
+    assert resource["token"] == result
 
 
 def test_invalid_username():
@@ -73,3 +75,11 @@ def test_credentials_not_set():
     # Act & Assert
     with pytest.raises(LoginError):
         login(repository=repository, username=username, password=password)
+
+
+def test_is_logged_in_ok():
+    pass
+
+
+def test_is_logged_in_ko():
+    pass

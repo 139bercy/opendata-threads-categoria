@@ -27,6 +27,10 @@ class PostgresClient:
         self.execute(query=query)
         self.conn.commit()
 
+    def update(self, query):
+        self.execute(query=query)
+        self.conn.commit()
+
     def fetch_one(self, query):
         result = self.execute(query)
         return dict(result.fetchone())

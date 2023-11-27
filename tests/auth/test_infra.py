@@ -1,7 +1,13 @@
 import pytest
 
+from uuid import UUID
+
 from src.auth.infrastructure import AccountPostgresqlRepository
-from src.auth.usecases import retrieve_user, login, LoginError
+from src.auth.usecases import (
+    retrieve_user,
+    login,
+    LoginError,
+)
 
 
 def test_retrieve_postgres_user():
@@ -16,10 +22,13 @@ def test_retrieve_postgres_user():
 def test_postgres_login_with_valid_credentials():
     # Arrange
     repository = AccountPostgresqlRepository()
+    repository.update_token("jdoe", None)
     # Act
     result = login(repository=repository, username="jdoe", password="password")
     # Assert
-    assert result is True
+    resource = repository.get_by_username("jdoe")
+    assert type(result) == UUID
+    assert resource["token"] is not None
 
 
 def test_postgres_login_with_invalid_credentials():

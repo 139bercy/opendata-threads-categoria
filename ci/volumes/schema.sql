@@ -12,7 +12,7 @@ create table "account"
     last_name     text not null,
     email         text not null,
     password      text not null,
-    token         text
+    token         uuid
 );
 
 -- Optionally, grant other privileges like SELECT, INSERT, UPDATE, DELETE, etc.
