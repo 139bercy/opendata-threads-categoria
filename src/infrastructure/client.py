@@ -8,9 +8,7 @@ dotenv.load_dotenv()
 
 class PostgresClient:
     def __init__(self, dbname, host, user, password, port=5432):
-        self.conn = psycopg2.connect(
-            dbname=dbname, user=user, password=password, host=host, port=port
-        )
+        self.conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host, port=port)
         self.cursor = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     def execute(self, query, params=None):

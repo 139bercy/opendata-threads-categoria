@@ -12,6 +12,7 @@ from data_acquisition import (
 # Indiquez le chemin du fichier CSV de données existant pour les tests.
 EXISTING_DATA_PATH = "../../../../data/raw/data_acquisition/extraction_discussions/discussions.csv"
 
+
 # Utilisez le décorateur @pytest.mark pour marquer vos tests comme unitaires.
 @pytest.mark.unit
 def test_fetch_discussion_data():
@@ -27,6 +28,7 @@ def test_fetch_discussion_data():
     with pytest.raises(Exception):
         fetch_discussion_data(discussions_url, last_update_date)
 
+
 @pytest.mark.unit
 def test_parse_datetime():
     # Cas de test avec une chaîne de date au format ISO
@@ -40,6 +42,7 @@ def test_parse_datetime():
     result = parse_datetime(datetime_str)
     expected_result = datetime(2022, 1, 1, 12, 0, 0)
     assert result == expected_result
+
 
 @pytest.mark.unit
 def test_load_existing_data(tmp_path):
@@ -55,6 +58,7 @@ def test_load_existing_data(tmp_path):
     assert isinstance(result, pd.DataFrame)  # Vérifiez si le résultat est un DataFrame
     assert len(result) == 1  # Vérifiez le nombre de lignes dans le DataFrame
 
+
 @pytest.mark.unit
 def test_save_extracted_data(tmp_path):
     # Créez un DataFrame de test avec des données fictives
@@ -66,6 +70,7 @@ def test_save_extracted_data(tmp_path):
 
     # Vérifiez si le fichier CSV a été créé avec succès
     assert test_csv_file.exists()
+
 
 # Vous pouvez ajouter d'autres tests unitaires au besoin.
 

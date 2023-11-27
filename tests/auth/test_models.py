@@ -1,10 +1,11 @@
-import pytest
-
 from uuid import UUID
 
+import pytest
+
+from src.auth.exceptions import LoginError, UsernameError
 from src.auth.infrastructure import AccountInMemoryRepository
 from src.auth.models import hash_password
-from src.auth.usecases import retrieve_user, login, LoginError
+from src.auth.usecases import retrieve_user, login
 
 
 def test_retrieve_user():
@@ -43,7 +44,7 @@ def test_invalid_username():
     username = "Oops!"
     password = "password"
     # Act & Assert
-    with pytest.raises(LoginError):
+    with pytest.raises(UsernameError):
         login(repository=repository, username=username, password=password)
 
 
@@ -63,7 +64,7 @@ def test_empty_credentials():
     username = ""
     password = ""
     # Act & Assert
-    with pytest.raises(LoginError):
+    with pytest.raises(UsernameError):
         login(repository=repository, username=username, password=password)
 
 
@@ -73,7 +74,7 @@ def test_credentials_not_set():
     username = None
     password = None
     # Act & Assert
-    with pytest.raises(LoginError):
+    with pytest.raises(UsernameError):
         login(repository=repository, username=username, password=password)
 
 

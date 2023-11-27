@@ -7,11 +7,9 @@ from dash import html
 from dash.dependencies import Input, Output
 from flask import Flask, render_template, request, jsonify
 
-from src.auth.infrastructure import (
-    AccountInMemoryRepository,
-    AccountPostgresqlRepository,
-)
-from src.auth.usecases import login as user_login, LoginError
+from src.auth.exceptions import LoginError, UsernameError
+from src.auth.infrastructure import AccountInMemoryRepository, AccountPostgresqlRepository
+from src.auth.usecases import login as user_login
 
 repository = AccountPostgresqlRepository()
 if os.environ["APP_ENV"] == "test":
@@ -183,9 +181,9 @@ def traiter_formulaire():
 def login():
     data = request.get_json()
     try:
-        user_login(
-            repository=repository, username=data["username"], password=data["password"]
-        )
+        user_login(repository=repository, username=data["username"], password=data["password"])
+    except UsernameError:
+        return (jsonify({"error": "Invalid credentials"}), 401)
     except LoginError:
         return (jsonify({"error": "Invalid credentials"}), 401)
     token = "mock_token"

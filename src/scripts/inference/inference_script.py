@@ -10,7 +10,8 @@ import categories
 from preprocess import preprocess_data, preprocess_data2
 
 import sys
-sys.path.append('..')
+
+sys.path.append("..")
 from logging_config import configure_logging
 
 """# Spécifier le chemin relatif vers le dossier logs
@@ -31,11 +32,12 @@ sslabels = categories.SSLABELS
 id2sslabel = categories.ID2SSLABEL
 sslabel2id = categories.SSLABEL2ID
 
+
 def load_and_prepare_models(model1_zip, model2_zip):
     # Charger du model 1 pré-entrainé (zippé)
     # Extraire le contenu du fichier .zip dans un répertoire temporaire
     extract_dir1 = "../../trained_models/extracted_model1"
-    with zipfile.ZipFile(model1_zip, 'r') as zip_ref:
+    with zipfile.ZipFile(model1_zip, "r") as zip_ref:
         zip_ref.extractall(extract_dir1)
     logging.info("Modèle 1 extrait avec succès dans %s", extract_dir1)
 
@@ -48,7 +50,7 @@ def load_and_prepare_models(model1_zip, model2_zip):
     # Chargement du modèle 2 (zippé)
     # Extraire le contenu du fichier .zip dans un répertoire temporaire
     extract_dir2 = "../../trained_models/extracted_model2"
-    with zipfile.ZipFile(model2_zip, 'r') as zip_ref:
+    with zipfile.ZipFile(model2_zip, "r") as zip_ref:
         zip_ref.extractall(extract_dir2)
     logging.info("Modèle 2 extrait avec succès dans %s", extract_dir2)
 
@@ -64,7 +66,7 @@ def load_and_prepare_models(model1_zip, model2_zip):
 def perform_inference1(model1, tokenizer1, csv_file_path, output_csv_path):
     # Début de l'inférence 1
     logging.info("Début de l'inférence 1 ...")
-    
+
     # Charger le DataFrame
     df_MEFSIN = pd.read_csv(csv_file_path)
     logging.info("Chargement du DataFrame effectué avec succès !")
@@ -95,17 +97,15 @@ def perform_inference1(model1, tokenizer1, csv_file_path, output_csv_path):
     # Parcourir les lots et effectuer l'inférence avec le modèle 1
     for i in range(num_batches):
         # Sélectionner les textes du lot actuel
-        batch_texts = preprocessed_data[i * batch_size: (i + 1) * batch_size]
+        batch_texts = preprocessed_data[i * batch_size : (i + 1) * batch_size]
 
         # Appliquer le tokenizer et le modèle 1 pour l'inférence
         with torch.no_grad():
             # Encoder les textes avec le tokenizer
-            encoded_inputs = tokenizer1(
-                batch_texts, padding=True, truncation=True, max_length=128, return_tensors="pt"
-            )
+            encoded_inputs = tokenizer1(batch_texts, padding=True, truncation=True, max_length=128, return_tensors="pt")
 
             # Passage des données dans le modèle 1 pour l'inférence
-            outputs = model1(input_ids=encoded_inputs['input_ids'], attention_mask=encoded_inputs['attention_mask'])
+            outputs = model1(input_ids=encoded_inputs["input_ids"], attention_mask=encoded_inputs["attention_mask"])
 
         # Récupération des prédictions
         predicted_labels = torch.argmax(outputs.logits, dim=1)
@@ -114,9 +114,9 @@ def perform_inference1(model1, tokenizer1, csv_file_path, output_csv_path):
         predictions1.extend(predicted_labels.tolist())
 
     # Ajouter la liste des prédictions du modèle 1 comme une nouvelle colonne au DataFrame
-    df_MEFSIN['predictions_motifs'] = predictions1
-    df_MEFSIN['predictions_motifs_label'] = [id2label[prediction] for prediction in predictions1]
-    
+    df_MEFSIN["predictions_motifs"] = predictions1
+    df_MEFSIN["predictions_motifs_label"] = [id2label[prediction] for prediction in predictions1]
+
     # Sauvegarder le DataFrame avec les prédictions dans un fichier CSV
     df_MEFSIN.to_csv(output_csv_path, index=False)
 
@@ -126,7 +126,7 @@ def perform_inference1(model1, tokenizer1, csv_file_path, output_csv_path):
 def perform_inference2(model2, tokenizer2, csv_file_path, output_csv_path):
     # Début de l'inférence 1
     logging.info("Début de l'inférence 2 ...")
-    
+
     # Charger le DataFrame
     df_MEFSIN = pd.read_csv(csv_file_path)
     logging.info("Chargement du DataFrame effectué avec succès !")
@@ -157,12 +157,14 @@ def perform_inference2(model2, tokenizer2, csv_file_path, output_csv_path):
     # Parcourir les lots et effectuer l'inférence avec le modèle 2
     for i in range(num_batches):
         # Sélectionner les textes du lot actuel
-        batch_texts = preprocessed_data2[i * batch_size: (i + 1) * batch_size]
+        batch_texts = preprocessed_data2[i * batch_size : (i + 1) * batch_size]
 
         # Appliquer le tokenizer et le modèle 2 pour l'inférence
         with torch.no_grad():
             # Encoder les textes avec le tokenizer
-            encoded_inputs2 = tokenizer2.batch_encode_plus(batch_texts, truncation=True, padding=True, max_length=128, return_tensors="pt")
+            encoded_inputs2 = tokenizer2.batch_encode_plus(
+                batch_texts, truncation=True, padding=True, max_length=128, return_tensors="pt"
+            )
 
             # Passage des données dans le modèle 2 pour l'inférence
             outputs2 = model2(**encoded_inputs2)
@@ -174,21 +176,21 @@ def perform_inference2(model2, tokenizer2, csv_file_path, output_csv_path):
         predictions2.extend(predicted_sslabels.tolist())
 
     # Ajouter la liste des prédictions du modèle 2 comme une nouvelle colonne au DataFrame
-    df_MEFSIN['predictions_ssmotifs'] = predictions2
-    df_MEFSIN['predictions_ssmotifs_label'] = [id2sslabel[prediction] for prediction in predictions2]
+    df_MEFSIN["predictions_ssmotifs"] = predictions2
+    df_MEFSIN["predictions_ssmotifs_label"] = [id2sslabel[prediction] for prediction in predictions2]
     # Ajouter une colonne 'predictions_ssmotifs_label' avec les noms de labels correspondant
-    #df_MEFSIN['predictions_ssmotifs_label'] = df_MEFSIN['predictions_ssmotifs'].map(id2sslabel)
+    # df_MEFSIN['predictions_ssmotifs_label'] = df_MEFSIN['predictions_ssmotifs'].map(id2sslabel)
 
-    
     # Sauvegarder le DataFrame avec les prédictions dans un fichier CSV
     df_MEFSIN.to_csv(output_csv_path, index=False)
 
     logging.info("Inférence avec le modèle 2 terminée et résultats sauvegardés dans %s", output_csv_path)
-    
+
+
 if __name__ == "__main__":
     # Utilisation de la fonction pour configurer le logging
-    log_directory = '../../../logs/inference/'
-    log_file_name = 'inference'
+    log_directory = "../../../logs/inference/"
+    log_file_name = "inference"
     configure_logging(log_directory, log_file_name)
 
     # Obtenez le chemin du répertoire du script en cours d'exécution
@@ -197,7 +199,9 @@ if __name__ == "__main__":
     # Spécifiez les noms de fichiers et répertoires relatifs
     model1_zip_file = os.path.join(script_directory, "../../trained_models/bert-finetuned-my-data-final_archive.zip")
     model2_zip_file = os.path.join(script_directory, "../../trained_models/bert-finetuned-my-data-final2_archive2.zip")
-    input_csv_file1 = os.path.join(script_directory, "../../../data/raw/data_acquisition/merging_data/dataset_mefsin.csv")
+    input_csv_file1 = os.path.join(
+        script_directory, "../../../data/raw/data_acquisition/merging_data/dataset_mefsin.csv"
+    )
     input_csv_file2 = os.path.join(script_directory, "../../../data/raw/inference/predicted_data_model1.csv")
     output_csv_file_model1 = os.path.join(script_directory, "../../../data/raw/inference/predicted_data_model1.csv")
     output_csv_file_model2 = os.path.join(script_directory, "../../../data/raw/inference/predicted_data_model2.csv")
@@ -208,9 +212,9 @@ if __name__ == "__main__":
     # Effectuez l'inférence avec les modèles
     perform_inference1(model1, tokenizer1, input_csv_file1, output_csv_file_model1)
     perform_inference2(model2, tokenizer2, input_csv_file2, output_csv_file_model2)
-    
+
     logging.info("Les données ont été annotées avec succès !")
     print("Les données ont été annotées avec succès !")
-        
+
     # Fermez le système de journalisation
     logging.shutdown()

@@ -13,7 +13,18 @@ def test_valid_login():
     assert "token" in response.json
 
 
-def test_invalid_credentials():
+def test_invalid_username():
+    # Arrange
+    client = app.test_client()
+    data = {"username": "Oops!", "password": "password"}
+    # Act
+    response = client.post("/login", json=data)
+    # Assert
+    assert response.status_code == 401
+    assert "error" in response.json
+
+
+def test_invalid_password():
     # Arrange
     client = app.test_client()
     data = {"username": "jdoe", "password": "Oops!"}

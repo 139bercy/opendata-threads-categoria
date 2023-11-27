@@ -12,13 +12,12 @@ import base64
 from src.app.vues import vue1
 
 # Configuration de l'application Dash
-app = dash.Dash(
-    __name__, external_stylesheets=[dbc.themes.BOOTSTRAP, "static/assets/styles.css"]
-)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP, "static/assets/styles.css"])
 server = Flask(__name__)  # Utiliser Flask en tant que serveur principal
 
 # Charger les données depuis le fichier CSV
 df = pd.read_csv("data/raw/inference/predicted_data_model2.csv")
+
 
 # Définir la fonction pour générer le contenu du fichier CSV
 def generate_csv_data():
@@ -86,6 +85,7 @@ app.layout = html.Div(
     style={"margin": "20px"},
 )
 
+
 # Définir les routes pour chaque vue
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def display_page(pathname):
@@ -115,9 +115,7 @@ def download_data(submit_n_clicks):
     file_name = "predicted_data_model2.csv"
 
     # Message de téléchargement avec lien
-    download_link = html.A(
-        "Télécharger le fichier", href=f"/download/{file_name}", download=file_name
-    )
+    download_link = html.A("Télécharger le fichier", href=f"/download/{file_name}", download=file_name)
 
     return True, download_link, None
 

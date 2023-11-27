@@ -1,13 +1,10 @@
-import pytest
-
 from uuid import UUID
 
+import pytest
+
+from src.auth.exceptions import LoginError
 from src.auth.infrastructure import AccountPostgresqlRepository
-from src.auth.usecases import (
-    retrieve_user,
-    login,
-    LoginError,
-)
+from src.auth.usecases import retrieve_user, login
 
 
 def test_retrieve_postgres_user():

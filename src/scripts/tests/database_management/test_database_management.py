@@ -1,8 +1,10 @@
 import pytest
 
 import sys
-sys.path.append('../../')
+
+sys.path.append("../../")
 from database_management.data_to_database import format_datetime_mysql
+
 
 # Test de la fonction format_datetime_mysql
 def test_format_datetime_mysql():

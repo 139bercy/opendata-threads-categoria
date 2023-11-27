@@ -28,37 +28,25 @@ jdd_counts = df["slug"].value_counts()
 jdd_counts = jdd_counts.sort_values(ascending=False)
 
 # Calculer les JDD avec le plus grand nombre de réutilisations
-jdd_reuses = (
-    df.groupby("title_dataset")["nb_reuses"].first().sort_values(ascending=False)
-)
+jdd_reuses = df.groupby("title_dataset")["nb_reuses"].first().sort_values(ascending=False)
 
 # Calculer les JDD les plus consultés
 jdd_views = df.groupby("title_dataset")["nb_views"].first().sort_values(ascending=False)
 
 # Calculer les JDD avec le plus de followers
-jdd_followers = (
-    df.groupby("title_dataset")["nb_followers"].first().sort_values(ascending=False)
-)
+jdd_followers = df.groupby("title_dataset")["nb_followers"].first().sort_values(ascending=False)
 
 # Calculer le nombre de discussions ouvertes et fermées
-discussions_closes = pd.to_datetime(
-    df["closed_discussion"], format="%d/%m/%Y", errors="coerce"
-).count()
+discussions_closes = pd.to_datetime(df["closed_discussion"], format="%d/%m/%Y", errors="coerce").count()
 discussions_ouvertes = total_rows - discussions_closes
 
 # Calcul du temps de réponse d'un commentaire entre l'ouverture de la discussion et sa fermeture
-df["created"] = pd.to_datetime(
-    df["created_discussion"], format="%d/%m/%Y", errors="coerce"
-)
-df["closed"] = pd.to_datetime(
-    df["closed_discussion"], format="%d/%m/%Y", errors="coerce"
-)
+df["created"] = pd.to_datetime(df["created_discussion"], format="%d/%m/%Y", errors="coerce")
+df["closed"] = pd.to_datetime(df["closed_discussion"], format="%d/%m/%Y", errors="coerce")
 df["time_response"] = df["closed"] - df["created"]
 
 # Calculer la moyenne des temps de réponse par annotation
-mean_time_response = (
-    df.groupby("title_discussion")["time_response"].mean().sort_values(ascending=False)
-)
+mean_time_response = df.groupby("title_discussion")["time_response"].mean().sort_values(ascending=False)
 
 # Calculer le nombre total de discussions
 total_discussions = total_rows
@@ -67,9 +55,7 @@ total_discussions = total_rows
 mean_time_response_total = df["time_response"].mean()
 
 # Calculer la médiane des temps de réponse par annotation
-median_time_response = (
-    df.groupby("title_discussion")["time_response"].median().sort_values(ascending=False)
-)
+median_time_response = df.groupby("title_discussion")["time_response"].median().sort_values(ascending=False)
 
 # Calculer le temps de réponse moyen total
 median_time_response_total = df["time_response"].median()
@@ -132,9 +118,7 @@ def generate_sunburst(filtered_data):
     # Centrer la légende
     title_font = {"size": 30, "color": "black", "family": "Arial"}
 
-    fig.update_traces(
-        textinfo="label+value", insidetextfont={"size": 20}, hovertemplate=""
-    )
+    fig.update_traces(textinfo="label+value", insidetextfont={"size": 20}, hovertemplate="")
 
     fig.update_layout(margin=dict(t=80, l=0, r=10, b=10))
     fig.update_layout(
@@ -195,20 +179,13 @@ def layout():
     # Création d'une division pour les filtres, le calendrier et la chronologie
     filters_div = html.Div(
         [
-            html.Label(
-                "Filtrer par catégorie :"
-            ),  # Filtre interactif pour la catégorie (labels)
+            html.Label("Filtrer par catégorie :"),  # Filtre interactif pour la catégorie (labels)
             dcc.Dropdown(
                 id="category-filter",
-                options=[
-                    {"label": label, "value": label}
-                    for label in df["predictions_motifs_label"].unique()
-                ],
+                options=[{"label": label, "value": label} for label in df["predictions_motifs_label"].unique()],
                 multi=True,
             ),
-            html.Label(
-                "Sélectionnez une plage de dates :"
-            ),  # Sélecteur de plage de dates de style calendrier
+            html.Label("Sélectionnez une plage de dates :"),  # Sélecteur de plage de dates de style calendrier
             dcc.DatePickerRange(
                 id="date-range-picker",
                 start_date=df["created_discussion"].min(),
@@ -232,14 +209,12 @@ def layout():
     treemap_fig = generate_treemap(df)
 
     # Ajouter un nouvel élément Div pour le deuxième graphique (sunburst)
-    sunburst_div = html.Div(
-        [html.Hr(), dcc.Graph(id="sunburst-graph", figure=generate_sunburst(df))]
-    )
+    sunburst_div = html.Div([html.Hr(), dcc.Graph(id="sunburst-graph", figure=generate_sunburst(df))])
 
     bar_chart_div = generate_bar_chart(jdd_counts)
 
     pie_chart_div = generate_pie_chart(discussions_ouvertes, discussions_closes)
-    
+
     # Ajout des KPIs
     kpi_div = html.Div(
         [
@@ -274,27 +249,27 @@ def layout():
             # Ajouter le graphique de la jauge
             dcc.Graph(
                 id="gauge-discussions-closes",
-                figure=go.Figure(go.Indicator(
-                    mode="gauge+number",
-                    value=discussions_closes,
-                    title={'text': "Discussions Closes"},
-                    domain={'x': [0, 1], 'y': [0, 1]},
-                    gauge={
-                        'axis': {'range': [0, total_discussions], 'tickwidth': 1, 'tickcolor': "darkblue"},
-                        'bar': {'color': "darkgreen"},
-                        'bgcolor': "white",
-                        'borderwidth': 2,
-                        'bordercolor': "gray",
-                        'steps': [
-                            {'range': [0, total_discussions], 'color': 'lightgray'}
-                        ],
-                        'threshold': {
-                            'line': {'color': "red", 'width': 4},
-                            'thickness': 0.75,
-                            'value': discussions_closes
-                        }
-                    }
-                )),
+                figure=go.Figure(
+                    go.Indicator(
+                        mode="gauge+number",
+                        value=discussions_closes,
+                        title={"text": "Discussions Closes"},
+                        domain={"x": [0, 1], "y": [0, 1]},
+                        gauge={
+                            "axis": {"range": [0, total_discussions], "tickwidth": 1, "tickcolor": "darkblue"},
+                            "bar": {"color": "darkgreen"},
+                            "bgcolor": "white",
+                            "borderwidth": 2,
+                            "bordercolor": "gray",
+                            "steps": [{"range": [0, total_discussions], "color": "lightgray"}],
+                            "threshold": {
+                                "line": {"color": "red", "width": 4},
+                                "thickness": 0.75,
+                                "value": discussions_closes,
+                            },
+                        },
+                    )
+                ),
                 className="kpi-card",
             ),
         ],
@@ -304,9 +279,7 @@ def layout():
     return html.Div(
         [
             filters_div,  # Ajout de la division des filtres au-dessus de votre graphique
-            dcc.Graph(
-                id="treemap-graph", figure=treemap_fig, className="responsive-graph"
-            ),  # Graphique de la treemap
+            dcc.Graph(id="treemap-graph", figure=treemap_fig, className="responsive-graph"),  # Graphique de la treemap
             sunburst_div,
             bar_chart_div,
             pie_chart_div,
@@ -331,9 +304,7 @@ def update_sunburst_chart(selected_categories, start_date, end_date, timeline_va
         end_date = pd.to_datetime(end_date)
 
         start_month_index, end_month_index = timeline_value
-        selected_start_month = pd.Timestamp(
-            f"{start_month_index + 1}/1/{start_date.year}"
-        )
+        selected_start_month = pd.Timestamp(f"{start_month_index + 1}/1/{start_date.year}")
         selected_end_month = pd.Timestamp(f"{end_month_index + 1}/1/{end_date.year}")
 
         filtered_df = df[
