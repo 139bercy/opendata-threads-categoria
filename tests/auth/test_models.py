@@ -5,7 +5,7 @@ import pytest
 from src.auth.exceptions import LoginError, UsernameError
 from src.auth.infrastructure import AccountInMemoryRepository
 from src.auth.models import hash_password
-from src.auth.usecases import retrieve_user, login
+from src.auth.usecases import is_logged_in, retrieve_user, login
 
 
 def test_retrieve_user():
@@ -79,8 +79,12 @@ def test_credentials_not_set():
 
 
 def test_is_logged_in_ok():
-    pass
+    repository = AccountInMemoryRepository()
+    result = is_logged_in(repository=repository, username="jsmith")
+    assert result is True
 
 
 def test_is_logged_in_ko():
-    pass
+    repository = AccountInMemoryRepository()
+    result = is_logged_in(repository=repository, username="jdoe")
+    assert result is False

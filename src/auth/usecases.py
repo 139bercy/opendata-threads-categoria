@@ -9,6 +9,13 @@ def retrieve_user(repository, username: str):
     return result
 
 
+def is_logged_in(repository, username: str):
+    result = repository.get_by_username(username=username)
+    if result["token"] is not None:
+        return True
+    return False
+
+
 def login(repository, username: str, password: str):
     account = repository.get_by_username(username=username)
     check_username(account=account, username=username, password=password)
