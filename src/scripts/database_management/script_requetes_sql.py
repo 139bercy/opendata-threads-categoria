@@ -1,10 +1,9 @@
-import mysql.connector
-import os
 import json
 import logging
-import pandas as pd
-
 import sys
+
+import mysql.connector
+import pandas as pd
 
 sys.path.append("..")
 from logging_config import configure_logging

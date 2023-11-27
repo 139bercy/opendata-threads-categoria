@@ -1,10 +1,9 @@
-import re
-import pandas as pd
-import nltk
-from nltk.corpus import stopwords
 import logging
-from datetime import datetime
 import os
+import re
+
+import nltk
+import pandas as pd
 
 nltk.download("stopwords")
 

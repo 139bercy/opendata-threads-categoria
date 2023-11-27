@@ -1,7 +1,7 @@
-import os
-import pytest
 from datetime import datetime, timezone
+
 import pandas as pd
+import pytest
 from data_acquisition import (
     fetch_discussion_data,
     parse_datetime,

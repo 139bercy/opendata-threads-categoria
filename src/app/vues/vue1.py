@@ -1,14 +1,17 @@
 # vue1.py
 
+import calendar
+import locale
+
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+
 # Import des bibliothèques nécessaires
 from dash import html, dcc
 from dash.dependencies import Input, Output
-import plotly.express as px
-import pandas as pd
-import locale
+
 from src.app.app import app
-import calendar
-import plotly.graph_objects as go
 
 # Configuration de la localisation en français
 locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")

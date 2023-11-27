@@ -1,12 +1,13 @@
-from flask import Flask, send_file
+import base64
+import io
+
 import dash
 import dash_bootstrap_components as dbc
-from dash.dependencies import Input, Output
-from dash import html, dcc
 import pandas as pd
+from dash import html, dcc
+from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
-import io
-import base64
+from flask import Flask, send_file
 
 # Importer les vues
 from src.app.vues import vue1

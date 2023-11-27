@@ -1,7 +1,5 @@
-from dash import html, dcc
 import dash_bootstrap_components as dbc
-from dash.dependencies import Input, Output, State
-
+from dash import html, dcc
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 

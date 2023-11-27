@@ -1,6 +1,7 @@
-from src.auth.models import hash_password
-from src.auth.exceptions import LoginError, UsernameError
 from uuid import uuid4
+
+from src.auth.exceptions import LoginError, UsernameError
+from src.auth.models import hash_password
 
 
 def retrieve_user(repository, username: str):

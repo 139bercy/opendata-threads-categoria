@@ -1,4 +1,5 @@
 import unittest
+
 from data_extraction import fetch_data_from_url, load_existing_data, process_data, save_data_to_csv
 
 

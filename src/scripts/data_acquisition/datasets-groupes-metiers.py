@@ -1,6 +1,7 @@
-import requests
-import json
 import csv
+import json
+
+import requests
 
 
 # Récupérer le host, le nom d'utilisateur et le mot de passe à partir des variables d'environnement situées dans le fichier de conf.

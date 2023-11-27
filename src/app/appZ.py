@@ -1,11 +1,7 @@
-import pandas as pd
-import logging
-import os
-from datetime import datetime
 import dash
-from dash import dcc, html
-import plotly.express as px
+import pandas as pd
 import plotly.graph_objects as go  # Importer la bibliothèque plotly.graph_objects
+from dash import dcc, html
 
 # Charger le fichier CSV généré par le script d'inférence
 input_csv_file = "../../data/raw/inference/predicted_data_model2.csv"

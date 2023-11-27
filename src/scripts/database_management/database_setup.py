@@ -1,10 +1,8 @@
-import mysql.connector
-import logging
-import os
 import json
-from datetime import datetime
-
+import logging
 import sys
+
+import mysql.connector
 
 sys.path.append("..")
 from logging_config import configure_logging

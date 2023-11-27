@@ -1,15 +1,14 @@
+import logging
+import os
+import sys
 import zipfile
+
 import pandas as pd
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
-import logging
-import re
-from datetime import datetime
-import os
+
 import categories
 from preprocess import preprocess_data, preprocess_data2
-
-import sys
 
 sys.path.append("..")
 from logging_config import configure_logging

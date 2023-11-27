@@ -1,7 +1,7 @@
-import pytest
-import pandas as pd
-import sys
 import os
+import sys
+
+import pandas as pd
 
 # Ajoutez le chemin du répertoire contenant preprocess.py au chemin de recherche
 preprocess_module_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../inference/preprocess.py"))

@@ -1,9 +1,8 @@
-import pandas as pd
 import logging
-from datetime import datetime
 import os
-
 import sys
+
+import pandas as pd
 
 sys.path.append("..")
 from logging_config import configure_logging

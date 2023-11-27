@@ -1,11 +1,11 @@
-import requests
-import pandas as pd
 import logging
-from datetime import datetime
 import os
-import pytz
-
 import sys
+from datetime import datetime
+
+import pandas as pd
+import pytz
+import requests
 
 sys.path.append("..")
 from logging_config import configure_logging
