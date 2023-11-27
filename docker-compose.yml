@@ -3,7 +3,6 @@ version: '3.5'
 services:
   db:
     container_name: app-db
-    hostname: host
     image: postgres
     healthcheck:
       test: ['CMD', 'pg_isready', '-q', '-d', 'postgres', '-U', 'postgres']
