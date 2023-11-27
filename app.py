@@ -1,9 +1,21 @@
-from flask import Flask, render_template, request
+import os
+
 import dash
 import dash_bootstrap_components as dbc
+from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output
-from dash import dcc
+from flask import Flask, render_template, request, jsonify
+
+from src.auth.infrastructure import (
+    AccountInMemoryRepository,
+    AccountPostgresqlRepository,
+)
+from src.auth.usecases import login as user_login, LoginError
+
+repository = AccountPostgresqlRepository()
+if os.environ["APP_ENV"] == "test":
+    repository = AccountInMemoryRepository()
 
 # from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 # from auth import Utilisateur, LoginForm, InscriptionForm
@@ -165,6 +177,19 @@ def traiter_formulaire():
 
         # Redirigez l'utilisateur vers une nouvelle page ou faites autre chose selon vos besoins
         return render_template("formulaire_traite.html", nom=nom, prenom=prenom)
+
+
+@app.server.route("/login", methods=["POST"])
+def login():
+    data = request.get_json()
+    try:
+        user_login(
+            repository=repository, username=data["username"], password=data["password"]
+        )
+    except LoginError:
+        return (jsonify({"error": "Invalid credentials"}), 401)
+    token = "mock_token"
+    return jsonify({"message": "Login successful", "token": token}), 200
 
 
 # Callback pour afficher le contenu de la vue en fonction de l'URL
