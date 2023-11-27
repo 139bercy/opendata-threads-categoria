@@ -44,9 +44,9 @@ class PostgresClient:
         self.conn.close()
 
 
-dbname = os.environ["DB_NAME"]
-user = os.environ["DB_USER"]
-password = os.environ["DB_PASSWORD"]
-host = os.environ["DB_HOST"]
+DB_NAME = os.environ["DB_NAME"]
+DB_HOST = os.environ["DB_HOST"]
+DB_USER = os.environ["DB_USER"]
+DB_PASSWORD = os.environ["DB_PASSWORD"]
 
-postgres_client = PostgresClient(dbname, host, user, password)
+postgres_client = PostgresClient(DB_NAME, DB_HOST, DB_USER, DB_PASSWORD)
