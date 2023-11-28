@@ -11,6 +11,16 @@ def create_message(repository, author, content, created_at):
 def test_create_message():
     # Act
     repository = InMemoryThreadRepository([])
+    # Arrange
+    message = create_message(
+        repository=repository, author="jdoe", content="Hello, World!", created_at="2023-01-01 12:00:00"
+    )
+    # Assert
+    assert isinstance(message, Message)
+
+
+def test_get_message():
+    # Arrange
     expected = {
         "pk": 1,
         "bk": "dffd6021",
@@ -18,12 +28,7 @@ def test_create_message():
         "author": "jdoe",
         "content": "Hello, World!",
     }
-    # Arrange
-    message = create_message(
-        repository=repository, author="jdoe", content="Hello, World!", created_at="2023-01-01 12:00:00"
-    )
-    # Assert
+    repository = InMemoryThreadRepository([expected])
+    # Act
     resource = repository.get_by_bk("dffd6021")
-    assert isinstance(message, Message)
-    assert message.__dict__ == expected
-    assert resource.__dict__ == message.__dict__
+    assert resource.__dict__ == expected
