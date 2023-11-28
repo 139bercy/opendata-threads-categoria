@@ -13,14 +13,12 @@ host = os.environ["DB_HOST"]
 postgres_client = PostgresClient(dbname, host, user, password)
 
 query = """
-insert into "account" (uuid, username, first_name, last_name, email, password)
+insert into "account" (uuid, username, email, password)
 values ('cf40ebed-85d6-4a85-930c-b6a9ea18a899',
         'jdoe',
-        'john',
-        'doe',
         'john.doe@example.com',
         '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8'
-        );
+);
 """
 
 postgres_client.add_one(query=query)

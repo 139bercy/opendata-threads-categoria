@@ -1,14 +1,23 @@
 import hashlib
+from uuid import UUID
 
 
 class Account:
-    def __init__(self, username: str):
+    def __init__(
+        self,
+        pk: int,
+        uuid: UUID,
+        username: str,
+        email: str,
+        password: str,
+        token: str,
+    ):
+        self.pk = pk
+        self.uuid = uuid
         self.username = username
-
-    @classmethod
-    def create(cls, username: str):
-        instance = Account(username)
-        return instance
+        self.email = email
+        self.password = password
+        self.token = token
 
 
 def hash_password(chain):

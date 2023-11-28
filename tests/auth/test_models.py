@@ -5,16 +5,16 @@ import pytest
 from src.auth.exceptions import LoginError, UsernameError
 from src.auth.infrastructure import AccountInMemoryRepository
 from src.auth.models import hash_password
-from src.auth.usecases import is_logged_in, retrieve_user, login
+from src.auth.usecases import is_logged_in, retrieve_account, login
 
 
 def test_retrieve_user():
     # Arrange
     repository = AccountInMemoryRepository()
     # Act
-    result = retrieve_user(repository=repository, username="jdoe")
+    result = retrieve_account(repository=repository, username="jdoe")
     # Assert
-    assert result["username"] == "jdoe"
+    assert result.username == "jdoe"
 
 
 def test_hash_password():
@@ -35,7 +35,7 @@ def test_valid_credentials():
     # Assert
     resource = repository.get_by_username("jdoe")
     assert type(result) == UUID
-    assert resource["token"] == result
+    assert resource.token == result
 
 
 def test_invalid_username():

@@ -1,17 +1,17 @@
 from uuid import uuid4
 
 from src.auth.exceptions import LoginError, UsernameError
-from src.auth.models import hash_password
+from src.auth.models import hash_password, Account
 
 
-def retrieve_user(repository, username: str):
-    result = repository.get_by_username(username=username)
-    return result
+def retrieve_account(repository, username: str):
+    account = repository.get_by_username(username=username)
+    return account
 
 
 def is_logged_in(repository, username: str):
     result = repository.get_by_username(username=username)
-    if result["token"] is not None:
+    if result.token is not None:
         return True
     return False
 
@@ -27,15 +27,15 @@ def login(repository, username: str, password: str):
 
 def check_username(account, username, password):
     try:
-        assert account is not None and account["username"] == username and password is not None
+        assert account is not None and account.username == username and password is not None
     except AssertionError:
         raise UsernameError
 
 
-def check_password(account: dict, password: str):
+def check_password(account: Account, password: str):
     try:
         hashed = hash_password(password)
-        assert account["password"] == hashed
+        assert account.password == hashed
         return True
     except AssertionError:
         raise LoginError

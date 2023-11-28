@@ -4,12 +4,10 @@
 drop table if exists "account";
 create table "account"
 (
-    id            serial,
+    pk            serial,
     uuid          uuid unique not null,
     creation_date timestamp with time zone default current_timestamp,
     username      text not null,
-    first_name    text not null,
-    last_name     text not null,
     email         text not null,
     password      text not null,
     token         uuid
