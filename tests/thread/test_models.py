@@ -10,8 +10,9 @@ def create_message(repository, author, content, created_at):
 
 def test_create_message():
     # Act
-    repository = InMemoryThreadRepository()
+    repository = InMemoryThreadRepository([])
     expected = {
+        "pk": 1,
         "bk": "dffd6021",
         "created_at": "2023-01-01 12:00:00",
         "author": "jdoe",

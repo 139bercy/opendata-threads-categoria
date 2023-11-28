@@ -2,15 +2,17 @@ import hashlib
 
 
 class Message:
-    def __init__(self, author: str, content: str, created_at: str, bk: str = None):
+    def __init__(self, bk: str, author: str, content: str, created_at: str, pk: int = None):
+        self.pk = pk
         self.created_at = created_at
         self.author = author
         self.content = content
-        self.bk = bk or get_key(self.content)
+        self.bk = bk
 
     @classmethod
     def create(cls, author: str, content: str, created_at: str):
-        instance = cls(author=author, content=content, created_at=created_at)
+        bk = get_key(content)
+        instance = cls(bk=bk, author=author, content=content, created_at=created_at)
         return instance
 
     def __repr__(self):
