@@ -1,7 +1,8 @@
 from uuid import uuid4
 
 from src.auth.exceptions import LoginError, UsernameError
-from src.auth.models import hash_password, Account
+from src.auth.models import Account
+from src.common import sha256_hash_string
 
 
 def retrieve_account(repository, username: str):
@@ -31,7 +32,7 @@ def check_username(account: Account, username: str, password: str):
 
 def check_password(account: Account, password: str):
     try:
-        hashed = hash_password(password)
+        hashed = sha256_hash_string(password)
         assert account.password == hashed
         return True
     except AssertionError:

@@ -4,8 +4,8 @@ import pytest
 
 from src.auth.exceptions import LoginError, UsernameError
 from src.auth.infrastructure import AccountInMemoryRepository
-from src.auth.models import hash_password
 from src.auth.usecases import is_logged_in, retrieve_account, login
+from src.common import sha256_hash_string
 
 
 def test_retrieve_user():
@@ -22,7 +22,7 @@ def test_hash_password():
     password = "password"
     hashed = "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
     # Act
-    result = hash_password(password)
+    result = sha256_hash_string(password)
     # Assert
     assert result == hashed
 

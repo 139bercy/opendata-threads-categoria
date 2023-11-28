@@ -26,9 +26,3 @@ class Account:
         if self.token is not None:
             return True
         return False
-
-
-def hash_password(chain):
-    sha256_hash = hashlib.sha256()
-    sha256_hash.update(chain.encode("utf-8"))
-    return sha256_hash.hexdigest()
