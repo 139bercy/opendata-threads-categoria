@@ -1,12 +1,11 @@
 import os
 
-import dash
 import dash_bootstrap_components as dbc
-from dash import dcc
-from dash import html
+from dash import Dash, dcc, html
 from dash.dependencies import Input, Output
 from flask import Flask, render_template, request, jsonify, make_response
 
+from src.app.vues import vue1, vue2
 from src.auth.exceptions import LoginError, UsernameError
 from src.auth.infrastructure import AccountInMemoryRepository, AccountPostgresqlRepository
 from src.auth.usecases import login as user_login
@@ -14,14 +13,6 @@ from src.auth.usecases import login as user_login
 repository = AccountPostgresqlRepository()
 if os.environ["APP_ENV"] == "test":
     repository = AccountInMemoryRepository()
-
-# from flask_login import LoginManager, login_required, login_user, logout_user, current_user
-# from auth import Utilisateur, LoginForm, InscriptionForm
-# from flask_sqlalchemy import SQLAlchemy
-# from werkzeug.security import generate_password_hash, check_password_hash
-
-# from auth.auth import app as auth_app  # Importez l'application d'authentification
-from src.app.vues import vue1, vue2
 
 # Importer la fonction de mise en page depuis vue1
 
@@ -41,13 +32,9 @@ db = SQLAlchemy(server)
 login_manager = LoginManager(server)
 login_manager.login_view = 'login'"""
 
-# Initialiser l'application Dash avec Bootstrap
-app = dash.Dash(__name__, server=server, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = Dash(__name__, server=server, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app.external_stylesheets = [dbc.themes.BOOTSTRAP, "static/assets/style.css"]
 
-# Configurez la page de connexion pour être affichée si un utilisateur non authentifié tente d'accéder à une page protégée
-# login_manager.login_view = 'login'
-
-# En-tête de l'application
 header = html.Div(
     [
         # Logo de l'entreprise ou de l'application (colonne 1)
@@ -110,54 +97,8 @@ app.layout = html.Div(
     style={"margin": "20px"},
 )
 
-# Intégrer le fichier CSS
-app.external_stylesheets = [dbc.themes.BOOTSTRAP, "static/assets/style.css"]
 
-"""
-@login_manager.user_loader
-def load_user(user_id):
-    return Utilisateur.query.get(int(user_id))
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        utilisateur = Utilisateur.query.filter_by(nom=form.nom.data, prenom=form.prenom.data).first()
-        if utilisateur and check_password_hash(utilisateur.mot_de_passe, form.mot_de_passe.data):
-            login_user(utilisateur)
-            flash('Connexion réussie.', 'success')
-            return redirect(url_for('accueil'))
-        else:
-            flash('Échec de la connexion. Veuillez vérifier vos informations.', 'danger')
-    return render_template('login.html', form=form)
-
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('accueil'))
-
-@app.route('/inscription', methods=['GET', 'POST'])
-def inscription():
-    form = InscriptionForm()
-    if form.validate_on_submit():
-        if form.mot_de_passe.data == form.confirmer_mot_de_passe.data:
-            mot_de_passe_hashe = generate_password_hash(form.mot_de_passe.data, method='sha256')
-            nouvel_utilisateur = Utilisateur(nom=form.nom.data, prenom=form.prenom.data, mot_de_passe=mot_de_passe_hashe)
-            db.session.add(nouvel_utilisateur)
-            db.session.commit()
-            flash('Inscription réussie. Vous pouvez maintenant vous connecter.', 'success')
-            return redirect(url_for('login'))
-        else:
-            flash('Les mots de passe ne correspondent pas.', 'danger')
-    return render_template('inscription.html', form=form)
-
-@app.route('/accueil')
-@login_required
-def accueil():
-    return f'Page d\'accueil. Bonjour, {current_user.prenom} {current_user.nom}!'
-
-"""
+# Routes
 
 
 @app.server.route("/form_traite", methods=["POST"])
