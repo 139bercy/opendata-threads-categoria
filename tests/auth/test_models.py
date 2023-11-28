@@ -3,14 +3,14 @@ from uuid import UUID
 import pytest
 
 from src.auth.exceptions import LoginError, UsernameError
-from src.auth.infrastructure import AccountInMemoryRepository
+from src.auth.infrastructure import InMemoryAccountRepository
 from src.auth.usecases import is_logged_in, retrieve_account, login
 from src.common.utils import sha256_hash_string
 
 
 def test_retrieve_user():
     # Arrange
-    repository = AccountInMemoryRepository()
+    repository = InMemoryAccountRepository()
     # Act
     result = retrieve_account(repository=repository, username="jdoe")
     # Assert
@@ -29,18 +29,18 @@ def test_hash_password():
 
 def test_valid_credentials():
     # Arrange
-    repository = AccountInMemoryRepository()
+    repository = InMemoryAccountRepository()
     # Act
     result = login(repository=repository, username="jdoe", password="password")
     # Assert
     resource = repository.get_by_username("jdoe")
-    assert type(result) == UUID
+    assert type(result) is UUID
     assert resource.token == result
 
 
 def test_invalid_username():
     # Arrange
-    repository = AccountInMemoryRepository()
+    repository = InMemoryAccountRepository()
     username = "Oops!"
     password = "password"
     # Act & Assert
@@ -50,7 +50,7 @@ def test_invalid_username():
 
 def test_invalid_password():
     # Arrange
-    repository = AccountInMemoryRepository()
+    repository = InMemoryAccountRepository()
     username = "jdoe"
     password = "Oops!"
     # Act & Assert
@@ -60,7 +60,7 @@ def test_invalid_password():
 
 def test_empty_credentials():
     # Arrange
-    repository = AccountInMemoryRepository()
+    repository = InMemoryAccountRepository()
     username = ""
     password = ""
     # Act & Assert
@@ -70,7 +70,7 @@ def test_empty_credentials():
 
 def test_credentials_not_set():
     # Arrange
-    repository = AccountInMemoryRepository()
+    repository = InMemoryAccountRepository()
     username = None
     password = None
     # Act & Assert
@@ -79,12 +79,12 @@ def test_credentials_not_set():
 
 
 def test_is_logged_in_ok():
-    repository = AccountInMemoryRepository()
+    repository = InMemoryAccountRepository()
     result = is_logged_in(repository=repository, username="jsmith")
     assert result is True
 
 
 def test_is_logged_in_ko():
-    repository = AccountInMemoryRepository()
+    repository = InMemoryAccountRepository()
     result = is_logged_in(repository=repository, username="jdoe")
     assert result is False

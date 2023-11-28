@@ -1,10 +1,11 @@
 from uuid import UUID
 
+from src.auth.gateways import AbstractAccountRepository
 from src.auth.models import Account
 from src.config import postgres_client
 
 
-class AccountInMemoryRepository:
+class InMemoryAccountRepository(AbstractAccountRepository):
     def __init__(self):
         self.db = [
             {
@@ -32,10 +33,9 @@ class AccountInMemoryRepository:
         for i, account in enumerate(self.db):
             if account["username"] == username:
                 account["token"] = token
-                # self.db[i] = account
 
 
-class AccountPostgresqlRepository:
+class PostgresqlAccountRepository(AbstractAccountRepository):
     client = postgres_client
 
     def get_by_username(self, username: str):

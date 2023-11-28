@@ -7,12 +7,12 @@ from flask import Flask, render_template, request, jsonify, make_response
 
 from src.app.vues import vue1, vue2
 from src.auth.exceptions import LoginError, UsernameError
-from src.auth.infrastructure import AccountInMemoryRepository, AccountPostgresqlRepository
+from src.auth.infrastructure import InMemoryAccountRepository, PostgresqlAccountRepository
 from src.auth.usecases import login as user_login
 
-repository = AccountPostgresqlRepository()
+repository = PostgresqlAccountRepository()
 if os.environ["APP_ENV"] == "test":
-    repository = AccountInMemoryRepository()
+    repository = InMemoryAccountRepository()
 
 # Initialiser le serveur Flask
 server = Flask(__name__, template_folder="src/app/templates")
