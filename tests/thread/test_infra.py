@@ -16,7 +16,7 @@ def test_postgres_create_message(db_fixture):
     )
     # Assert
     result = postgres_client.fetch_one("SELECT * FROM message;")
-    assert result["bk"] == message.bk
+    assert result["sk"] == message.sk
 
 
 def test_postgres_message_escape_specials_chars(db_fixture):
@@ -32,4 +32,4 @@ def test_postgres_message_escape_specials_chars(db_fixture):
     )
     # Assert
     result = postgres_client.fetch_one("SELECT * FROM message;")
-    assert result["bk"] == message.bk
+    assert result["sk"] == message.sk

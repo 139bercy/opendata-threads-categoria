@@ -8,14 +8,14 @@ class Account:
     def __init__(
         self,
         pk: int,
-        uuid: UUID,
+        sk: UUID,
         username: str,
         email: str,
         password: str,
         token: str,
     ):
         self.pk = pk
-        self.uuid = uuid
+        self.sk = sk
         self.username = username
         self.email = email
         self.password = password

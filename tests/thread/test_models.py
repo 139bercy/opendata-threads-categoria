@@ -16,14 +16,14 @@ def test_create_message():
     )
     # Assert
     assert isinstance(message, Message)
-    assert message.bk == "78d750d4"
+    assert message.sk == "78d750d4"
 
 
 def test_get_message():
     # Arrange
     expected = {
         "pk": 1,
-        "bk": "78d750d4",
+        "sk": "78d750d4",
         "thread_id": "7665a9eacdd3c3173bb2d30c",
         "posted_on": "2023-01-01 12:00:00",
         "author": "jdoe",

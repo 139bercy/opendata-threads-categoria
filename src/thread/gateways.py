@@ -5,7 +5,7 @@ from src.thread.models import Message
 
 class AbstractThreadRepository(abc.ABC):
     @abc.abstractmethod
-    def get_by_bk(self, bk: str) -> Message:
+    def get_by_bk(self, sk: str) -> Message:
         pass
 
     @abc.abstractmethod

@@ -1,4 +1,4 @@
-insert into "account" (uuid, username, email, password)
+insert into "account" (sk, username, email, password)
 values ('cf40ebed-85d6-4a85-930c-b6a9ea18a899',
         'jdoe',
         'john.doe@example.com',

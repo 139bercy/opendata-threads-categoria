@@ -9,7 +9,7 @@ class AccountInMemoryRepository:
         self.db = [
             {
                 "pk": 1,
-                "uuid": UUID("fe06e149-0aeb-44a3-a0e5-e8f9dcbbfe79"),
+                "sk": UUID("fe06e149-0aeb-44a3-a0e5-e8f9dcbbfe79"),
                 "username": "jdoe",
                 "email": "john.doe@example.com",
                 "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
@@ -17,7 +17,7 @@ class AccountInMemoryRepository:
             },
             {
                 "pk": 2,
-                "uuid": UUID("03949324-f5f9-424b-9d96-852c0916ca22"),
+                "sk": UUID("03949324-f5f9-424b-9d96-852c0916ca22"),
                 "username": "jsmith",
                 "email": "john.smith@example.com",
                 "password": "5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8",
@@ -39,7 +39,9 @@ class AccountPostgresqlRepository:
     client = postgres_client
 
     def get_by_username(self, username: str):
-        query = f"""SELECT pk, uuid, username, email, password, token  FROM account acc WHERE acc.username = '{username}';"""
+        query = (
+            f"""SELECT pk, sk, username, email, password, token  FROM account acc WHERE acc.username = '{username}';"""
+        )
         data = self.client.fetch_one(query=query)
         return Account(**data)
 

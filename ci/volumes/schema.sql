@@ -5,11 +5,11 @@ drop table if exists "account";
 create table "account"
 (
     pk            serial,
-    uuid          uuid unique not null,
+    sk            uuid unique not null,
     creation_date timestamp with time zone default current_timestamp,
-    username      text not null,
-    email         text not null,
-    password      text not null,
+    username      text        not null,
+    email         text        not null,
+    password      text        not null,
     token         uuid
 );
 
@@ -17,12 +17,12 @@ drop table if exists "message";
 create table "message"
 (
     pk            serial,
-    creation_date timestamp with time zone default current_timestamp,
+    sk            text unique not null,
     thread_id     text,
-    bk            text unique not null,
-    posted_on    text not null,
-    author        text not null,
-    content       text not null
+    creation_date timestamp with time zone default current_timestamp,
+    posted_on     text        not null,
+    author        text        not null,
+    content       text        not null
 );
 
 -- Optionally, grant other privileges like SELECT, INSERT, UPDATE, DELETE, etc.
