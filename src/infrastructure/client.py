@@ -7,8 +7,12 @@ import psycopg2.extras
 dotenv.load_dotenv()
 
 
+class ResourceDoesNotExist(Exception):
+    pass
+
+
 class PostgresClient:
-    def __init__(self, dbname, host, user, password, port=5432):
+    def __init__(self, dbname, host, user, password, port):
         self.conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host, port=port)
         self.cursor = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
@@ -32,6 +36,8 @@ class PostgresClient:
 
     def fetch_one(self, query):
         result = self.execute(query)
+        if not result:
+            raise ResourceDoesNotExist
         return dict(result.fetchone())
 
     def fetch_all(self, table_name):
@@ -44,9 +50,10 @@ class PostgresClient:
         self.conn.close()
 
 
-DB_NAME = os.environ["DB_NAME"]
-DB_HOST = os.environ["DB_HOST"]
-DB_USER = os.environ["DB_USER"]
-DB_PASSWORD = os.environ["DB_PASSWORD"]
-
-postgres_client = PostgresClient(DB_NAME, DB_HOST, DB_USER, DB_PASSWORD)
+postgres_client = PostgresClient(
+    dbname=os.environ["DB_NAME"],
+    host=os.environ["DB_HOST"],
+    user=os.environ["DB_USER"],
+    port=os.environ["DB_PORT"],
+    password=os.environ["DB_PASSWORD"],
+)

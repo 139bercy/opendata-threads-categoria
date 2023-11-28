@@ -7,7 +7,7 @@ from src.auth.infrastructure import AccountPostgresqlRepository
 from src.auth.usecases import retrieve_account, login
 
 
-def test_retrieve_postgres_user():
+def test_retrieve_postgres_user(db_fixture):
     # Arrange
     repository = AccountPostgresqlRepository()
     # Act

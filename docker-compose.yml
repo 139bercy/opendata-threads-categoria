@@ -23,8 +23,22 @@ services:
       - postgres
     restart: always
 
+  db-test:
+    container_name: app-db-test
+    image: postgres
+    environment:
+      - POSTGRES_DB=app_db_test
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - ./ci/volumes:/docker-entrypoint-initdb.d/
+    ports:
+      - '5433:5432'
+    networks:
+      - postgres
+
   pgadmin:
-    container_name: bhub-discussia-pgadmin
+    container_name: app-pgadmin
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}

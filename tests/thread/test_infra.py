@@ -3,7 +3,7 @@ from src.thread.infrastructure import PostgresThreadRepository
 from tests.thread.test_models import create_message
 
 
-def test_create_message():
+def test_create_message(db_fixture):
     # Act
     repository = PostgresThreadRepository()
     # Arrange
