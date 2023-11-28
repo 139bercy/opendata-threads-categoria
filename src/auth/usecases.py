@@ -10,10 +10,8 @@ def retrieve_account(repository, username: str):
 
 
 def is_logged_in(repository, username: str):
-    result = repository.get_by_username(username=username)
-    if result.token is not None:
-        return True
-    return False
+    account = repository.get_by_username(username=username)
+    return account.is_logged_in
 
 
 def login(repository, username: str, password: str):
@@ -25,7 +23,7 @@ def login(repository, username: str, password: str):
     return False
 
 
-def check_username(account, username, password):
+def check_username(account: Account, username: str, password: str):
     try:
         assert account is not None and account.username == username and password is not None
     except AssertionError:
