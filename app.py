@@ -14,23 +14,10 @@ repository = AccountPostgresqlRepository()
 if os.environ["APP_ENV"] == "test":
     repository = AccountInMemoryRepository()
 
-# Importer la fonction de mise en page depuis vue1
-
-
-# Ajoutez le chemin du dossier auth au chemin de recherche du système
-# auth_path = Path(__file__).resolve().parents[2]  # Remplacez le nombre selon la structure de vos dossiers
-# sys.path.append(str(auth_path))
-
 # Initialiser le serveur Flask
 server = Flask(__name__, template_folder="src/app/templates")
 server.config["SECRET_KEY"] = "asma"
-server.config["WTF_CSRF_ENABLED"] = False  # Désactiver le jeton CSRF
-
-"""server.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///utilisateurs.db'
-server.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(server)
-login_manager = LoginManager(server)
-login_manager.login_view = 'login'"""
+server.config["WTF_CSRF_ENABLED"] = False
 
 app = Dash(__name__, server=server, external_stylesheets=[dbc.themes.BOOTSTRAP])
 app.external_stylesheets = [dbc.themes.BOOTSTRAP, "static/assets/style.css"]
