@@ -6,7 +6,7 @@ def test_valid_login():
     client = app.test_client()
     data = {"username": "jdoe", "password": "password"}
     # Act
-    response = client.post("/login", json=data)
+    response = client.post("/login", data=data)
     # Assert
     assert response.status_code == 200
     assert "message" in response.json
@@ -18,10 +18,10 @@ def test_invalid_username():
     client = app.test_client()
     data = {"username": "Oops!", "password": "password"}
     # Act
-    response = client.post("/login", json=data)
+    response = client.post("/login", data=data)
     # Assert
-    assert response.status_code == 401
-    assert "error" in response.json
+    assert response.status_code == 200
+    assert "Invalid credentials" in response.text
 
 
 def test_invalid_password():
@@ -31,5 +31,5 @@ def test_invalid_password():
     # Act
     response = client.post("/login", json=data)
     # Assert
-    assert response.status_code == 401
-    assert "error" in response.json
+    assert response.status_code == 200
+    assert "Invalid credentials" in response.text

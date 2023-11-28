@@ -5,7 +5,7 @@ import dash_bootstrap_components as dbc
 from dash import dcc
 from dash import html
 from dash.dependencies import Input, Output
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, make_response
 
 from src.auth.exceptions import LoginError, UsernameError
 from src.auth.infrastructure import AccountInMemoryRepository, AccountPostgresqlRepository
@@ -31,7 +31,7 @@ from src.app.vues import vue1, vue2
 # sys.path.append(str(auth_path))
 
 # Initialiser le serveur Flask
-server = Flask(__name__)
+server = Flask(__name__, template_folder="src/app/templates")
 server.config["SECRET_KEY"] = "asma"
 server.config["WTF_CSRF_ENABLED"] = False  # Désactiver le jeton CSRF
 
@@ -177,17 +177,19 @@ def traiter_formulaire():
         return render_template("formulaire_traite.html", nom=nom, prenom=prenom)
 
 
-@app.server.route("/login", methods=["POST"])
+@app.server.route("/login", methods=["GET", "POST"])
 def login():
-    data = request.get_json()
-    try:
-        user_login(repository=repository, username=data["username"], password=data["password"])
-    except UsernameError:
-        return (jsonify({"error": "Invalid credentials"}), 401)
-    except LoginError:
-        return (jsonify({"error": "Invalid credentials"}), 401)
-    token = "mock_token"
-    return jsonify({"message": "Login successful", "token": token}), 200
+    if request.method == "POST":
+        data = request.form.to_dict()
+        try:
+            session_token = user_login(repository=repository, username=data["username"], password=data["password"])
+            token = str(session_token)
+            response = make_response(jsonify({"message": "Login successful", "token": str(token)}), 200)
+            response.set_cookie("token", token)
+            return response
+        except (LoginError, UsernameError, KeyError):
+            return render_template("login.html", error="Invalid credentials")
+    return render_template("login.html", error=None)
 
 
 # Callback pour afficher le contenu de la vue en fonction de l'URL
