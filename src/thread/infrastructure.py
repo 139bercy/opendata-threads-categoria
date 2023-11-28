@@ -22,5 +22,5 @@ class PostgresThreadRepository(AbstractThreadRepository):
         pass
 
     def create(self, message: Message) -> None:
-        query = f"""INSERT INTO message(bk, author, content, created_at) VALUES ('{message.bk}', '{message.author}', '{message.content}', '{message.created_at}');"""
+        query = f"""INSERT INTO message(bk, thread_id, author, content, posted_on) VALUES ('{message.bk}', '{message.thread_id}','{message.author}', $${message.content}$$, '{message.posted_on}');"""
         postgres_client.add_one(query=query)

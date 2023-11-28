@@ -18,8 +18,9 @@ create table "message"
 (
     pk            serial,
     creation_date timestamp with time zone default current_timestamp,
+    thread_id     text,
     bk            text unique not null,
-    created_at    text not null,
+    posted_on    text not null,
     author        text not null,
     content       text not null
 );
