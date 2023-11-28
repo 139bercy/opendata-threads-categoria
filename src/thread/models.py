@@ -15,9 +15,6 @@ class Message:
         instance = cls(bk=bk, author=author, content=content, created_at=created_at)
         return instance
 
-    def __repr__(self):
-        return f"<Message: {self.bk}>"
-
 
 def sha256_hash_string(input_string):
     sha256_hash = hashlib.sha256()

@@ -20,7 +20,6 @@ def login(repository, username: str, password: str):
     is_authenticated = check_password(account=account, password=password)
     if is_authenticated:
         return update_account_with_token(repository=repository, username=username)
-    return False
 
 
 def check_username(account: Account, username: str, password: str):

@@ -7,3 +7,6 @@ down:
 
 db:
 	docker exec -it app-db /bin/bash
+
+coverage:
+	pytest --cov=. && coverage html
