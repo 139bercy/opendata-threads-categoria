@@ -1,4 +1,4 @@
-from src.common import sha256_hash_string
+from src.common.utils import sha256_hash_string
 
 
 class Message:

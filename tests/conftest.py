@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from src.infrastructure.client import postgres_client
+from src.config import postgres_client
 
 os.environ["APP_ENV"] = "test"
 os.environ["DB_NAME"] = "app_db_test"

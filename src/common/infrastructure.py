@@ -1,14 +1,7 @@
-import os
-
-import dotenv
 import psycopg2
 import psycopg2.extras
 
-dotenv.load_dotenv()
-
-
-class ResourceDoesNotExist(Exception):
-    pass
+from src.common.exceptions import ResourceDoesNotExist
 
 
 class PostgresClient:
@@ -48,12 +41,3 @@ class PostgresClient:
     def close_connection(self):
         self.cursor.close()
         self.conn.close()
-
-
-postgres_client = PostgresClient(
-    dbname=os.environ["DB_NAME"],
-    host=os.environ["DB_HOST"],
-    user=os.environ["DB_USER"],
-    port=os.environ["DB_PORT"],
-    password=os.environ["DB_PASSWORD"],
-)

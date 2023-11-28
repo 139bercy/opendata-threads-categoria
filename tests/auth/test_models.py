@@ -5,7 +5,7 @@ import pytest
 from src.auth.exceptions import LoginError, UsernameError
 from src.auth.infrastructure import AccountInMemoryRepository
 from src.auth.usecases import is_logged_in, retrieve_account, login
-from src.common import sha256_hash_string
+from src.common.utils import sha256_hash_string
 
 
 def test_retrieve_user():

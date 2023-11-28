@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from src.auth.exceptions import LoginError, UsernameError
 from src.auth.models import Account
-from src.common import sha256_hash_string
+from src.common.utils import sha256_hash_string
 
 
 def retrieve_account(repository, username: str):

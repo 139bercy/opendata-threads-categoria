@@ -1,7 +1,7 @@
 from uuid import UUID
 
 from src.auth.models import Account
-from src.infrastructure.client import postgres_client
+from src.config import postgres_client
 
 
 class AccountInMemoryRepository:

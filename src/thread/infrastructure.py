@@ -1,4 +1,4 @@
-from src.infrastructure.client import postgres_client
+from src.config import postgres_client
 from src.thread.gateways import AbstractThreadRepository
 from src.thread.models import Message
 
