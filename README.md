@@ -70,6 +70,12 @@ projet_discussions/
 └── requirements.txt                  # Liste des dépendances Python nécessaires
 ```
 
+## Installation
+
+```
+$ make install
+```
+
 ## Instructions d'Utilisation
 
 - Installation des Dépendances : Exécuter pip install -r requirements.txt pour installer les librairies requises.
@@ -87,4 +93,10 @@ Pour lancer le front-end, d'un environnement virtuel :
 
 ```
 $ python app.py
+```
+
+Pour interagir en lignes de commande :
+
+```
+$ cli
 ```

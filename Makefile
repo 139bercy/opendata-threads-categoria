@@ -1,3 +1,7 @@
+install:
+	pip install -r requirements.txt
+	pip install -e .
+
 # Docker compose
 up:
 	docker compose up --build -d
