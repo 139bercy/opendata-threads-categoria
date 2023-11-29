@@ -6,23 +6,25 @@
         <title>My Dashboard</title>
         <!-- Liens vers les fichiers CSS -->
         <link rel="stylesheet" href="/assets/style.css">
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <!-- Ajoutez un en-tête si nécessaire -->
-            <h1>Tableau de bord d'annotations du Ministère des Finances</h1>
-        </div>
-        <div class="content">
-            <div class="filters">
-                <!-- Vos filtres ici -->
+        <!-- Ajoutez ceci dans le head de votre fichier HTML -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8sh+WyAeWp4HfahsIcF8UNqI4pX8E1PqFVkVK7" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <!-- Ajoutez un en-tête si nécessaire -->
+                <h1>Tableau de bord d'annotations du Ministère des Finances</h1>
             </div>
-            <div class="chart">
-                {%app_entry%}
+            <div class="content">
+                <div class="filters">
+                    <!-- Vos filtres ici -->
+                </div>
+                <div class="chart">
+                    {%app_entry%}
+                </div>
             </div>
         </div>
-    </div>
-    {%config%}
-    {%scripts%}
-</body>
+        {%config%}
+        {%scripts%}
+    </body>
 </html>

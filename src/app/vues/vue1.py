@@ -10,6 +10,7 @@ import plotly.graph_objects as go
 # Import des bibliothèques nécessaires
 from dash import html, dcc
 from dash.dependencies import Input, Output
+import dash_bootstrap_components as dbc
 
 from src.app.app import app
 
@@ -223,10 +224,10 @@ def layout():
         [
             html.Div(
                 [
-                    html.H3("Total Discussions"),
-                    html.H4(total_discussions),
+                    html.H3("Total Discussions", className="card-title"),
+                    html.H4(total_discussions, className="card-text"),
                 ],
-                className="kpi-card",
+                className="card kpi-card",
             ),
             html.Div(
                 [
@@ -235,6 +236,27 @@ def layout():
                 ],
                 className="kpi-card",
             ),
+            dbc.Card(
+                [
+                    dbc.CardHeader("Marketing"),
+                    dbc.CardBody(
+                        [
+                            html.H4("201 new Leads", className="card-title"),
+                            html.P("Delivered this week compared...", className="card-text"),
+                        ]
+                    ),
+                ],
+                style={"width": "30rem"},
+            ),
+            dbc.Card([
+            dbc.CardBody([
+                    html.H4("Card title", className="card-title"),
+                    html.P(
+                        "$10.5 M",
+                        className="card-value",
+                    ),
+                ])
+            ]),
             html.Div(
                 [
                     html.H3("Mean Time Response (Total)"),
