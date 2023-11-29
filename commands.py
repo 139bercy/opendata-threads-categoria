@@ -29,19 +29,19 @@ def data_gouv_messages(file, dump):
             "souverainete-industrielle-et-numerique/discussions"
         )
         response = requests.get(url)
-        data = response.json()
+        source = response.json()
         if dump:
-            data = json.dumps(response.json(), indent=2, ensure_ascii=False)
+            source = json.dumps(response.json(), indent=2, ensure_ascii=False)
             with open("data/discussions.json", "w") as file:
                 json.dump(response.json(), file, indent=2, ensure_ascii=False)
     else:
-        with open("data/messages.json", "r") as file:
-            data = json.load(file)
-    for item in data:
-        for message in item["discussion"]:
+        with open("data/discussions.json", "r") as file:
+            source = json.load(file)
+    for discussion in source:
+        for message in discussion["discussion"]:
             create_message(
                 repository=repository,
-                thread_id=item["id"],
+                thread_id=discussion["id"],
                 author=message["posted_by"]["slug"],
                 content=message["content"],
                 posted_on=message["posted_on"],

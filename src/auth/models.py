@@ -5,6 +5,8 @@ from dataclasses import dataclass
 
 @dataclass
 class Account:
+    source = "coucou"
+    
     def __init__(
         self,
         pk: int,

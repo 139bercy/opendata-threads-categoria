@@ -26,10 +26,10 @@ class InMemoryAccountRepository(AbstractAccountRepository):
             },
         ]
 
-    def get_by_username(self, username: str):
+    def get_by_username(self, username: str) -> Account:
         return next((Account(**data) for data in self.db if data["username"] == username), None)
 
-    def update_token(self, username, token):
+    def update_token(self, username: str, token: UUID) -> None:
         for i, account in enumerate(self.db):
             if account["username"] == username:
                 account["token"] = token
@@ -45,7 +45,7 @@ class PostgresqlAccountRepository(AbstractAccountRepository):
         data = self.client.fetch_one(query=query)
         return Account(**data)
 
-    def update_token(self, username, token):
+    def update_token(self, username: str, token: UUID) -> None:
         if token:
             query = f"""UPDATE account acc SET token = '{token}' WHERE acc.username = '{username}';"""
         else:
