@@ -25,17 +25,5 @@ create table "message"
     content       text        not null
 );
 
-drop table if exists "thread";
-create table "drop table if exists "thread""
-(
-    pk            serial,
-    sk            text unique not null,
-    thread_id     text,
-    creation_date timestamp with time zone default current_timestamp,
-    posted_on     text        not null,
-    author        text        not null,
-    content       text        not null
-);
-
 -- Optionally, grant other privileges like SELECT, INSERT, UPDATE, DELETE, etc.
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO <username>;

@@ -1,12 +1,12 @@
 from src.thread.infrastructure import InMemoryThreadRepository
-from src.thread.models import Message
-from src.thread.usecases import create_message
+from src.thread.models import Message, Thread
+from src.thread.usecases import create_message, create_thread
 
 
 def test_create_message():
-    # Act
-    repository = InMemoryThreadRepository([])
     # Arrange
+    repository = InMemoryThreadRepository([])
+    # Act
     message = create_message(
         repository=repository,
         thread_id="7665a9eacdd3c3173bb2d30c",
@@ -29,7 +29,33 @@ def test_get_message():
         "author": "jdoe",
         "content": "Hello, World!",
     }
-    repository = InMemoryThreadRepository([expected])
+    repository = InMemoryThreadRepository(db=[expected])
     # Act
-    resource = repository.get_by_bk("78d750d4")
+    resource = repository.get_message_by_sk("78d750d4")
+    assert resource.__dict__ == expected
+
+
+def test_create_thread():
+    # Arrange
+    repository = InMemoryThreadRepository([])
+    # Act
+    thread = create_thread(
+        repository=repository,
+        title="Lorem ipsum",
+    )
+    # Assert
+    assert isinstance(thread, Thread)
+    assert thread.sk == "a9a66978"
+
+
+def test_get_thread():
+    # Arrange
+    expected = {
+        "pk": 1,
+        "sk": "78d750d4",
+        "title": "Lorem ipsum",
+    }
+    repository = InMemoryThreadRepository(db=[expected])
+    # Act
+    resource = repository.get_thread_by_sk("78d750d4")
     assert resource.__dict__ == expected

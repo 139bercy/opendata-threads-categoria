@@ -248,15 +248,19 @@ def layout():
                 ],
                 style={"width": "30rem"},
             ),
-            dbc.Card([
-            dbc.CardBody([
-                    html.H4("Card title", className="card-title"),
-                    html.P(
-                        "$10.5 M",
-                        className="card-value",
-                    ),
-                ])
-            ]),
+            dbc.Card(
+                [
+                    dbc.CardBody(
+                        [
+                            html.H4("Card title", className="card-title"),
+                            html.P(
+                                "$10.5 M",
+                                className="card-value",
+                            ),
+                        ]
+                    )
+                ]
+            ),
             html.Div(
                 [
                     html.H3("Mean Time Response (Total)"),
