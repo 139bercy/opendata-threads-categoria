@@ -13,10 +13,11 @@ from src.auth.usecases import login as user_login
 from src.app.views.sidebar import sidebar
 from src.app.views.header import header
 from src.app.views.graphs import filtres, treemap_fig, barchart, pie_chart, jauge_disc_closes, kpi 
-from src.app.views import dashboard, formulaire
-#from src.app.views import dashboard, formulaire, dataset
+from src.app.views import dashboard, formulaire, dataset
 
 from dash.dependencies import Input, Output
+import base64
+from dash import callback_context
 
 repository = PostgresqlAccountRepository()
 if os.environ["APP_ENV"] == "test":
@@ -116,6 +117,26 @@ def login():
             return render_template("login.html", error="Invalid credentials")
     return render_template("login.html", error=None)
 
+@app.callback(
+    Output("download-link", "href"),
+    [Input("table", "data")],
+)
+def update_download_link(data):
+    if not callback_context.triggered_id:
+        # Si la mise à jour n'est pas déclenchée par un événement de clic sur le bouton
+        raise dash.exceptions.PreventUpdate
+
+    # Convertir les données en DataFrame
+    df_download = pd.DataFrame(data)
+
+    # Convertir le DataFrame en CSV
+    csv_string = df_download.to_csv(index=False, encoding="utf-8")
+
+    # Convertir en base64 et créer le lien de téléchargement
+    csv_base64 = base64.b64encode(csv_string.encode("utf-8")).decode("utf-8")
+    href = f"data:text/csv;base64,{csv_base64}"
+
+    return href
 
 # Callback pour afficher le contenu de la vue en fonction de l'URL
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
@@ -125,8 +146,8 @@ def display_page(pathname):
     elif pathname == "/form":
         # Appliquez le décorateur @login_required uniquement à la vue associée à '/form'
         return formulaire.layout()
-   # elif pathname == "/dataset":
-    #    return dataset.layout()
+    elif pathname == "/dataset":
+        return dataset.dataset_layout()
     else:
         return "404 - Page introuvable"
 
