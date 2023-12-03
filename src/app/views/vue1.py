@@ -1,5 +1,3 @@
-# vue1.py
-
 import calendar
 import locale
 

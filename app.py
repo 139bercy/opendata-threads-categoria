@@ -42,47 +42,14 @@ app.layout = html.Div(
     [
         sidebar,
         dash.page_container,
-        html.Div(
-            [
-                header, 
-                html.Hr(),
-                filtres,
-                html.Hr(),
-                html.Div(
-                    [
-                    html.Div(
-                        [
-                            treemap_fig,
-                        ],
-                        className="treemap-container"
-                    ),
-                    html.Div(
-                        [
-                            barchart,
-                        ],
-                        className="barchart-container"
-                    ),
-                    html.Div(
-                        [
-                            pie_chart,
-                            jauge_disc_closes,
-                        ],
-                        className="status-container"
-                    ),
-                    html.Div(
-                        [
-                            kpi,
-                        ],
-                        className="status-container"
-                    ),
-                ], className="graphs-container"
-                )
-            ],
-            className="flex-container",
-        ),
-    ],
+        header,
+        #dashboard_layout(),
+        # Composant de gestion de l'URL
+        dcc.Location(id="url", refresh=False),
+        # Contenu de la page actuelle
+        html.Div(id="page-content"),
+    ], className="flex-container",
 )
-
 
 # Callback function pour mettre à jour le graphique sunburst
 @app.callback(
@@ -154,7 +121,7 @@ def login():
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def display_page(pathname):
     if pathname == "/" or pathname == "/accueil":
-        return dashboard.layout()
+        return dashboard.dashboard_layout()
     elif pathname == "/form":
         # Appliquez le décorateur @login_required uniquement à la vue associée à '/form'
         return formulaire.layout()

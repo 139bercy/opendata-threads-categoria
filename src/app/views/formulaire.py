@@ -15,6 +15,7 @@ def layout():
 
     return dbc.Container(
         [
+            html.Br(),
             dbc.Row(dbc.Col(html.H1("Formulaire"), width=12)),
             dbc.Row(
                 [
@@ -38,6 +39,7 @@ def layout():
                                         ],
                                         className="form-group",
                                     ),
+                                    html.Br(),
                                     html.Div(
                                         [
                                             html.Label("Prénom"),
@@ -50,6 +52,7 @@ def layout():
                                         ],
                                         className="form-group",
                                     ),
+                                    html.Br(),
                                     html.Button(
                                         "Soumettre",
                                         type="submit",
