@@ -136,3 +136,14 @@
   color: rgba(0, 0, 0, 0.849);
   margin-bottom: 0.4em;
 }
+
+.kpi-cards-container{
+  display: flex;
+  text-align: center;
+  align-items: center;  /* Centrer verticalement les éléments */
+  justify-content: space-between;  /* Espacez les éléments horizontalement */
+  width: 100%;
+  margin-left: 0.8rem;
+  margin-right: 0.8rem;
+  margin-bottom: 2rem;
+}

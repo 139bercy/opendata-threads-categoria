@@ -199,56 +199,49 @@ jauge_disc_closes = dcc.Graph(
 # Ajout des KPIs
 kpi = html.Div(
     [
-        html.Div(
-            [
-                html.H3("Total Discussions", className="card-title"),
-                html.H4(total_discussions, className="card-text"),
-            ],
-            className="card kpi-card",
-        ),
-        html.Div(
-            [
-                html.H3("Open Discussions"),
-                html.H4(discussions_ouvertes),
-            ],
-            className="kpi-card",
-        ),
         dbc.Card(
             [
-                dbc.CardHeader("Marketing"),
+                dbc.CardHeader("Total discussions"),
                 dbc.CardBody(
                     [
-                        html.H4("201 new Leads", className="card-title"),
-                        html.P("Delivered this week compared...", className="card-text"),
+                        html.H4(total_discussions, className="card-title1")
                     ]
                 ),
             ],
-            style={"width": "30rem"},
+            style={"width": "12rem"},
         ),
         dbc.Card(
             [
+                dbc.CardHeader("Discussions ouvertes"),
                 dbc.CardBody(
                     [
-                        html.H4("Card title", className="card-title"),
-                        html.P(
-                            "$10.5 M",
-                            className="card-value",
-                        ),
+                        html.H4(discussions_ouvertes, className="card-title1")
                     ]
-                )
-            ]
-        ),
-        html.Div(
-            [
-                html.H3("Mean Time Response (Total)"),
-                html.H4(str(mean_time_response_total)),
+                ),
             ],
-            className="kpi-card",
+            style={"width": "12rem"},
         ),
-        html.Div(
+        dbc.Card(
             [
-                html.H3("Median Time Response"),
-                html.H4(str(median_time_response_total)),
+                dbc.CardHeader("Temps de réponses moyen"),
+                dbc.CardBody(
+                    [
+                        html.H4(str(mean_time_response_total), className="card-title2")
+                    ]
+                ),
             ],
-            className="kpi-card",
-        )])
+            style={"width": "12rem"},
+        ),
+        dbc.Card(
+            [
+                dbc.CardHeader("Temps de réponses médian"),
+                dbc.CardBody(
+                    [
+                        html.H4(str(median_time_response_total), className="card-title3")
+                    ]
+                ),
+            ],
+            style={"width": "12rem"},
+        ),
+        ], className="kpi-cards-container",
+    )
