@@ -96,7 +96,7 @@
 
 .header-title {
   text-align: center;
-  color:rgba(0, 0, 0, 0.808);
+  color:rgba(0, 0, 0, 0.863);
   margin-right: 0.3em;
 }
 
@@ -124,4 +124,15 @@
 .sticky-filters{
   margin-left: 0.8rem;
   margin-right: 0.8rem;
+}
+
+.dataset{
+  margin-left: 0.8rem;
+  margin-right: 0.8rem;
+  margin-top: 1.5em;
+}
+
+.title-dataset{
+  color: rgba(0, 0, 0, 0.849);
+  margin-bottom: 0.4em;
 }

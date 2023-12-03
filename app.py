@@ -117,18 +117,16 @@ def login():
             return render_template("login.html", error="Invalid credentials")
     return render_template("login.html", error=None)
 
+# Définir le callback pour mettre à jour le lien de téléchargement
 @app.callback(
     Output("download-link", "href"),
-    [Input("table", "data")],
+    [Input("download-link", "n_clicks")],
 )
-def update_download_link(data):
-    if not callback_context.triggered_id:
-        # Si la mise à jour n'est pas déclenchée par un événement de clic sur le bouton
+def update_download_link(n_clicks):
+    if n_clicks is None:
         raise dash.exceptions.PreventUpdate
-
-    # Convertir les données en DataFrame
-    df_download = pd.DataFrame(data)
-
+    
+    df_download = df
     # Convertir le DataFrame en CSV
     csv_string = df_download.to_csv(index=False, encoding="utf-8")
 
