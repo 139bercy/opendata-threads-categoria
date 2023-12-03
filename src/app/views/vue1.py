@@ -12,7 +12,7 @@ from dash import html, dcc
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 
-from src.app.app import app
+#from src.app.app import app
 
 # Configuration de la localisation en français
 locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")
@@ -274,36 +274,134 @@ def layout():
                     html.H4(str(median_time_response_total)),
                 ],
                 className="kpi-card",
-            ),
-            # Ajouter le graphique de la jauge
-            dcc.Graph(
-                id="gauge-discussions-closes",
-                figure=go.Figure(
-                    go.Indicator(
-                        mode="gauge+number",
-                        value=discussions_closes,
-                        title={"text": "Discussions Closes"},
-                        domain={"x": [0, 1], "y": [0, 1]},
-                        gauge={
-                            "axis": {"range": [0, total_discussions], "tickwidth": 1, "tickcolor": "darkblue"},
-                            "bar": {"color": "darkgreen"},
-                            "bgcolor": "white",
-                            "borderwidth": 2,
-                            "bordercolor": "gray",
-                            "steps": [{"range": [0, total_discussions], "color": "lightgray"}],
-                            "threshold": {
-                                "line": {"color": "red", "width": 4},
-                                "thickness": 0.75,
-                                "value": discussions_closes,
-                            },
-                        },
-                    )
-                ),
-                className="kpi-card",
-            ),
-        ],
-        className="kpi-container",
-    )
+            )])
+    
+    # Ajouter le graphique de la jauge
+    jauge_disc_closes = dcc.Graph(
+                            id="gauge-discussions-closes",
+                            figure=go.Figure(
+                                go.Indicator(
+                                    mode="gauge+number",
+                                    value=discussions_closes,
+                                    title={"text": "Discussions Closes"},
+                                    domain={"x": [0, 1], "y": [0, 1]},
+                                    gauge={
+                                        "axis": {"range": [0, total_discussions], "tickwidth": 1, "tickcolor": "darkblue"},
+                                        "bar": {"color": "darkgreen"},
+                                        "bgcolor": "white",
+                                        "borderwidth": 2,
+                                        "bordercolor": "gray",
+                                        "steps": [{"range": [0, total_discussions], "color": "lightgray"}],
+                                        "threshold": {
+                                            "line": {"color": "red", "width": 4},
+                                            "thickness": 0.75,
+                                            "value": discussions_closes,
+                                        },
+                                    },
+                                )
+                            ))
+    
+    """
+        # Ajout des KPIs
+    kpi_div2 = html.Div([
+                    html.Div(
+                        [
+                            #html.H6("Total Discussions", className="card-title"),
+                            #html.H4(total_discussions, className="card-text"),
+                            html.H6(children='Total des discussions',
+                                    style={
+                                        'textAlign': 'center',
+                                        'color': 'black'}
+                                    ),
+                            
+                            html.P(total_discussions,
+                                   style={
+                                       'textAlign': 'center',
+                                        'color': 'black',
+                                        'fontSize': 40}
+                                   )
+                        ],
+                        className="card_container three columns"),
+                    
+                    html.Div(
+                        [
+                            html.H6(children='Discussions non-fermées',
+                                    style={
+                                        'textAlign': 'center',
+                                        'color': 'black'}
+                                    ),
+                            
+                            html.P(discussions_ouvertes,
+                                   style={
+                                       'textAlign': 'center',
+                                        'color': 'Black',
+                                        'fontSize': 40}
+                                   )
+                        ],
+                        className="card_container three columns"),
+                    
+                    html.Div(
+                        [
+                            html.H6(children='Temps de réponse moyen',
+                                    style={
+                                        'textAlign': 'center',
+                                        'color': 'black'}
+                                    ),
+                            
+                            html.P(mean_time_response_total,
+                                   style={
+                                       'textAlign': 'center',
+                                        'color': 'Black',
+                                        'fontSize': 40}
+                                   )
+                        ],
+                        className="card_container three columns"),
+                    
+                    html.Div(
+                        [
+                            html.H6(children='Temps de réponse médian',
+                                    style={
+                                        'textAlign': 'center',
+                                        'color': 'black'}
+                                    ),
+                            
+                            html.P(median_time_response_total,
+                                   style={
+                                       'textAlign': 'center',
+                                        'color': 'Black',
+                                        'fontSize': 40}
+                                   )
+                        ],
+                        className="card_container three columns")
+                    ], className="row flex-display"),
+
+    # Ajouter le graphique de la jauge
+    dcc.Graph(
+        id="gauge-discussions-closes",
+        figure=go.Figure(
+            go.Indicator(
+                mode="gauge+number",
+                value=discussions_closes,
+                title={"text": "Discussions Closes"},
+                domain={"x": [0, 1], "y": [0, 1]},
+                gauge={
+                    "axis": {"range": [0, total_discussions], "tickwidth": 1, "tickcolor": "darkblue"},
+                    "bar": {"color": "darkgreen"},
+                    "bgcolor": "white",
+                    "borderwidth": 2,
+                    "bordercolor": "gray",
+                    "steps": [{"range": [0, total_discussions], "color": "lightgray"}],
+                    "threshold": {
+                        "line": {"color": "red", "width": 4},
+                        "thickness": 0.75,
+                        "value": discussions_closes,
+                    },
+                },
+            )
+        ),
+        className="kpi-card")"""
+    
+    
 
     return html.Div(
         [
@@ -313,42 +411,11 @@ def layout():
             bar_chart_div,
             pie_chart_div,
             kpi_div,
+            jauge_disc_closes,
         ]
     )
 
 
-# Callback function pour mettre à jour le graphique sunburst
-@app.callback(
-    Output("sunburst-graph", "figure"),
-    [
-        Input("category-filter", "value"),
-        Input("date-range-picker", "start_date"),
-        Input("date-range-picker", "end_date"),
-        Input("timeline-filter", "value"),
-    ],
-)
-def update_sunburst_chart(selected_categories, start_date, end_date, timeline_value):
-    try:
-        start_date = pd.to_datetime(start_date)
-        end_date = pd.to_datetime(end_date)
-
-        start_month_index, end_month_index = timeline_value
-        selected_start_month = pd.Timestamp(f"{start_month_index + 1}/1/{start_date.year}")
-        selected_end_month = pd.Timestamp(f"{end_month_index + 1}/1/{end_date.year}")
-
-        filtered_df = df[
-            (df["predictions_motifs_label"].isin(selected_categories))
-            & (df["created_discussion"] >= start_date)
-            & (df["created_discussion"] <= end_date)
-            & (df["created_discussion"].dt.month >= start_month_index + 1)
-            & (df["created_discussion"].dt.month <= end_month_index + 1)
-        ]
-
-        updated_sunburst_fig = generate_sunburst(filtered_df)
-
-        return updated_sunburst_fig
-    except Exception as e:
-        print(str(e))
 
 
 # Exemple de mise à jour de l'app.layout

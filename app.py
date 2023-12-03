@@ -1,14 +1,22 @@
+import dash
+import dash_bootstrap_components as dbc
+from dash import html, dcc
+import pandas as pd 
 import os
 
-import dash_bootstrap_components as dbc
-from dash import Dash, dcc, html
-from dash.dependencies import Input, Output
 from flask import Flask, render_template, request, jsonify, make_response
-
-from src.app.vues import vue1, vue2
-from src.auth.exceptions import LoginError, UsernameError
 from src.auth.infrastructure import InMemoryAccountRepository, PostgresqlAccountRepository
+
+from src.auth.exceptions import LoginError, UsernameError
 from src.auth.usecases import login as user_login
+
+from src.app.views.sidebar import sidebar
+from src.app.views.header import header
+from src.app.views.graphs import filtres, treemap_fig, barchart, pie_chart, jauge_disc_closes, kpi 
+from src.app.views import dashboard, formulaire
+#from src.app.views import dashboard, formulaire, dataset
+
+from dash.dependencies import Input, Output
 
 repository = PostgresqlAccountRepository()
 if os.environ["APP_ENV"] == "test":
@@ -19,75 +27,97 @@ server = Flask(__name__, template_folder="src/app/templates")
 server.config["SECRET_KEY"] = "asma"
 server.config["WTF_CSRF_ENABLED"] = False
 
-app = Dash(__name__, server=server, external_stylesheets=[dbc.themes.BOOTSTRAP])
-app.external_stylesheets = [dbc.themes.BOOTSTRAP, "static/assets/style.css"]
-
-header = html.Div(
-    [
-        # Logo de l'entreprise ou de l'application (colonne 1)
-        html.Div(
-            [
-                html.Img(
-                    src="static/assets/images/mefsin.svg",
-                    style={
-                        "height": "230px",
-                        "width": "230px",
-                        "margin-top": "-50px",
-                        "margin-bottom": "-30px",
-                    },
-                )
-            ],
-            className="col-lg-2 col-md-4 col-sm-4 col-12 text-right",
-        ),
-        # Titre de l'application (colonne 2)
-        html.Div(
-            [
-                html.H1(
-                    "Tableau de bord d'analyse des discussions du MEFSIN",
-                    id="header-title",
-                    style={"margin-top": "40px"},
-                )
-            ],
-            className="col-lg-8 col-md-4 col-sm-4 col-12 text-center",
-        ),
-        # Bouton de téléchargement du jeu de données (colonne 3)
-        html.Div(
-            [
-                dcc.ConfirmDialogProvider(
-                    children=[
-                        html.Button(
-                            "Télécharger les données",
-                            id="download-button",
-                            className="btn btn-primary",
-                            style={"margin-top": "35px", "padding": "15px"},
-                        )
-                    ],
-                    id="download-data-confirm",
-                    message="Êtes-vous sûr de vouloir télécharger les données ?",
-                )
-            ],
-            className="col-lg-2 col-md-4 col-sm-4 col-12 text-center",
-        ),
-    ],
-    className="header row",
+app = dash.Dash(
+    __name__,
+    server=server,
+    suppress_callback_exceptions=True,
+    external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.themes.MATERIA, dbc.icons.FONT_AWESOME],
+    assets_folder="static", 
 )
 
-# Mise en page principale de l'application Dash
+# Chargement des données depuis le fichier CSV (peut être placé dans app.py)
+df = pd.read_csv("data/raw/inference/predicted_data_model2.csv")
+
 app.layout = html.Div(
     [
-        header,
-        # Composant de gestion de l'URL
-        dcc.Location(id="url", refresh=False),
-        # Contenu de la page actuelle
-        html.Div(id="page-content"),
+        sidebar,
+        dash.page_container,
+        html.Div(
+            [
+                header, 
+                html.Hr(),
+                filtres,
+                html.Hr(),
+                html.Div(
+                    [
+                    html.Div(
+                        [
+                            treemap_fig,
+                        ],
+                        className="treemap-container"
+                    ),
+                    html.Div(
+                        [
+                            barchart,
+                        ],
+                        className="barchart-container"
+                    ),
+                    html.Div(
+                        [
+                            pie_chart,
+                            jauge_disc_closes,
+                        ],
+                        className="status-container"
+                    ),
+                    html.Div(
+                        [
+                            kpi,
+                        ],
+                        className="status-container"
+                    ),
+                ], className="graphs-container"
+                )
+            ],
+            className="flex-container",
+        ),
     ],
-    style={"margin": "20px"},
 )
 
 
+# Callback function pour mettre à jour le graphique sunburst
+@app.callback(
+    Output("treemap-graph", "figure"),
+    [
+        Input("category-filter", "value"),
+        Input("date-range-picker", "start_date"),
+        Input("date-range-picker", "end_date"),
+        Input("timeline-filter", "value"),
+    ],
+)
+def update_charts(selected_categories, start_date, end_date, timeline_value):
+    try:
+        start_date = pd.to_datetime(start_date)
+        end_date = pd.to_datetime(end_date)
+
+        start_month_index, end_month_index = timeline_value
+        selected_start_month = pd.Timestamp(f"{start_month_index + 1}/1/{start_date.year}")
+        selected_end_month = pd.Timestamp(f"{end_month_index + 1}/1/{end_date.year}")
+
+        filtered_df = df[
+            (df["predictions_motifs_label"].isin(selected_categories))
+            & (df["created_discussion"] >= start_date)
+            & (df["created_discussion"] <= end_date)
+            & (df["created_discussion"].dt.month >= start_month_index + 1)
+            & (df["created_discussion"].dt.month <= end_month_index + 1)
+        ]
+
+        updated_treemap_fig = treemap_fig
+
+        return updated_treemap_fig
+    except Exception as e:
+        print(str(e))
+        
 # Routes
-
-
 @app.server.route("/form_traite", methods=["POST"])
 def traiter_formulaire():
     if request.method == "POST":
@@ -124,14 +154,14 @@ def login():
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def display_page(pathname):
     if pathname == "/" or pathname == "/accueil":
-        return vue1.layout()
+        return dashboard.layout()
     elif pathname == "/form":
         # Appliquez le décorateur @login_required uniquement à la vue associée à '/form'
-        return vue2.layout()
+        return formulaire.layout()
+   # elif pathname == "/dataset":
+    #    return dataset.layout()
     else:
         return "404 - Page introuvable"
 
-
-# Exécuter le serveur Flask
 if __name__ == "__main__":
-    server.run(debug=True)
+    app.run_server(debug=True)
