@@ -1,5 +1,5 @@
 import dash_html_components as html
-import dash_table
+from dash_table import DataTable
 import dash_core_components as dcc
 from dash.dependencies import Input, Output
 import pandas as pd
@@ -16,7 +16,7 @@ def datasets_layout():
             html.H2("Présentation du jeu de données", style={"color": "white"}),
 
             # Afficher le tableau
-            dash_table.DataTable(
+            DataTable(
                 id='table',
                 columns=[{'name': col, 'id': col} for col in df.columns],
                 data=df.to_dict('records'),
