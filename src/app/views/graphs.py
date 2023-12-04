@@ -101,7 +101,7 @@ def generate_treemap(filtered_data):
         filtered_data,
         path=["predictions_motifs_label", "predictions_ssmotifs_label"],
         width=None,  # Définir la largeur à None pour permettre la responsivité
-        height=620,  # Définir la hauteur à None pour permettre la responsivité
+        height=800,  # Définir la hauteur à None pour permettre la responsivité
     )
 
     # Personnalisation du texte de la légende
