@@ -1,6 +1,6 @@
 from src.app.views.header import header
 from dash import html, dcc
-from .graphs import filtres, treemap_fig, barchart, pie_chart, jauge_disc_closes, kpi, barchart_views, horizontal_bar_labels 
+from .graphs import filtres, treemap_fig, barchart, pie_chart, jauge_disc_closes, kpi, bar_chart_top_jdd_views, bar_chart_top_jdd_reuses
 
 def dashboard_layout():
     return html.Div(
@@ -20,7 +20,8 @@ def dashboard_layout():
                             ),
                             html.Div(
                                 [
-                                    barchart,
+                                    #barchart,
+                                    dcc.Graph(figure=barchart, id="barchart"),             
                                 ],
                                 className="barchart-container"
                             ),
@@ -42,9 +43,11 @@ def dashboard_layout():
                             ),
                             html.Div(
                                 [
-                                    barchart_views,
+                                    #barchart_views,
                                     #barchart_reuses,
-                                    dcc.Graph(figure=horizontal_bar_labels, id="horizontal-bar-labels"),
+                                    dcc.Graph(figure=bar_chart_top_jdd_views, id="bar_chart_top_jdd_views"),
+                                    dcc.Graph(figure=bar_chart_top_jdd_reuses, id="bar_chart_top_jdd_reuses"),
+                                    #graph_row,
                                 ],
                                 className="tendances-container"
                             ),

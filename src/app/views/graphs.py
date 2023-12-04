@@ -136,7 +136,7 @@ treemap_fig = generate_treemap(df)
 
 # BARCHART
 
-# Fonction pour générer le graphique en barres des JDD les plus discutés
+"""# Fonction pour générer le graphique en barres des JDD les plus discutés
 def generate_bar_chart_top_jdd(jdd_counts):
     top_10_jdd_counts = jdd_counts.head(10)  # Sélectionnez les 10 premières lignes
     return dcc.Graph(
@@ -155,6 +155,70 @@ def generate_bar_chart_top_jdd(jdd_counts):
     )
 
 # Utilisation de cette fonction pour créer le graphique en barres
+barchart = generate_bar_chart_top_jdd(jdd_counts)"""
+
+def generate_bar_chart_top_jdd(jdd_counts):
+    top_10_jdd_counts = jdd_counts.head(10) # Sélectionnez les 10 premières lignes
+    subplots = make_subplots(
+        rows=len(top_10_jdd_counts),
+        cols=1,
+        subplot_titles=[f"{index}: {value}" for index, value in top_10_jdd_counts.items()],
+        shared_xaxes=True,
+        print_grid=False,
+        vertical_spacing=(0.45 / len(top_10_jdd_counts)),
+    )
+    subplots['layout'].update(
+        width=800,
+        plot_bgcolor='#fff',
+        title_text="Top 10 des jeux de données les plus discutés",
+        title_font=dict(size=19),
+        bargap=0.01,
+    )
+
+    # add bars for the categories
+    for k, (index, value) in enumerate(top_10_jdd_counts.items()):
+        subplots.add_trace(go.Bar(
+            y=[index],
+            x=[value],
+            orientation='h',
+            text=[str(value)],
+            hoverinfo='text',
+            textposition='auto',
+            marker=dict(color="#3ca2f4"),
+            textfont_color='white',
+        ), row=k+1, col=1)
+
+    # update the layout
+    subplots['layout'].update(
+        showlegend=False,
+    )
+    for x in subplots["layout"]['annotations']:
+        x['x'] = 0
+        x['xanchor'] = 'left'
+        x['align'] = 'left'
+        x['font'] = dict(
+            size=15,
+        )
+
+    # hide the axes
+    for axis in subplots['layout']:
+        if axis.startswith('yaxis') or axis.startswith('xaxis'):
+            subplots['layout'][axis]['visible'] = False
+
+    # update the margins and size
+    subplots['layout']['margin'] = {
+        'l': 0,
+        'r': 0,
+        't': 90,
+        'b': 15,
+    }
+    height_calc = 75 * len(top_10_jdd_counts)
+    height_calc = max([height_calc, 550])
+    subplots['layout']['height'] = height_calc
+    subplots['layout']['width'] = None
+
+    return subplots
+
 barchart = generate_bar_chart_top_jdd(jdd_counts)
 
 # PIECHART
@@ -250,7 +314,7 @@ kpi = html.Div(
     ], className="kpi-container container-fluid",
 )
 
-# Fonction pour générer le graphique en barres des JDD les plus consultés
+"""# Fonction pour générer le graphique en barres des JDD les plus consultés
 def generate_bar_chart_top_jdd_views(jdd_views):
     top_5_jdd_counts = jdd_views.head(5)  # Sélectionnez les 5 premières lignes
     return dcc.Graph(
@@ -269,44 +333,24 @@ def generate_bar_chart_top_jdd_views(jdd_views):
     )
 
 # Utilisation de cette fonction pour créer le graphique en barres
-barchart_views = generate_bar_chart_top_jdd_views(jdd_views)
+barchart_views = generate_bar_chart_top_jdd_views(jdd_views)"""
 
-# Fonction pour générer le graphique en barres des JDD les plus réutilisés
-"""def generate_bar_chart_top_jdd_reuses(jdd_reuses):
-    top_5_jdd_counts = jdd_reuses.head(5)  # Sélectionnez les 5 premières lignes
-    return dcc.Graph(
-        id="bar-chart-jdd-discutes",
-        figure=px.bar(
-            y=top_5_jdd_counts.index,
-            x=top_5_jdd_counts.values,
-            orientation="h",
-            title="Top 5 des jeux de données les plus réutilisés",
-            category_orders={"y": list(top_5_jdd_counts.index)},
-            text=top_5_jdd_counts.values,
-            labels={"x": "Nombre de réutilisations", "y": "Slugs jeux de données"},
-            height=400,
-            width=None,
-        ),
-    )
-
-# Utilisation de cette fonction pour créer le graphique en barres
-barchart_reuses = generate_bar_chart_top_jdd_reuses(jdd_reuses)"""
-
-def horizontal_bar_labels(jdd_reuses):
-    top_5_jdd_counts = jdd_reuses.head(5)
+def generate_bar_chart_top_jdd_views(jdd_views):
+    top_5_jdd_counts = jdd_views.head(5)
     subplots = make_subplots(
         rows=len(top_5_jdd_counts),
         cols=1,
         subplot_titles=[f"{index}: {value}" for index, value in top_5_jdd_counts.items()],
         shared_xaxes=True,
         print_grid=False,
-        vertical_spacing=(0.40 / len(top_5_jdd_counts)),
+        vertical_spacing=(0.45 / len(top_5_jdd_counts)),
     )
     subplots['layout'].update(
         width=800,
         plot_bgcolor='#fff',
-        title_text="Top 5 des jeux de données les plus réutilisés",
-        title_font=dict(size=18),
+        title_text="Top 10 des jeux de données les plus consultés",
+        title_font=dict(size=19),
+        bargap=0.01,
     )
 
     # add bars for the categories
@@ -315,10 +359,11 @@ def horizontal_bar_labels(jdd_reuses):
             y=[index],
             x=[value],
             orientation='h',
-            text=["{:,.0f}".format(value)],
+            text=[str(value)],
             hoverinfo='text',
             textposition='auto',
             marker=dict(color="#3ca2f4"),
+            textfont_color='white',
         ), row=k+1, col=1)
 
     # update the layout
@@ -342,14 +387,107 @@ def horizontal_bar_labels(jdd_reuses):
     subplots['layout']['margin'] = {
         'l': 0,
         'r': 0,
-        't': 60,
-        'b': 20,
+        't': 90,
+        'b': 15,
     }
-    height_calc = 45 * len(top_5_jdd_counts)
-    height_calc = max([height_calc, 350])
+    height_calc = 75 * len(top_5_jdd_counts)
+    height_calc = max([height_calc, 400]) # largeur bar
     subplots['layout']['height'] = height_calc
     subplots['layout']['width'] = None
 
     return subplots
 
-horizontal_bar_labels = horizontal_bar_labels(jdd_reuses)
+bar_chart_top_jdd_views = generate_bar_chart_top_jdd_views(jdd_views)
+
+# Fonction pour générer le graphique en barres des JDD les plus réutilisés
+"""def generate_bar_chart_top_jdd_reuses(jdd_reuses):
+    top_5_jdd_counts = jdd_reuses.head(5)  # Sélectionnez les 5 premières lignes
+    return dcc.Graph(
+        id="bar-chart-jdd-discutes",
+        figure=px.bar(
+            y=top_5_jdd_counts.index,
+            x=top_5_jdd_counts.values,
+            orientation="h",
+            title="Top 5 des jeux de données les plus réutilisés",
+            category_orders={"y": list(top_5_jdd_counts.index)},
+            text=top_5_jdd_counts.values,
+            labels={"x": "Nombre de réutilisations", "y": "Slugs jeux de données"},
+            height=400,
+            width=None,
+        ),
+    )
+
+# Utilisation de cette fonction pour créer le graphique en barres
+barchart_reuses = generate_bar_chart_top_jdd_reuses(jdd_reuses)"""
+
+def generate_bar_chart_top_jdd_reuses(jdd_reuses):
+    top_5_jdd_counts = jdd_reuses.head(5)
+    subplots = make_subplots(
+        rows=len(top_5_jdd_counts),
+        cols=1,
+        subplot_titles=[f"{index}: {value}" for index, value in top_5_jdd_counts.items()],
+        shared_xaxes=True,
+        print_grid=False,
+        vertical_spacing=(0.45 / len(top_5_jdd_counts)),
+    )
+    subplots['layout'].update(
+        width=800,
+        plot_bgcolor='#fff',
+        title_text="Top 10 des jeux de données les plus réutilisés",
+        title_font=dict(size=19),
+        bargap=0.01,
+    )
+
+    # add bars for the categories
+    for k, (index, value) in enumerate(top_5_jdd_counts.items()):
+        subplots.add_trace(go.Bar(
+            y=[index],
+            x=[value],
+            orientation='h',
+            text=[str(value)],
+            hoverinfo='text',
+            textposition='auto',
+            marker=dict(color="#3ca2f4"),
+            textfont_color='white',
+        ), row=k+1, col=1)
+
+    # update the layout
+    subplots['layout'].update(
+        showlegend=False,
+    )
+    for x in subplots["layout"]['annotations']:
+        x['x'] = 0
+        x['xanchor'] = 'left'
+        x['align'] = 'left'
+        x['font'] = dict(
+            size=15,
+        )
+
+    # hide the axes
+    for axis in subplots['layout']:
+        if axis.startswith('yaxis') or axis.startswith('xaxis'):
+            subplots['layout'][axis]['visible'] = False
+
+    # update the margins and size
+    subplots['layout']['margin'] = {
+        'l': 0,
+        'r': 0,
+        't': 90,
+        'b': 15,
+    }
+    height_calc = 75 * len(top_5_jdd_counts)
+    height_calc = max([height_calc, 400])
+    subplots['layout']['height'] = height_calc
+    subplots['layout']['width'] = None
+
+    return subplots
+
+bar_chart_top_jdd_reuses = generate_bar_chart_top_jdd_reuses(jdd_reuses)
+
+"""graph_row = dbc.Row(
+    [
+        dbc.Col(dcc.Graph(figure=bar_chart_top_jdd_views, id="bar_chart_top_jdd_views"), width=5),
+        dbc.Col(dcc.Graph(figure=bar_chart_top_jdd_reuses, id="bar_chart_top_jdd_reuses"), width=5),
+    ],
+    className="tendances-container"
+)"""
