@@ -171,6 +171,7 @@
 }
 
 .tendances-container{
+  display: flex;
   margin-top: -30px;
   margin-left: 0.8rem;
   margin-right: 0.8rem;

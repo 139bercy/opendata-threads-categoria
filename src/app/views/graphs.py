@@ -10,6 +10,8 @@ from dash import html, dcc
 from dash.dependencies import Input, Output
 import dash_bootstrap_components as dbc
 
+from plotly.subplots import make_subplots
+
 # Configuration de la localisation en français
 locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")
 
@@ -270,7 +272,7 @@ def generate_bar_chart_top_jdd_views(jdd_views):
 barchart_views = generate_bar_chart_top_jdd_views(jdd_views)
 
 # Fonction pour générer le graphique en barres des JDD les plus réutilisés
-def generate_bar_chart_top_jdd_reuses(jdd_reuses):
+"""def generate_bar_chart_top_jdd_reuses(jdd_reuses):
     top_5_jdd_counts = jdd_reuses.head(5)  # Sélectionnez les 5 premières lignes
     return dcc.Graph(
         id="bar-chart-jdd-discutes",
@@ -288,4 +290,66 @@ def generate_bar_chart_top_jdd_reuses(jdd_reuses):
     )
 
 # Utilisation de cette fonction pour créer le graphique en barres
-barchart_reuses = generate_bar_chart_top_jdd_reuses(jdd_reuses)
+barchart_reuses = generate_bar_chart_top_jdd_reuses(jdd_reuses)"""
+
+def horizontal_bar_labels(jdd_reuses):
+    top_5_jdd_counts = jdd_reuses.head(5)
+    subplots = make_subplots(
+        rows=len(top_5_jdd_counts),
+        cols=1,
+        subplot_titles=[f"{index}: {value}" for index, value in top_5_jdd_counts.items()],
+        shared_xaxes=True,
+        print_grid=False,
+        vertical_spacing=(0.40 / len(top_5_jdd_counts)),
+    )
+    subplots['layout'].update(
+        width=800,
+        plot_bgcolor='#fff',
+        title_text="Top 5 des jeux de données les plus réutilisés",
+        title_font=dict(size=18),
+    )
+
+    # add bars for the categories
+    for k, (index, value) in enumerate(top_5_jdd_counts.items()):
+        subplots.add_trace(go.Bar(
+            y=[index],
+            x=[value],
+            orientation='h',
+            text=["{:,.0f}".format(value)],
+            hoverinfo='text',
+            textposition='auto',
+            marker=dict(color="#3ca2f4"),
+        ), row=k+1, col=1)
+
+    # update the layout
+    subplots['layout'].update(
+        showlegend=False,
+    )
+    for x in subplots["layout"]['annotations']:
+        x['x'] = 0
+        x['xanchor'] = 'left'
+        x['align'] = 'left'
+        x['font'] = dict(
+            size=15,
+        )
+
+    # hide the axes
+    for axis in subplots['layout']:
+        if axis.startswith('yaxis') or axis.startswith('xaxis'):
+            subplots['layout'][axis]['visible'] = False
+
+    # update the margins and size
+    subplots['layout']['margin'] = {
+        'l': 0,
+        'r': 0,
+        't': 60,
+        'b': 20,
+    }
+    height_calc = 45 * len(top_5_jdd_counts)
+    height_calc = max([height_calc, 350])
+    subplots['layout']['height'] = height_calc
+    subplots['layout']['width'] = None
+
+    return subplots
+
+horizontal_bar_labels = horizontal_bar_labels(jdd_reuses)
