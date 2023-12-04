@@ -26,16 +26,19 @@ def dashboard_layout():
                             ),
                             html.Div(
                                 [
-                                    pie_chart,
-                                    jauge_disc_closes,
+                                    html.H3("Proportion des discussions ouvertes / closes :", className="status-title"),
+                                    html.Div([
+                                        pie_chart,
+                                        jauge_disc_closes,
+                                        ], className="status-container"
+                                    ),
                                 ],
-                                className="status-container"
                             ),
                             html.Div(
                                 [
                                     kpi,
                                 ],
-                                className="status-container"
+                                className="kpi-container"
                             ),
                         ], 
                         className="graphs-container"

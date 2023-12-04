@@ -136,15 +136,16 @@ treemap_fig = generate_treemap(df)
 
 # Fonction pour générer le graphique en barres des JDD les plus discutés
 def generate_bar_chart(jdd_counts):
+    top_10_jdd_counts = jdd_counts.head(10)  # Sélectionnez les 10 premières lignes
     return dcc.Graph(
         id="bar-chart-jdd-discutes",
         figure=px.bar(
-            y=jdd_counts.index,
-            x=jdd_counts.values,
+            y=top_10_jdd_counts.index,
+            x=top_10_jdd_counts.values,
             orientation="h",
-            title="JDD les plus discutés",
-            category_orders={"y": list(jdd_counts.index)},
-            text=jdd_counts.values,
+            title="Top 10 des jeux de données les plus discutés",
+            category_orders={"y": list(top_10_jdd_counts.index)},
+            text=top_10_jdd_counts.values,
             labels={"x": "Nombre de Discussions", "y": "Slug jdd"},
             height=800,
             width=None,
@@ -181,12 +182,13 @@ jauge_disc_closes = dcc.Graph(
                                     title={"text": "Nombre de discussions Closes"},
                                     domain={"x": [0, 1], "y": [0, 1]},
                                     gauge={
-                                        "axis": {"range": [0, total_discussions], "tickwidth": 1, "tickcolor": "darkblue"},
+                                        "axis": {"range": [0, total_discussions]},
                                         "bar": {"color": "darkgreen"},
                                         "bgcolor": "white",
                                         "borderwidth": 2,
                                         "bordercolor": "gray",
-                                        "steps": [{"range": [0, total_discussions], "color": "lightgray"}],
+                                        "steps": [{"range": [0, discussions_closes], "color": "rgba(0, 100, 0, 0.350)"},
+                                                  {'range': [discussions_closes, total_discussions], 'color': "lightgray"}],
                                         "threshold": {
                                             "line": {"color": "red", "width": 4},
                                             "thickness": 0.75,
@@ -203,49 +205,45 @@ kpi = html.Div(
         html.Div([
             dbc.Card(
                 [
-                    dbc.CardHeader("Total discussions"),
+                    dbc.CardHeader("Total discussions", style={"background-color": "#015366", "color": "white"}),
                     dbc.CardBody(
                         [
-                            html.H4(total_discussions, className="card-title1")
+                            html.H4(total_discussions, className="card-title")
                         ]
                     ),
-                ],
-                style={"width": "12rem"},
+                ], className="kpi-card",
             ),
             dbc.Card(
                 [
-                    dbc.CardHeader("Discussions ouvertes"),
+                    dbc.CardHeader("Discussions ouvertes", style={"background-color": "#00718F", "color": "white"}),
                     dbc.CardBody(
                         [
-                            html.H4(discussions_ouvertes, className="card-title1")
+                            html.H4(discussions_ouvertes, className="card-title")
                         ]
                     ),
-                ],
-                style={"width": "12rem"},
+                ], className="kpi-card",
             ),
             dbc.Card(
                 [
-                    dbc.CardHeader("Temps de réponses moyen"),
+                    dbc.CardHeader("Temps de réponses moyen", style={"background-color": "#5ba5c2", "color": "white"}),
                     dbc.CardBody(
                         [
-                            html.H4(str(mean_time_response_total), className="card-title2")
+                            html.H4(str(mean_time_response_total), className="card-title")
                         ]
                     ),
-                ],
-                style={"width": "12rem"},
+                ], className="kpi-card",
             ),
             dbc.Card(
                 [
-                    dbc.CardHeader("Temps de réponses médian"),
+                    dbc.CardHeader("Temps de réponses médian", style={"background-color": "#0BA5BE", "color": "white"}),
                     dbc.CardBody(
                         [
-                            html.H4(str(median_time_response_total), className="card-title3")
+                            html.H4(str(median_time_response_total), className="card-title")
                         ]
                     ),
-                ],
-                style={"width": "12rem"},
+                ], className="kpi-card",
             ),
             ], className="kpi-cards-container",
         )
-    ], className="kpi-container",
+    ], className="kpi-container container-fluid",
 )

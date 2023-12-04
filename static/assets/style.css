@@ -109,16 +109,25 @@
   margin-right: 0.2rem;
 }
 
-.status-container{
-  display: flex;
-}
-
 #pie-chart-discussions{
   width: 50%;
 }
 
 #jauge-discussions-closes{
   width: 50%;
+}
+
+.status-title{
+  margin-left: 2.2rem;
+  margin-right: 1rem;
+}
+
+.status-container{
+  display: flex;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  align-items: center; 
+  justify-content: space-between;
 }
 
 .sticky-filters{
@@ -137,17 +146,26 @@
   margin-bottom: 0.4em;
 }
 
+.kpi-card{
+  width: 100%;
+  margin: 1rem;
+}
+
+.card-title{
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 .kpi-cards-container{
   display: flex;
   text-align: center;
   align-items: center;  /* Centrer verticalement les éléments */
   justify-content: space-between;  /* Espacez les éléments horizontalement */
-  width: 100%;
-  margin-left: 0.8rem;
-  margin-right: 0.8rem;
   margin-bottom: 2rem;
 }
 
 .kpi-container{
   margin-top: -5px;
+  margin-left: 0.8rem;
+  margin-right: 0.8rem;
 }
