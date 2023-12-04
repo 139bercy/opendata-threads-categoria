@@ -135,7 +135,7 @@ treemap_fig = generate_treemap(df)
 # BARCHART
 
 # Fonction pour générer le graphique en barres des JDD les plus discutés
-def generate_bar_chart(jdd_counts):
+def generate_bar_chart_top_jdd(jdd_counts):
     top_10_jdd_counts = jdd_counts.head(10)  # Sélectionnez les 10 premières lignes
     return dcc.Graph(
         id="bar-chart-jdd-discutes",
@@ -146,14 +146,14 @@ def generate_bar_chart(jdd_counts):
             title="Top 10 des jeux de données les plus discutés",
             category_orders={"y": list(top_10_jdd_counts.index)},
             text=top_10_jdd_counts.values,
-            labels={"x": "Nombre de Discussions", "y": "Slug jdd"},
+            labels={"x": "Nombre de discussions", "y": "Slugs jeux de données"},
             height=800,
             width=None,
         ),
     )
 
 # Utilisation de cette fonction pour créer le graphique en barres
-barchart = generate_bar_chart(jdd_counts)
+barchart = generate_bar_chart_top_jdd(jdd_counts)
 
 # PIECHART
 
@@ -247,3 +247,45 @@ kpi = html.Div(
         )
     ], className="kpi-container container-fluid",
 )
+
+# Fonction pour générer le graphique en barres des JDD les plus consultés
+def generate_bar_chart_top_jdd_views(jdd_views):
+    top_5_jdd_counts = jdd_views.head(5)  # Sélectionnez les 5 premières lignes
+    return dcc.Graph(
+        id="bar-chart-jdd-discutes",
+        figure=px.bar(
+            y=top_5_jdd_counts.index,
+            x=top_5_jdd_counts.values,
+            orientation="h",
+            title="Top 5 des jeux de données les plus consutés",
+            category_orders={"y": list(top_5_jdd_counts.index)},
+            text=top_5_jdd_counts.values,
+            labels={"x": "Nombre de vues", "y": "Slugs jeux de données"},
+            height=400,
+            width=None,
+        ),
+    )
+
+# Utilisation de cette fonction pour créer le graphique en barres
+barchart_views = generate_bar_chart_top_jdd_views(jdd_views)
+
+# Fonction pour générer le graphique en barres des JDD les plus réutilisés
+def generate_bar_chart_top_jdd_reuses(jdd_reuses):
+    top_5_jdd_counts = jdd_reuses.head(5)  # Sélectionnez les 5 premières lignes
+    return dcc.Graph(
+        id="bar-chart-jdd-discutes",
+        figure=px.bar(
+            y=top_5_jdd_counts.index,
+            x=top_5_jdd_counts.values,
+            orientation="h",
+            title="Top 5 des jeux de données les plus réutilisés",
+            category_orders={"y": list(top_5_jdd_counts.index)},
+            text=top_5_jdd_counts.values,
+            labels={"x": "Nombre de réutilisations", "y": "Slugs jeux de données"},
+            height=400,
+            width=None,
+        ),
+    )
+
+# Utilisation de cette fonction pour créer le graphique en barres
+barchart_reuses = generate_bar_chart_top_jdd_reuses(jdd_reuses)

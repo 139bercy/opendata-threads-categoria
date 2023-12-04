@@ -1,6 +1,6 @@
 from src.app.views.header import header
 from dash import html, dcc
-from .graphs import filtres, treemap_fig, barchart, pie_chart, jauge_disc_closes, kpi
+from .graphs import filtres, treemap_fig, barchart, pie_chart, jauge_disc_closes, kpi, barchart_views, barchart_reuses
 
 def dashboard_layout():
     return html.Div(
@@ -39,6 +39,13 @@ def dashboard_layout():
                                     kpi,
                                 ],
                                 className="kpi-container"
+                            ),
+                            html.Div(
+                                [
+                                    barchart_views,
+                                    barchart_reuses,
+                                ],
+                                className="tendances-container"
                             ),
                         ], 
                         className="graphs-container"

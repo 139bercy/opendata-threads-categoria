@@ -105,8 +105,8 @@
 }
 
 .graphs-container{
-  margin-left: 0.2rem;
-  margin-right: 0.2rem;
+  margin-left: 0.8rem;
+  margin-right: 0.8rem;
 }
 
 #pie-chart-discussions{
@@ -168,4 +168,12 @@
   margin-top: -5px;
   margin-left: 0.8rem;
   margin-right: 0.8rem;
+}
+
+.tendances-container{
+  margin-top: -30px;
+  margin-left: 0.8rem;
+  margin-right: 0.8rem;
+  align-items: center; 
+  justify-content: space-between;
 }
