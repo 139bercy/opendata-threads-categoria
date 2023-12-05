@@ -4,7 +4,7 @@ import pytest
 
 from src.auth.exceptions import LoginError, UsernameError
 from src.auth.infrastructure import InMemoryAccountRepository
-from src.auth.usecases import is_logged_in, retrieve_account, login
+from src.auth.usecases import is_logged_in, retrieve_account, login, encode_token, check_token, InvalidToken
 from src.common.utils import sha256_hash_string
 
 
@@ -27,15 +27,43 @@ def test_hash_password():
     assert result == hashed
 
 
+def test_format_token():
+    # Arrange
+    username = "jdoe"
+    token = UUID("1aab03db-d323-4c55-aa52-33913ed821d7")
+    # Act
+    result = encode_token(username=username, token=token)
+    # Assert
+    assert result == "amRvZToxYWFiMDNkYi1kMzIzLTRjNTUtYWE1Mi0zMzkxM2VkODIxZDc="
+
+
+def test_check_token_is_invalid():
+    # Arrange
+    repository = InMemoryAccountRepository()
+    token = "amRvZToxYWFiMDNkYi1kMzIzLTRjNTUtYWE1Mi0zMzkxM2VkODIxZDc="
+    # Act @ Assert
+    with pytest.raises(InvalidToken):
+        check_token(repository=repository, encoded_token=token)
+
+
+def test_check_token_is_valid():
+    # Arrange
+    repository = InMemoryAccountRepository()
+    token = "anNtaXRoOmQ2YTgxM2RlLTczYzEtNDMyOC1hYTU1LTBhYzFhMDEyMGIyMA=="
+    # Act
+    result = check_token(repository=repository, encoded_token=token)
+    # Assert
+    assert result
+
+
 def test_valid_credentials():
     # Arrange
     repository = InMemoryAccountRepository()
     # Act
     result = login(repository=repository, username="jdoe", password="password")
     # Assert
-    resource = repository.get_by_username("jdoe")
-    assert type(result) is UUID
-    assert resource.token == result
+    assert type(result) is str
+    assert len(result) == 56
 
 
 def test_invalid_username():

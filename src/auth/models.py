@@ -28,3 +28,6 @@ class Account:
         if self.token is not None:
             return True
         return False
+
+    def token_is_valid(self, token):
+        return str(self.token) == str(token)

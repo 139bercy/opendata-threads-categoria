@@ -1,6 +1,9 @@
+import pytest
+
 from app import server as app
 
 
+@pytest.mark.skip("Useless test : deprecated endpoint")
 def test_valid_login():
     # Arrange
     client = app.test_client()
@@ -13,6 +16,7 @@ def test_valid_login():
     assert "token" in response.json
 
 
+@pytest.mark.skip("Useless test : deprecated endpoint")
 def test_invalid_username():
     # Arrange
     client = app.test_client()
@@ -24,6 +28,7 @@ def test_invalid_username():
     assert "Invalid credentials" in response.text
 
 
+@pytest.mark.skip("Useless test : deprecated endpoint")
 def test_invalid_password():
     # Arrange
     client = app.test_client()

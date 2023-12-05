@@ -1,15 +1,16 @@
 import dash
 import dash_bootstrap_components as dbc
+import flask
 from dash import html, dcc
 import pandas as pd
 import os
 
 from dash.exceptions import PreventUpdate
-from flask import Flask, render_template, request, make_response, redirect
+from flask import Flask, render_template, request, make_response, redirect, jsonify
 from src.auth.infrastructure import InMemoryAccountRepository, PostgresqlAccountRepository
 
 from src.auth.exceptions import LoginError, UsernameError
-from src.auth.usecases import login as user_login
+from src.auth.usecases import login as user_login, check_token, InvalidToken
 
 from src.app.views import sidebar, header, dashboard
 from src.app.views.graphs import treemap_fig
@@ -101,6 +102,18 @@ def traiter_formulaire():
 
         # Redirigez l'utilisateur vers une nouvelle page ou faites autre chose selon vos besoins
         return render_template("formulaire_traite.html", nom=nom, prenom=prenom)
+
+
+# Routes
+@server.route("/test/user-is-logged-in", methods=["GET"])
+def user_is_logged_in():
+    cookies = flask.request.cookies
+    user_session_cookie = cookies.get("session-token", "No cookie found")
+    try:
+        is_logged = check_token(repository=repository, encoded_token=user_session_cookie)
+        return make_response(jsonify(f"Cookie Value: {user_session_cookie}, is logged in : {is_logged}"), 200)
+    except Exception as e:
+        return make_response(jsonify(f"Error: {e}"), 200)
 
 
 # Définir le callback pour mettre à jour le lien de téléchargement

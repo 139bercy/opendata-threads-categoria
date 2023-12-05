@@ -29,5 +29,3 @@ with open("data/messages.json", "r") as file:
                 content=message["content"],
                 posted_on=message["posted_on"],
             )
-
-print("SUCCESS")

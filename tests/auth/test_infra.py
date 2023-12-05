@@ -1,5 +1,3 @@
-from uuid import UUID
-
 import pytest
 
 from src.auth.exceptions import LoginError
@@ -24,7 +22,7 @@ def test_postgres_login_with_valid_credentials():
     result = login(repository=repository, username="jdoe", password="password")
     # Assert
     resource = repository.get_by_username("jdoe")
-    assert type(result) is UUID
+    assert type(result) is str
     assert resource.token is not None
 
 
