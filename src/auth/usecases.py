@@ -60,8 +60,13 @@ def encode_token(username, token):
 
 
 def check_token(repository, encoded_token):
-    username, token = tuple(base64.b64decode(encoded_token).decode("utf-8").split(":"))
+    username, token = decode_token(encoded_token)
     account = repository.get_by_username(username=username)
     if not account.token_is_valid(token):
         raise InvalidToken
     return True
+
+
+def decode_token(encoded_token):
+    username, token = tuple(base64.b64decode(encoded_token).decode("utf-8").split(":"))
+    return username, token
