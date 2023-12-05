@@ -4,19 +4,19 @@ from dash import html, dcc
 import pandas as pd
 import os
 
-from flask import Flask, render_template, request, jsonify, make_response
+from dash.exceptions import PreventUpdate
+from flask import Flask, render_template, request, make_response, redirect
 from src.auth.infrastructure import InMemoryAccountRepository, PostgresqlAccountRepository
 
 from src.auth.exceptions import LoginError, UsernameError
 from src.auth.usecases import login as user_login
 
-from src.app.views.sidebar import sidebar
-from src.app.views.header import header
+from src.app.views import sidebar, header, dashboard
 from src.app.views.graphs import treemap_fig
-from src.app.views import dashboard, formulaire, dataset
+from src.app.views import formulaire, dataset
 from src.app.views.auth import login
 
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
 import base64
 
 repository = PostgresqlAccountRepository()
@@ -27,22 +27,6 @@ if os.environ["APP_ENV"] == "test":
 server = Flask(__name__, template_folder="src/app/templates")
 server.config["SECRET_KEY"] = "asma"
 server.config["WTF_CSRF_ENABLED"] = False
-
-
-@server.route("/api/v1/login", methods=["GET", "POST"])
-def api_login():
-    if request.method == "POST":
-        data = request.form.to_dict()
-        try:
-            session_token = user_login(repository=repository, username=data["username"], password=data["password"])
-            token = str(session_token)
-            response = make_response(jsonify({"message": "Login successful", "token": str(token)}), 200)
-            response.set_cookie("token", token)
-            return response
-        except (LoginError, UsernameError, KeyError):
-            return render_template("login.html", error="Invalid credentials")
-    return render_template("login.html", error=None)
-
 
 app = dash.Dash(
     __name__,
@@ -57,13 +41,10 @@ df = pd.read_csv("data/raw/inference/predicted_data_model2.csv")
 
 app.layout = html.Div(
     [
-        sidebar,
+        sidebar.layout,
         dash.page_container,
-        header,
-        # dashboard_layout(),
-        # Composant de gestion de l'URL
+        header.layout,
         dcc.Location(id="url", refresh=False),
-        # Contenu de la page actuelle
         html.Div(id="page-content"),
     ],
     className="flex-container",
@@ -142,13 +123,42 @@ def update_download_link(n_clicks):
     return href
 
 
+@app.callback(Output("login-error", "children"), [Input("url", "pathname")], [State("url", "search")])
+def display_error(pathname, search):
+    if search:
+        error_message = search.split("=")[1]
+        return dbc.Alert(f"Error: {error_message}", color="danger")
+    return None
+
+
+@app.callback(
+    Output("login-output", "children"),
+    Input("login-button", "n_clicks"),
+    State("username-input", "value"),
+    State("password-input", "value"),
+)
+def check_login(n_clicks, username, password):
+    if n_clicks is None:
+        raise PreventUpdate
+    try:
+        session_token = user_login(repository=repository, username=username, password=password)
+        token = str(session_token)
+        dash.callback_context.response.set_cookie("session-token", token)
+        return dcc.Location(pathname="/", id="homepage")
+    except (LoginError, UsernameError, KeyError) as e:
+        print(e)
+        return dbc.Alert("Mauvais couple d'identifiants.", color="warning", dismissable=True)
+    except TypeError:
+        pass
+
+
 # Callback pour afficher le contenu de la vue en fonction de l'URL
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def display_page(pathname):
     if pathname == "/" or pathname == "/accueil":
         return dashboard.dashboard_layout()
     elif pathname == "/login":
-        return login.layout()
+        return login.layout
     elif pathname == "/form":
         # Appliquez le décorateur @login_required uniquement à la vue associée à '/form'
         return formulaire.layout()

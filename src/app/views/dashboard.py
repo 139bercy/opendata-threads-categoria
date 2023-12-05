@@ -1,6 +1,15 @@
-from src.app.views.header import header
 from dash import html, dcc
-from .graphs import filtres, treemap_fig, barchart, pie_chart, jauge_disc_closes, kpi, bar_chart_top_jdd_views, bar_chart_top_jdd_reuses
+from .graphs import (
+    filtres,
+    treemap_fig,
+    barchart,
+    pie_chart,
+    jauge_disc_closes,
+    kpi,
+    bar_chart_top_jdd_views,
+    bar_chart_top_jdd_reuses,
+)
+
 
 def dashboard_layout():
     return html.Div(
@@ -16,22 +25,24 @@ def dashboard_layout():
                                 [
                                     treemap_fig,
                                 ],
-                                className="treemap-container"
+                                className="treemap-container",
                             ),
                             html.Div(
                                 [
-                                    #barchart,
-                                    dcc.Graph(figure=barchart, id="barchart"),             
+                                    # barchart,
+                                    dcc.Graph(figure=barchart, id="barchart"),
                                 ],
-                                className="barchart-container"
+                                className="barchart-container",
                             ),
                             html.Div(
                                 [
                                     html.H3("Proportion des discussions ouvertes / closes :", className="status-title"),
-                                    html.Div([
-                                        pie_chart,
-                                        jauge_disc_closes,
-                                        ], className="status-container"
+                                    html.Div(
+                                        [
+                                            pie_chart,
+                                            jauge_disc_closes,
+                                        ],
+                                        className="status-container",
                                     ),
                                 ],
                             ),
@@ -39,21 +50,21 @@ def dashboard_layout():
                                 [
                                     kpi,
                                 ],
-                                className="kpi-container"
+                                className="kpi-container",
                             ),
                             html.Div(
                                 [
-                                    #barchart_views,
-                                    #barchart_reuses,
+                                    # barchart_views,
+                                    # barchart_reuses,
                                     dcc.Graph(figure=bar_chart_top_jdd_views, id="bar_chart_top_jdd_views"),
                                     dcc.Graph(figure=bar_chart_top_jdd_reuses, id="bar_chart_top_jdd_reuses"),
-                                    #graph_row,
+                                    # graph_row,
                                 ],
-                                className="tendances-container"
+                                className="tendances-container",
                             ),
-                        ], 
-                        className="graphs-container"
-                    )
+                        ],
+                        className="graphs-container",
+                    ),
                 ],
                 className="dashboard-container",
             ),
