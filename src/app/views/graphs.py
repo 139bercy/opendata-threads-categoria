@@ -348,7 +348,7 @@ def generate_bar_chart_top_jdd_views(jdd_views):
     subplots['layout'].update(
         width=800,
         plot_bgcolor='#fff',
-        title_text="Top 10 des jeux de données les plus consultés",
+        title_text="Top 5 des jeux de données les plus consultés",
         title_font=dict(size=19),
         bargap=0.01,
     )
@@ -433,7 +433,7 @@ def generate_bar_chart_top_jdd_reuses(jdd_reuses):
     subplots['layout'].update(
         width=800,
         plot_bgcolor='#fff',
-        title_text="Top 10 des jeux de données les plus réutilisés",
+        title_text="Top 5 des jeux de données les plus réutilisés",
         title_font=dict(size=19),
         bargap=0.01,
     )
