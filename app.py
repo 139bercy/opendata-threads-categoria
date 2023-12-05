@@ -1,33 +1,32 @@
+import base64
+import functools
+import os
+
 import dash
 import dash_bootstrap_components as dbc
 import flask
-from dash import html, dcc
 import pandas as pd
-import os
-
+from dash import html, dcc
+from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
-from flask import Flask, render_template, request, make_response, redirect, jsonify
-from src.auth.infrastructure import InMemoryAccountRepository, PostgresqlAccountRepository
+from flask import Flask, render_template, request, make_response, jsonify, redirect
 
+from src.auth.infrastructure import PostgresqlAccountRepository, InMemoryAccountRepository
+from src.app.views import formulaire, dataset
+from src.app.views import sidebar, header, dashboard
+from src.app.views.auth import login
+from src.app.views.graphs import treemap_fig
 from src.auth.exceptions import LoginError, UsernameError
 from src.auth.usecases import login as user_login, check_token, decode_token
-
-from src.app.views import sidebar, header, dashboard
-from src.app.views.graphs import treemap_fig
-from src.app.views import formulaire, dataset
-from src.app.views.auth import login
-
-from dash.dependencies import Input, Output, State
-import base64
-
-repository = PostgresqlAccountRepository()
-if os.environ["APP_ENV"] == "test":
-    repository = InMemoryAccountRepository()
 
 # Initialiser le serveur Flask
 server = Flask(__name__, template_folder="src/app/templates")
 server.config["SECRET_KEY"] = "asma"
 server.config["WTF_CSRF_ENABLED"] = False
+
+repository = PostgresqlAccountRepository()
+if os.environ["APP_ENV"] == "test":
+    repository = InMemoryAccountRepository()
 
 app = dash.Dash(
     __name__,
@@ -165,7 +164,18 @@ def user_is_logged_in():
             200,
         )
     except Exception as e:
-        return make_response(jsonify(f"Error: {e}"), 200)
+        return make_response(jsonify(f"Error: {e}"), 403)
+
+
+def login_required(repository, view_func):
+    cookies = flask.request.cookies
+    user_session_cookie = cookies.get("session-token", None)
+    if not user_session_cookie:
+        return dcc.Location(href="/login", id="login-page")
+    user_is_logged_in = check_token(repository=repository, encoded_token=user_session_cookie)
+    if not user_is_logged_in:
+        return dcc.Location(href="/login", id="login-page")
+    return view_func
 
 
 # Callback pour afficher le contenu de la vue en fonction de l'URL
@@ -177,7 +187,7 @@ def display_page(pathname):
         return login.layout
     elif pathname == "/form":
         # Appliquez le décorateur @login_required uniquement à la vue associée à '/form'
-        return formulaire.layout()
+        return login_required(repository, formulaire.layout())
     elif pathname == "/dataset":
         return dataset.dataset_layout()
     else:
