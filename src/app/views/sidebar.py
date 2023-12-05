@@ -13,16 +13,13 @@ sidebar = html.Div(
         dbc.Nav(
             [
                 dbc.NavLink(
-                    [
-                    html.I(className="fa fa-chart-simple me-3"), 
-                    html.Span("Dashboard")
-                    ],
+                    [html.I(className="fa fa-chart-simple me-3"), html.Span("Dashboard")],
                     href="/",
                     active="exact",
                 ),
                 dbc.NavLink(
                     [
-                        #html.I(className="fa fa-commenting me-2"),
+                        # html.I(className="fa fa-commenting me-2"),
                         html.I(className="fa fa-gamepad me-3", style={"margin-left": "-3px"}),
                         html.Span("Jouer avec l'IA"),
                     ],
@@ -43,6 +40,7 @@ sidebar = html.Div(
                         html.Span("GitHub"),
                     ],
                     href="https://github.com/AsmaRACHIDI/Projet_Discussions.git",
+                    target="_blank",
                     active="exact",
                 ),
             ],
