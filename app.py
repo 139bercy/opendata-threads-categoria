@@ -12,12 +12,12 @@ from src.auth.usecases import login as user_login
 
 from src.app.views.sidebar import sidebar
 from src.app.views.header import header
-from src.app.views.graphs import filtres, treemap_fig, barchart, pie_chart, jauge_disc_closes, kpi
+from src.app.views.graphs import treemap_fig
 from src.app.views import dashboard, formulaire, dataset
+from src.app.views.auth import login
 
 from dash.dependencies import Input, Output
 import base64
-from dash import callback_context
 
 repository = PostgresqlAccountRepository()
 if os.environ["APP_ENV"] == "test":
@@ -29,8 +29,8 @@ server.config["SECRET_KEY"] = "asma"
 server.config["WTF_CSRF_ENABLED"] = False
 
 
-@server.route("/login", methods=["GET", "POST"])
-def login():
+@server.route("/api/v1/login", methods=["GET", "POST"])
+def api_login():
     if request.method == "POST":
         data = request.form.to_dict()
         try:
@@ -147,6 +147,8 @@ def update_download_link(n_clicks):
 def display_page(pathname):
     if pathname == "/" or pathname == "/accueil":
         return dashboard.dashboard_layout()
+    elif pathname == "/login":
+        return login.layout()
     elif pathname == "/form":
         # Appliquez le décorateur @login_required uniquement à la vue associée à '/form'
         return formulaire.layout()
