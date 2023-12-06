@@ -27,9 +27,9 @@ def login(repository, username: str, password: str) -> str:
     is_authenticated = check_password(account=account, password=password)
     if is_authenticated:
         token = uuid4()
-        session_token = encode_token(username=username, token=token)
+        cookie = encode_token(username=username, token=token)
         update_account_with_token(repository=repository, username=username, token=token)
-        return session_token
+        return cookie
 
 
 def check_username(account: Account, username: str, password: str):
@@ -49,17 +49,20 @@ def check_password(account: Account, password: str):
 
 
 def update_account_with_token(repository, username: str, token: UUID):
+    """Update account data with created token"""
     repository.update_token(username=username, token=token)
     return token
 
 
 def encode_token(username, token):
+    """Create session cookie"""
     userpass = f"{username}:{token}"
     result = base64.b64encode(userpass.encode()).decode()
     return result
 
 
 def check_token(repository, encoded_token):
+    """Decode and compare token to registered account token"""
     username, token = decode_token(encoded_token)
     account = repository.get_by_username(username=username)
     if not account.token_is_valid(token):

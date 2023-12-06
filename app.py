@@ -17,7 +17,7 @@ from src.app.views import sidebar, header, dashboard
 from src.app.views.auth import login
 from src.app.views.graphs import treemap_fig
 from src.auth.exceptions import LoginError, UsernameError
-from src.auth.usecases import login as user_login, check_token, decode_token
+from src.auth.usecases import login as user_login, check_token, decode_token, InvalidToken
 
 # Initialiser le serveur Flask
 server = Flask(__name__, template_folder="src/app/templates")
@@ -169,13 +169,16 @@ def user_is_logged_in():
 
 def login_required(repository, view_func):
     cookies = flask.request.cookies
-    user_session_cookie = cookies.get("session-token", None)
-    if not user_session_cookie:
+    try:
+        user_session_cookie = cookies.get("session-token", None)
+        if not user_session_cookie:
+            return dcc.Location(href="/login", id="login-page")
+        user_is_logged_in = check_token(repository=repository, encoded_token=user_session_cookie)
+        if not user_is_logged_in:
+            return dcc.Location(href="/login", id="login-page")
+        return view_func
+    except InvalidToken:
         return dcc.Location(href="/login", id="login-page")
-    user_is_logged_in = check_token(repository=repository, encoded_token=user_session_cookie)
-    if not user_is_logged_in:
-        return dcc.Location(href="/login", id="login-page")
-    return view_func
 
 
 # Callback pour afficher le contenu de la vue en fonction de l'URL

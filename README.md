@@ -36,7 +36,7 @@ Le dashboard quant à lui est développé avec Dash plotly.
 ### Applications :
 
 - `auth` : gestionnaire d'authentification basique
-- `thread` : gestionnaire de discussions et coeur de l'application. TODO: Renommer `core`.
+  - `thread` : gestionnaire de discussions et coeur de l'application. TODO: Renommer `core`.
 
 Les applications suivent la même arborescence :
 
@@ -81,3 +81,8 @@ Pour interagir en lignes de commande :
 ```
 $ python commands.py
 ```
+
+### Dev
+
+Pré-requis : avoir installé Docker et docker-compose.
+Les commandes liées sont dans le fichier `Makefile`.
