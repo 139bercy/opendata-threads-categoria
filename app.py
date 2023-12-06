@@ -181,6 +181,31 @@ def login_required(repository, view_func):
     except InvalidToken:
         return dcc.Location(href="/login", id="login-page")
 
+# Callback pour gérer le clic sur le bouton de connexion/déconnexion
+@app.callback(
+    [
+        Output("login-logout-icon", "className"),
+        Output("login-logout-text", "children"),
+        Output("login-logout-link", "href"),
+    ],
+    [Input("login-logout-link", "n_clicks")],
+    prevent_initial_call=True,
+)
+def toggle_login_logout(n_clicks):
+    print("Toggle Clicks:", n_clicks)
+    
+    # Obtenir le cookie de session
+    cookies = flask.request.cookies
+    user_session_cookie = cookies.get("session-token", None)
+    print("Session Cookie:", user_session_cookie)
+
+    if user_session_cookie:
+        # L'utilisateur est connecté donc bouton deconnexion
+        return "fa fa-sign-out", "Se déconnecter", "/"
+
+    # L'utilisateur n'est pas connecté, donc connexion
+    return "fa fa-sign-in", "Se connecter", "/login"
+
 
 # Callback pour afficher le contenu de la vue en fonction de l'URL
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])

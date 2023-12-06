@@ -43,6 +43,18 @@ layout = html.Div(
                     target="_blank",
                     active="exact",
                 ),
+                html.Hr(),
+                dbc.NavLink(
+                    id="login-logout-link",
+                    children=[
+                        html.Div(id="login-logout-container", children=[
+                            html.I(id="login-logout-icon", className="fa fa-sign-in me-3"),
+                            html.Span(id="login-logout-text", children="Se connecter"),
+                        ]),
+                    ],
+                    href="/login",
+                    active="exact",
+                ),
             ],
             vertical=True,
             pills=True,
