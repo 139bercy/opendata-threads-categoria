@@ -2,14 +2,14 @@ import pytest
 
 from src.auth.exceptions import LoginError
 from src.auth.infrastructure import PostgresqlAccountRepository
-from src.auth.usecases import retrieve_account, login
+from src.auth.usecases import get_account_by_username, login
 
 
 def test_retrieve_postgres_user(db_fixture):
     # Arrange
     repository = PostgresqlAccountRepository()
     # Act
-    result = retrieve_account(repository=repository, username="jdoe")
+    result = get_account_by_username(repository=repository, username="jdoe")
     # Assert
     assert result.username == "jdoe"
 

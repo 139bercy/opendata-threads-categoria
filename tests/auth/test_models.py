@@ -4,7 +4,8 @@ import pytest
 
 from src.auth.exceptions import LoginError, UsernameError
 from src.auth.infrastructure import InMemoryAccountRepository
-from src.auth.usecases import is_logged_in, retrieve_account, login, encode_token, check_token, InvalidToken
+from src.auth.usecases import user_is_logged_in, get_account_by_username, login, encode_token, check_token
+from src.auth.exceptions import InvalidToken
 from src.common.utils import sha256_hash_string
 
 
@@ -12,7 +13,7 @@ def test_retrieve_user():
     # Arrange
     repository = InMemoryAccountRepository()
     # Act
-    result = retrieve_account(repository=repository, username="jdoe")
+    result = get_account_by_username(repository=repository, username="jdoe")
     # Assert
     assert result.username == "jdoe"
 
@@ -108,11 +109,11 @@ def test_credentials_not_set():
 
 def test_is_logged_in_ok():
     repository = InMemoryAccountRepository()
-    result = is_logged_in(repository=repository, username="jsmith")
+    result = user_is_logged_in(repository=repository, username="jsmith")
     assert result is True
 
 
 def test_is_logged_in_ko():
     repository = InMemoryAccountRepository()
-    result = is_logged_in(repository=repository, username="jdoe")
+    result = user_is_logged_in(repository=repository, username="jdoe")
     assert result is False

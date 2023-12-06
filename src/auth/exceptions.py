@@ -4,3 +4,7 @@ class LoginError(Exception):
 
 class UsernameError(Exception):
     pass
+
+
+class InvalidToken(Exception):
+    pass

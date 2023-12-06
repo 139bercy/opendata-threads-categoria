@@ -1,26 +1,24 @@
 import base64
 from uuid import uuid4, UUID
 
+from auth.gateways import AbstractAccountRepository
+from src.auth.exceptions import InvalidToken
 from src.auth.exceptions import LoginError, UsernameError
 from src.auth.models import Account
 from src.common.utils import sha256_hash_string
 
 
-class InvalidToken(Exception):
-    pass
-
-
-def retrieve_account(repository, username: str):
+def get_account_by_username(repository: AbstractAccountRepository, username: str):
     account = repository.get_by_username(username=username)
     return account
 
 
-def is_logged_in(repository, username: str) -> bool:
+def user_is_logged_in(repository: AbstractAccountRepository, username: str) -> bool:
     account = repository.get_by_username(username=username)
     return account.is_logged_in
 
 
-def login(repository, username: str, password: str) -> str:
+def login(repository: AbstractAccountRepository, username: str, password: str) -> str:
     """:returns base64 encoded string if authentication is successful"""
     account = repository.get_by_username(username=username)
     check_username(account=account, username=username, password=password)
@@ -48,13 +46,13 @@ def check_password(account: Account, password: str):
         raise LoginError
 
 
-def update_account_with_token(repository, username: str, token: UUID):
+def update_account_with_token(repository: AbstractAccountRepository, username: str, token: UUID):
     """Update account data with created token"""
     repository.update_token(username=username, token=token)
     return token
 
 
-def encode_token(username, token):
+def encode_token(username: str, token: UUID):
     """Create session cookie"""
     userpass = f"{username}:{token}"
     result = base64.b64encode(userpass.encode()).decode()

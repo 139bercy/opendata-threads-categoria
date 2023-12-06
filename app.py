@@ -17,7 +17,8 @@ from src.app.views import sidebar, header, dashboard
 from src.app.views.auth import login
 from src.app.views.graphs import treemap_fig
 from src.auth.exceptions import LoginError, UsernameError
-from src.auth.usecases import login as user_login, check_token, decode_token, InvalidToken
+from src.auth.usecases import login as user_login, check_token, decode_token
+from src.auth.exceptions import InvalidToken
 
 # Initialiser le serveur Flask
 server = Flask(__name__, template_folder="src/app/templates")
