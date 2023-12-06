@@ -14,3 +14,8 @@ db:
 
 coverage:
 	pytest --cov=. && coverage html
+
+## Dev
+
+todo:
+	grep -r "TODO" src tests
