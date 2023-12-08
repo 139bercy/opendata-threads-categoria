@@ -1,6 +1,6 @@
 import abc
 
-from src.thread.models import Message, Thread
+from src.core.models import Message, Thread
 
 
 class AbstractThreadRepository(abc.ABC):

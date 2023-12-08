@@ -1,6 +1,6 @@
 from src.config import postgres_client
-from src.thread.gateways import AbstractThreadRepository
-from src.thread.models import Message, Thread
+from src.core.gateways import AbstractThreadRepository
+from src.core.models import Message, Thread
 
 
 class InMemoryThreadRepository(AbstractThreadRepository):

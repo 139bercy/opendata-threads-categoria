@@ -3,8 +3,8 @@ import json
 import click
 import requests
 
-from thread.infrastructure import PostgresThreadRepository
-from thread.usecases import create_message
+from core.infrastructure import PostgresThreadRepository
+from core.usecases import create_message
 
 
 @click.group()

@@ -1,5 +1,5 @@
 from src.config import postgres_client
-from src.thread.infrastructure import PostgresThreadRepository
+from src.core.infrastructure import PostgresThreadRepository
 from tests.thread.test_models import create_message
 
 
