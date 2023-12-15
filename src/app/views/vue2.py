@@ -2,7 +2,6 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
-#test
 
 class MonFormulaire(FlaskForm):
     nom = StringField("Nom")
