@@ -4,20 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulaire</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Formulaire de prédiction</h1>
-    <form method="post" action="/form">
-        {{ form.hidden_tag() }}
-        <label for="title">Titre :</label>
-        {{ form.title() }}
+    <div class="container mt-4">
+        <h1>Formulaire de prédictions</h1>
         <br>
         <br>
-        <label for="message">Message :</label>
-        {{ form.message() }}
-        <br>
-        <br>
-        {{ form.submit() }}
-    </form>
+        <form method="post" action="/form">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <label for="title">Titre :</label>
+                {{ form.title(class="form-control") }}
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="message">Message :</label>
+                {{ form.message(class="form-control") }}
+            </div>
+            <br>
+            <br>
+            <button type="submit" class="btn btn-primary">Envoyer</button>
+        </form>
+    </div>
 </body>
 </html>
