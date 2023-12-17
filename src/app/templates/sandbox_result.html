@@ -8,32 +8,7 @@
 </head>
 <body>
     <h2>Résultat de l'Inférence</h2>
-    <p>{{ result }}</p>
+    <p>Catégorie prédite : {{ categorie }}</p>
+    <p>Sous-catégorie prédite : {{ sscategorie }}</p>
 </body>
 </html>
-
-
-class SandboxFormulaire(FlaskForm):
-    titre = StringField("Titre")
-    text = StringField("Texte")
-
-@app.route("/sandbox", methods=["GET", "POST"])
-def sandbox():
-
-form = SandboxFormulaire()
-if form.validate_on_submit():
-
-user_title = form.titre.data
-user_text = form.text.data
-
-df = df.Dataframe(user_title, user_text)
-
-ouput_df = perform_inference1(model, tokenizer, df)
-predicted = ID2SSLABEL(output_df["inference"].values[0])
-
-return render_template("templates/sandbox.html", form=form)
-
-
-from src.script.inference.categories import ID2SSLABEL
-
-sandbox_template.html

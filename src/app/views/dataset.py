@@ -7,7 +7,7 @@ import io
 
 
 # Charger le DataFrame
-df = pd.read_csv("data/raw/inference/predicted_data_model2.csv")
+df = pd.read_csv("data/raw/inference/predicted_data_models.csv")
 
 # Réinitialiser l'index du DataFrame
 df = df.reset_index()

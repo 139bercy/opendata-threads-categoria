@@ -19,7 +19,7 @@ locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")
 mois_en_francais = list(calendar.month_name)[1:]
 
 # Chargement des données depuis le fichier CSV (peut être placé dans app.py)
-df = pd.read_csv("data/raw/inference/predicted_data_model2.csv")
+df = pd.read_csv("data/raw/inference/predicted_data_models.csv")
 
 # Calculer le nombre total de lignes dans le DataFrame
 total_rows = df.shape[0]

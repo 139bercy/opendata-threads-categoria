@@ -2,20 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulaire d'Inférence</title>
+    <title>Formulaire</title>
 </head>
 <body>
-    <h2>Formulaire d'Inférence</h2>
-    <form method="POST" action="/submit-prediction">
+    <h1>Formulaire de prédiction</h1>
+    <form method="post" action="/form">
+        {{ form.hidden_tag() }}
         <label for="title">Titre :</label>
-        <input type="text" id="title" name="title" required>
+        {{ form.title() }}
+        <br>
         <br>
         <label for="message">Message :</label>
-        <textarea id="message" name="message" rows="4" required></textarea>
+        {{ form.message() }}
         <br>
-        <input type="submit" value="Prédiction">
+        <br>
+        {{ form.submit() }}
     </form>
 </body>
 </html>

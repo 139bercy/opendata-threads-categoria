@@ -7,12 +7,18 @@ import pandas as pd
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-import categories
-from preprocess import preprocess_data
+#import categories
+#from preprocess import preprocess_data
 
-sys.path.append("..")
-from logging_config import configure_logging
+#sys.path.append("..")
+#from logging_config import configure_logging
+# Ajoutez le chemin du projet au chemin d'import
+project_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+sys.path.append(project_path)
 
+from src.scripts.inference import categories
+from src.scripts.inference.preprocess import preprocess_data
+from src.scripts.logging_config import configure_logging
 
 # Accédez aux dictionnaires définis dans categories.py
 labels = categories.LABELS

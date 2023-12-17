@@ -1,6 +1,7 @@
 import base64
 import functools
 import os
+import sys
 
 import dash
 import dash_bootstrap_components as dbc
@@ -20,6 +21,18 @@ from src.auth.exceptions import LoginError, UsernameError
 from src.auth.usecases import login as user_login, check_token, decode_token
 from src.auth.exceptions import InvalidToken
 
+# Importez FlaskForm du module wtforms
+from flask_wtf import FlaskForm
+# Importez TextAreaField pour traiter le champ de texte du formulaire
+from wtforms import StringField, SubmitField, TextAreaField
+
+# Ajoutez le chemin du projet au chemin d'import
+#project_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../"))
+#sys.path.append(project_path)
+
+from src.scripts.inference import inference_script
+from src.app.views import sandbox
+
 # Initialiser le serveur Flask
 server = Flask(__name__, template_folder="src/app/templates")
 server.config["SECRET_KEY"] = "asma"
@@ -38,7 +51,7 @@ app = dash.Dash(
 )
 
 # Chargement des données depuis le fichier CSV (peut être placé dans app.py)
-df = pd.read_csv("data/raw/inference/predicted_data_model2.csv")
+df = pd.read_csv("data/raw/inference/predicted_data_models.csv")
 
 app.layout = html.Div(
     [
@@ -207,6 +220,60 @@ def toggle_login_logout(n_clicks):
     return "fa fa-sign-in", "Se connecter", "/login"
 
 
+
+
+# Modifiez la classe SandboxFormulaire pour inclure un champ TextAreaField pour le message
+class SandboxFormulaire(FlaskForm):
+    title = StringField("Titre")
+    message = TextAreaField("Message")  # Modifiez le champ pour TextAreaField
+    submit = SubmitField("Envoyer")
+    
+    
+"""# Modifiez la route /sandbox pour rendre le modèle "sandbox.html" plutôt que "templates/sandbox.html"
+@server.route("/sandbox", methods=["GET", "POST"])
+def sandbox():
+    form = SandboxFormulaire()
+    
+    if form.validate_on_submit():
+        title = form.title.data
+        message = form.message.data
+
+        print(f"Titre: {title}, Message: {message}")
+        
+        # Créez un DataFrame avec les colonnes correctes
+        df = pd.DataFrame({"title_discussion": [title], "message": [message]})
+        
+        # Obtenez le chemin du répertoire du script en cours d'exécution
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+
+        # Spécifiez les noms de fichiers et répertoires relatifs
+        model1_zip_file = os.path.join(script_directory, "../../trained_models/bert-finetuned-my-data-final_archive.zip")
+        model2_zip_file = os.path.join(script_directory, "../../trained_models/bert-finetuned-my-data-final2_archive2.zip")
+
+        # Chargez et préparez les modèles
+        model1, tokenizer1, model2, tokenizer2 = inference_script.load_and_prepare_models(model1_zip_file, model2_zip_file)
+
+        # Effectuez l'inférence avec les modèles
+        output_df_model1 = inference_script.perform_inference1(model1, tokenizer1, df)
+
+        # Utilisez la sortie du modèle 1 comme entrée pour le modèle 2
+        output_df_model2 = inference_script.perform_inference2(model2, tokenizer2, output_df_model1)
+
+        categorie_predite = output_df_model2["predictions_motifs_label"].iloc[0]
+        sous_categorie_predite = output_df_model2["predictions_ssmotifs_label"].iloc[0]
+        
+        print("Les données ont été annotées avec succès !")
+        
+        # Redirigez l'utilisateur vers une nouvelle page ou faites autre chose selon vos besoins
+        return render_template("sandbox_result.html", categorie=categorie_predite, sscategorie=sous_categorie_predite)
+
+    return render_template("sandbox.html", form=form)"""
+
+
+@server.route("/form", methods=["GET", "POST"])
+def sandbox_route():
+    return sandbox.sandbox()
+
 # Callback pour afficher le contenu de la vue en fonction de l'URL
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def display_page(pathname):
@@ -214,11 +281,14 @@ def display_page(pathname):
         return dashboard.dashboard_layout()
     elif pathname == "/login":
         return login.layout
-    elif pathname == "/form":
+    #elif pathname == "/form":
         # Appliquez le décorateur @login_required uniquement à la vue associée à '/form'
-        return login_required(repository, formulaire.layout())
+     #   return login_required(repository, formulaire.layout())
     elif pathname == "/dataset":
         return dataset.dataset_layout()
+    elif pathname == "/form":
+        # Afficher la page associée au formulaire de prédiction
+        return sandbox.sandbox()
     else:
         return "404 - Page introuvable"
 
