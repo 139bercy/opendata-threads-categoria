@@ -49,6 +49,8 @@ app = dash.Dash(
     external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.themes.MATERIA, dbc.icons.FONT_AWESOME],
     assets_folder="static",
 )
+# pour le formulaire flask !
+app.config['suppress_callback_exceptions'] = True
 
 # Chargement des données depuis le fichier CSV (peut être placé dans app.py)
 df = pd.read_csv("data/raw/inference/predicted_data_models.csv")
@@ -115,7 +117,6 @@ def traiter_formulaire():
 
         # Redirigez l'utilisateur vers une nouvelle page ou faites autre chose selon vos besoins
         return render_template("formulaire_traite.html", nom=nom, prenom=prenom)
-
 
 # Définir le callback pour mettre à jour le lien de téléchargement
 @app.callback(
@@ -220,27 +221,34 @@ def toggle_login_logout(n_clicks):
     return "fa fa-sign-in", "Se connecter", "/login"
 
 
+# Ajoutez la route pour le formulaire
 @server.route("/form", methods=["GET", "POST"])
 def sandbox_route():
     return sandbox.sandbox()
 
+# Ajoutez une nouvelle route pour le résultat du formulaire
+@server.route("/form/result", methods=["POST"])
+def process_form():
+    title = request.form.get("title")
+    message = request.form.get("message")
+    return sandbox.process_form(title, message)
+
 # Callback pour afficher le contenu de la vue en fonction de l'URL
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def display_page(pathname):
-    if pathname == "/" or pathname == "/accueil":
+    if pathname == "/" or pathname == "/home":
         return dashboard.dashboard_layout()
     elif pathname == "/login":
         return login.layout
     #elif pathname == "/form":
-        # Appliquez le décorateur @login_required uniquement à la vue associée à '/form'
-     #   return login_required(repository, formulaire.layout())
+        #Appliquez le décorateur @login_required uniquement à la vue associée à '/form'
+        #return login_required(repository, formulaire.layout())
     elif pathname == "/dataset":
         return dataset.dataset_layout()
     elif pathname == "/form":
-        # Afficher la page associée au formulaire de prédiction
-        #return sandbox.sandbox()
-        #return login_required(repository, sandbox.sandbox())
         return login_required(repository, sandbox.sandbox())
+    elif pathname == "/form/result":
+        return login_required(repository, sandbox.process_form())
     else:
         return "404 - Page introuvable"
 

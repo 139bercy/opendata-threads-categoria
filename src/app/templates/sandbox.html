@@ -11,7 +11,7 @@
         <h1>Formulaire de prédictions</h1>
         <br>
         <br>
-        <form method="post" action="/form">
+        <form method="post" action="/form/result">
             {{ form.hidden_tag() }}
             <div class="form-group">
                 <label for="title">Titre :</label>
@@ -20,7 +20,7 @@
             <br>
             <div class="form-group">
                 <label for="message">Message :</label>
-                {{ form.message(class="form-control") }}
+                {{ form.message(class="form-control", rows=5) }}
             </div>
             <br>
             <br>
