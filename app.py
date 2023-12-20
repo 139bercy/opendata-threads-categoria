@@ -1,5 +1,4 @@
 import base64
-import functools
 import os
 
 import dash
@@ -9,16 +8,16 @@ import pandas as pd
 from dash import html, dcc
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
-from flask import Flask, render_template, request, make_response, jsonify, redirect
+from flask import Flask, render_template, request, make_response, jsonify
 
-from src.auth.infrastructure import PostgresqlAccountRepository, InMemoryAccountRepository
 from src.app.views import formulaire, dataset
 from src.app.views import sidebar, header, dashboard
 from src.app.views.auth import login
 from src.app.views.graphs import treemap_fig
-from src.auth.exceptions import LoginError, UsernameError
-from src.auth.usecases import login as user_login, check_token, decode_token
 from src.auth.exceptions import InvalidToken
+from src.auth.exceptions import LoginError, UsernameError
+from src.auth.infrastructure import PostgresqlAccountRepository, InMemoryAccountRepository
+from src.auth.usecases import login as user_login, check_token, decode_token
 
 # Initialiser le serveur Flask
 server = Flask(__name__, template_folder="src/app/templates")
@@ -181,6 +180,7 @@ def login_required(repository, view_func):
     except InvalidToken:
         return dcc.Location(href="/login", id="login-page")
 
+
 # Callback pour gérer le clic sur le bouton de connexion/déconnexion
 @app.callback(
     [
@@ -193,7 +193,7 @@ def login_required(repository, view_func):
 )
 def toggle_login_logout(n_clicks):
     print("Toggle Clicks:", n_clicks)
-    
+
     # Obtenir le cookie de session
     cookies = flask.request.cookies
     user_session_cookie = cookies.get("session-token", None)
