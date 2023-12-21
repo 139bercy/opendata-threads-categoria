@@ -76,11 +76,7 @@ target/
 .ipynb_checkpoints/
 
 # exclude data from source control by default
-/data/raw/extraction_datasets/
-/data/raw/extraction_discussions/
-/data/raw/extraction_groupes_metier/
-/data/raw/merging_data/merged_data.csv
-
+/data
 # Mac OS-specific storage files
 .DS_Store
 
