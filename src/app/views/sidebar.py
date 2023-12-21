@@ -23,7 +23,7 @@ layout = html.Div(
                         html.I(className="fa fa-gamepad me-3", style={"margin-left": "-3px"}),
                         html.Span("Jouer avec l'IA"),
                     ],
-                    href="/form",
+                    href="http://127.0.0.1:8050/form",
                     active="exact",
                 ),
                 dbc.NavLink(

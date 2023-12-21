@@ -73,7 +73,7 @@ def import_data_from_csv():
         # Créer un curseur
         cursor = conn.cursor()
 
-        # Itérer sur les lignes du DataFrame et insérer les données dans la table Utilisateur
+        # Itérer sur les lignes du DataFrame et insérer les données dans les tables
         for index, row in data.iterrows():
             try:
                 # Reformater les dates avec fuseau horaire en format DATETIME AAAA-MM-DD HH:MI:SS
@@ -84,18 +84,18 @@ def import_data_from_csv():
                 closed_discussion_formatted = format_datetime_mysql(row["closed_discussion"])
 
                 # Insérer des données dans la table user
-                # query = "SELECT pk FROM user WHERE username = %s"
-                # cursor.execute(query, (row['user'],))
-                # existing_user = cursor.fetchone()
-                query = "SELECT pk FROM user WHERE CONCAT(firstname, ' ', lastname) = %s"
-                cursor.execute(query, (row["firstname"] + " " + row["lastname"],))
+                query = "SELECT pk FROM user WHERE username = %s"
+                cursor.execute(query, (row['user'],))
                 existing_user = cursor.fetchone()
+                #query = "SELECT pk FROM user WHERE CONCAT(firstname, ' ', lastname) = %s"
+                #cursor.execute(query, (row["firstname"] + " " + row["lastname"],))
+                #existing_user = cursor.fetchone()
 
                 if not existing_user:
                     # insérer utilisateur
                     # query = "INSERT INTO user (username) VALUES (%s)"
                     # cursor.execute(query, (row['user'],))
-                    query = "INSERT INTO Users (firstname, lastname) VALUES (%s, %s)"
+                    query = "INSERT INTO user (firstname, lastname) VALUES (%s, %s)"
                     cursor.execute(
                         query,
                         (

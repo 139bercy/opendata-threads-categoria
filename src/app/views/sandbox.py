@@ -6,6 +6,21 @@ import pandas as pd
 from src.scripts.inference import inference_script
 from wtforms.validators import DataRequired
 
+# Importez le module MySQL pour la connexion à la base de données
+import mysql.connector
+import json
+import src.config
+
+# Charger les informations de connexion depuis le fichier de configuration
+with open("config.json") as config_file:
+    config = json.load(config_file)
+
+# Utilisation des paramètres de connexion
+db_host = config["DB_HOST"]
+db_user = config["DB_USER"]
+#db_password = config["DB_PASSWORD"]  # Ajoutez cette ligne si votre fichier de configuration a cette variable
+db_name = config["DB_NAME"]
+
 
 class SandboxFormulaire(FlaskForm):
     title = StringField("Titre", validators=[DataRequired()])
@@ -37,6 +52,31 @@ def process_form(title, message):
     
     print("Les données ont été annotées avec succès !")
     
+    # Insérez les données dans la table 'prediction'
+    try:
+        conn = mysql.connector.connect(
+            host=db_host,
+            user=db_user,
+            # password=db_password,
+            database="database_discussions"
+        )
+        
+        cursor = conn.cursor()
+
+        # Insérez les données dans la table 'prediction'
+        query = "INSERT INTO prediction (title, message, categorie, sous_categorie) VALUES (%s, %s, %s, %s)"
+        cursor.execute(query, (title, message, categorie_predite, sous_categorie_predite))
+        
+        conn.commit()
+        print("Données insérées avec succès dans la table 'prediction' !")
+
+    except mysql.connector.Error as err:
+        print(f"Erreur lors de l'insertion dans la table 'prediction' : {err}")
+
+    finally:
+        if conn:
+            conn.close()  # Fermeture de la connexion
+            
     # Redirigez l'utilisateur vers une nouvelle page ou faites autre chose selon vos besoins
     return render_template("sandbox_result.html", categorie=categorie_predite, sscategorie=sous_categorie_predite)
 

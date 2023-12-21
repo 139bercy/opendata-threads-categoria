@@ -103,7 +103,7 @@ def main():
             # created_date = datetime.strptime(item['created'][:10], "%Y-%m-%d").strftime("%d/%m/%Y")
             # closed_date = datetime.strptime(item['closed'][:10], "%Y-%m-%d").strftime("%d/%m/%Y") if item['closed'] else None
             user = item["user"]
-            # full_name = user['first_name'] + ' ' + user['last_name']
+            #full_name = user['first_name'] + ' ' + user['last_name']
             discussion_list = item["discussion"]
             for discussion in discussion_list:
                 extracted_data.append(
