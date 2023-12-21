@@ -1,5 +1,5 @@
-from src.thread.models import Message, Thread
-from src.thread.gateways import AbstractThreadRepository
+from src.core.models import Message, Thread
+from src.core.gateways import AbstractThreadRepository
 
 
 def create_message(

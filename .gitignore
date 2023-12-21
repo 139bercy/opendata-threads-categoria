@@ -89,6 +89,7 @@ target/
 .mypy_cache/
 
 # Fichiers que je souhaite ignorer
+./auth
 *.zip
 src/trained_models/
 logs/

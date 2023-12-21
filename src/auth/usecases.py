@@ -1,7 +1,7 @@
 import base64
 from uuid import uuid4, UUID
 
-from auth.gateways import AbstractAccountRepository
+from src.auth.gateways import AbstractAccountRepository
 from src.auth.exceptions import InvalidToken
 from src.auth.exceptions import LoginError, UsernameError
 from src.auth.models import Account

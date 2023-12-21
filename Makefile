@@ -19,3 +19,6 @@ coverage:
 
 todo:
 	grep -r "TODO" src tests
+
+clean:
+	rm -rf .pytest_cache htmlcov .coverage

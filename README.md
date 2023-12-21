@@ -36,7 +36,7 @@ Le dashboard quant à lui est développé avec Dash plotly.
 ### Applications :
 
 - `auth` : gestionnaire d'authentification basique
-  - `thread` : gestionnaire de discussions et coeur de l'application. TODO: Renommer `core`.
+  - `core` : gestionnaire de discussions et coeur de l'application. TODO: Renommer `core`.
 
 Les applications suivent la même arborescence :
 

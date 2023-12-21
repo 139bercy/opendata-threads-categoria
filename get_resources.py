@@ -1,8 +1,8 @@
 import json
 import requests
 
-from src.thread.infrastructure import PostgresThreadRepository
-from src.thread.usecases import create_message
+from src.core.infrastructure import PostgresThreadRepository
+from src.core.usecases import create_message
 
 repository = PostgresThreadRepository()
 

@@ -39,7 +39,7 @@ layout = html.Div(
                         html.I(className="fa-brands fa-github me-3"),
                         html.Span("GitHub"),
                     ],
-                    href="https://github.com/AsmaRACHIDI/Projet_Discussions.git",
+                    href="https://github.com/139bercy/opendata-threads-categoria/",
                     target="_blank",
                     active="exact",
                 ),
@@ -47,10 +47,13 @@ layout = html.Div(
                 dbc.NavLink(
                     id="login-logout-link",
                     children=[
-                        html.Div(id="login-logout-container", children=[
-                            html.I(id="login-logout-icon", className="fa fa-sign-in me-3"),
-                            html.Span(id="login-logout-text", children="Se connecter"),
-                        ]),
+                        html.Div(
+                            id="login-logout-container",
+                            children=[
+                                html.I(id="login-logout-icon", className="fa fa-sign-in me-3"),
+                                html.Span(id="login-logout-text", children="Se connecter"),
+                            ],
+                        ),
                     ],
                     href="/login",
                     active="exact",

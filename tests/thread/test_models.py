@@ -1,6 +1,6 @@
-from src.thread.infrastructure import InMemoryThreadRepository
-from src.thread.models import Message, Thread
-from src.thread.usecases import create_message, create_thread
+from src.core.infrastructure import InMemoryThreadRepository
+from src.core.models import Message, Thread
+from src.core.usecases import create_message, create_thread
 
 
 def test_create_message():
