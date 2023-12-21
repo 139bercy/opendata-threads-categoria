@@ -7,16 +7,6 @@ import mysql.connector
 sys.path.append("..")
 from logging_config import configure_logging
 
-"""# Vérification et création du répertoire de logs
-def configure_logging(log_directory, log_file_name):
-    if not os.path.exists(log_directory):
-        os.makedirs(log_directory)
-
-    # Configuration du logging
-    timestamp = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
-    log_file = os.path.join(log_directory, f"{log_file_name}_{timestamp}.log")
-    logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')"""
-
 
 # Récupérer le host, le nom d'utilisateur et le mot de passe à partir des variables d'environnement situées dans le fichier de conf.
 def load_db_config():
@@ -45,22 +35,11 @@ def create_database_and_tables():
         # Création de la base de données
         cursor.execute("CREATE DATABASE IF NOT EXISTS database_discussions")
 
-        """# Fermeture du curseur
-        cursor.close()
-        conn.close()
-
-        # Connexion à la base de données nouvellement créée
-        conn = mysql.connector.connect(
-            host= db_host,
-            user= db_user,
-            password= db_password,
-            database="database_discussions"
-        )"""
-
         # Utilisation de la base de données nouvellement créée
         cursor.execute("USE database_discussions")
 
-        # Création de tables (Utilisateur, Discussion, Dataset)
+        # Création de tables 
+        # TABLE USER
         cursor.execute(
             """
         CREATE TABLE IF NOT EXISTS user (
@@ -71,6 +50,7 @@ def create_database_and_tables():
         """
         )
 
+        # TABLE ORGANIZATION
         cursor.execute(
             """
         CREATE TABLE IF NOT EXISTS organization (
@@ -80,6 +60,7 @@ def create_database_and_tables():
         """
         )
 
+        # TABLE DATASET
         cursor.execute(
             """
         CREATE TABLE IF NOT EXISTS dataset (
@@ -102,6 +83,7 @@ def create_database_and_tables():
         """
         )
 
+        # TABLE DISCUSSION
         cursor.execute(
             """
         CREATE TABLE IF NOT EXISTS discussion (
@@ -116,6 +98,7 @@ def create_database_and_tables():
         """
         )
 
+        # TABLE MESSAGE
         # Table intermédiaire car relation (n,n)
         cursor.execute(
             """
@@ -131,7 +114,7 @@ def create_database_and_tables():
         """
         )
         
-        # Tble des prédictions "jouer avec l'IA"
+        # TABLE PREDICTION "jouer avec l'IA"
         cursor.execute(
             """
         CREATE TABLE IF NOT EXISTS prediction (
@@ -143,7 +126,6 @@ def create_database_and_tables():
         )
         """
         )
-    
 
         # Fermeture du curseur et de la connexion
         cursor.close()
