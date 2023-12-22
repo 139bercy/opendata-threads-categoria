@@ -7,14 +7,6 @@ import pandas as pd
 sys.path.append("..")
 from logging_config import configure_logging
 
-"""# Spécifier le chemin relatif vers le dossier logs
-log_folder_path = '../../../logs/data_acquisition/merging_data'  # Le nom du dossier que vous avez créé
-# Générer un nom de fichier de journal unique basé sur la date et l'heure
-log_filename = datetime.now().strftime("%Y-%m-%d") + "_merging_data.log"
-# Spécifier le chemin complet du fichier de journal
-log_file_path = os.path.join(log_folder_path, log_filename)
-# Configurer les paramètres de journalisation avec le chemin complet
-logging.basicConfig(filename=log_file_path, level=logging.INFO, format='%(asctime)s - %(levelname)s: %(message)s')"""
 
 # Obtenez le chemin du dossier du script en cours d'exécution
 script_directory = os.path.dirname(__file__)
@@ -28,9 +20,7 @@ def load_and_merge_data():
         logging.info("Chargement des fichiers CSV en cours...")
         df_discussions = pd.read_csv(os.path.join(csv_folder_path, "extraction_discussions/discussions.csv"))
         df_datasets = pd.read_csv(os.path.join(csv_folder_path, "extraction_datasets/datasets.csv"))
-        df_grp_metiers = pd.read_csv(
-            os.path.join(csv_folder_path, "extraction_groupes_metiers/datasets_groupes_metiers.csv")
-        )
+        df_grp_metiers = pd.read_csv(os.path.join(csv_folder_path, "extraction_groupes_metiers/datasets_groupes_metiers_20231030.csv"), sep=';')
         logging.info("Fichiers CSV chargés avec succès.")
 
         # Fusionner les DataFrames en utilisant les colonnes 'id_subject' et 'id_dataset' comme clés de jointure
@@ -44,7 +34,7 @@ def load_and_merge_data():
             left_on="slug",
             right_on="dataset_id",
             how="left",
-        )
+        ).drop("dataset_id", axis=1)
         # df_merged.drop(['dataset_id'], axis=1, inplace=True)  # Drop the duplicate column
 
         logging.info("Fusion des DataFrames terminée.")
