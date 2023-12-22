@@ -237,7 +237,7 @@ def process_form():
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
 def display_page(pathname):
     if pathname == "/" or pathname == "/home":
-        return dashboard.dashboard_layout()
+        return login_required(repository, dashboard.dashboard_layout())
     elif pathname == "/login":
         return login.layout
     #elif pathname == "/form":
@@ -246,9 +246,9 @@ def display_page(pathname):
     elif pathname == "/dataset":
         return dataset.dataset_layout()
     elif pathname == "/form":
-        return login_required(repository, sandbox.sandbox())
+        return sandbox.sandbox()
     elif pathname == "/form/result":
-        return login_required(repository, sandbox.process_form())
+        return sandbox.process_form()
     else:
         return "404 - Page introuvable"
 
