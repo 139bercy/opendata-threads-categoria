@@ -55,7 +55,7 @@ def create_database_and_tables():
             """
         CREATE TABLE IF NOT EXISTS organization (
             pk INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(255) NOT NULL UNIQUE
+            name VARCHAR(255) NOT NULL
         )
         """
         )
@@ -65,19 +65,19 @@ def create_database_and_tables():
             """
         CREATE TABLE IF NOT EXISTS dataset (
             pk INT AUTO_INCREMENT PRIMARY KEY,
-            organization_id INT,
             dataset_buid VARCHAR(50) NOT NULL UNIQUE,
             title VARCHAR(400),
+            groupe_metier VARCHAR(255),
             description TEXT,
             url VARCHAR(400),
             created_at DATETIME,
-            last_update DATETIME,
-            slug VARCHAR(255) NOT NULL UNIQUE,
-            groupe_metier VARCHAR(100) NOT NULL,
+            last_modified_at DATETIME,
+            slug VARCHAR(255) NOT NULL,
             nb_discussions INT,
             nb_followers INT,
             nb_reuses INT,
             nb_views INT,
+            organization_id INT,
             FOREIGN KEY (organization_id) REFERENCES organization(pk)
         )
         """
@@ -88,11 +88,11 @@ def create_database_and_tables():
             """
         CREATE TABLE IF NOT EXISTS discussion (
             pk INT AUTO_INCREMENT PRIMARY KEY,
-            dataset_id INT,
-            discussion_buid VARCHAR(50) NOT NULL UNIQUE,
+            discussion_buid VARCHAR(50) NOT NULL,
             created_at DATETIME,
             closed_at DATETIME,
             title VARCHAR(400),
+            dataset_id INT,
             FOREIGN KEY (dataset_id) REFERENCES dataset(pk)
         )
         """
@@ -115,30 +115,33 @@ def create_database_and_tables():
         )
         
         # TABLE PREDICTION "jouer avec l'IA"
-        cursor.execute(
-            """
-        CREATE TABLE IF NOT EXISTS prediction (
-            pk INT AUTO_INCREMENT PRIMARY KEY,
-            title VARCHAR(200) NOT NULL,
-            message VARCHAR(400) NOT NULL,
-            categorie VARCHAR(100) NOT NULL,
-            sous_categorie VARCHAR(100) NOT NULL
-        )
-        """
-        )
+        #cursor.execute(
+        #    """
+        #CREATE TABLE IF NOT EXISTS prediction (
+        #    pk INT AUTO_INCREMENT PRIMARY KEY,
+        #    title VARCHAR(200) NOT NULL,
+        #    message VARCHAR(400) NOT NULL,
+        #    categorie VARCHAR(100) NOT NULL,
+        #    sous_categorie VARCHAR(100) NOT NULL
+        #)
+        #"""
+        #)
 
-        # Fermeture du curseur et de la connexion
+        conn.commit()
+        # Fermeture du curseur
         cursor.close()
-        conn.close()
 
         print("Base de données et tables créées avec succès !")
-        # Logging : Enregistrement d'un message de succès
         logging.info("Base de données et tables créées avec succès !")
 
     except mysql.connector.Error as err:
         print(f"Erreur lors de la création de la base de données : {err}")
-        # Logging : Enregistrement d'une erreur
         logging.error(f"Erreur lors de la création de la base de données : {err}")
+
+    finally:
+        # Fermeture de la connexion dans tous les cas
+        if conn.is_connected():
+            conn.close()
 
 
 if __name__ == "__main__":

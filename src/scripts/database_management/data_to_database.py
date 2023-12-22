@@ -10,14 +10,6 @@ from dateutil import parser
 sys.path.append("..")
 from logging_config import configure_logging
 
-"""# Configuration du logging
-log_directory = "../../../logs/database_management/"
-log_file = os.path.join(log_directory, 'data_to_database.log')
-if not os.path.exists(log_directory):
-    os.makedirs(log_directory)
-
-logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-"""
 
 # Charger les informations de connexion depuis le fichier de configuration
 with open("../../../config.json") as config_file:
@@ -78,34 +70,26 @@ def import_data_from_csv():
             try:
                 # Reformater les dates avec fuseau horaire en format DATETIME AAAA-MM-DD HH:MI:SS
                 created_dataset_formatted = format_datetime_mysql(row["created_dataset"])
-                last_update_dataset_formatted = format_datetime_mysql(row["last_update_dataset"])
+                #last_update_script_formatted = format_datetime_mysql(row["last_update_script"])
                 discussion_posted_on_formatted = format_datetime_mysql(row["discussion_posted_on"])
                 created_discussion_formatted = format_datetime_mysql(row["created_discussion"])
                 closed_discussion_formatted = format_datetime_mysql(row["closed_discussion"])
+                last_modified_dataset_formatted = format_datetime_mysql(row["last_modified_dataset"])
 
                 # Insérer des données dans la table user
-                query = "SELECT pk FROM user WHERE username = %s"
-                cursor.execute(query, (row['user'],))
+                # Vérifier si l'utilisateur avec le même prénom existe déjà
+                query_check_user = "SELECT pk FROM user WHERE firstname = %s AND lastname = %s"
+                cursor.execute(query_check_user, (row["firstname"], row["lastname"]))
                 existing_user = cursor.fetchone()
-                #query = "SELECT pk FROM user WHERE CONCAT(firstname, ' ', lastname) = %s"
-                #cursor.execute(query, (row["firstname"] + " " + row["lastname"],))
-                #existing_user = cursor.fetchone()
 
                 if not existing_user:
-                    # insérer utilisateur
-                    # query = "INSERT INTO user (username) VALUES (%s)"
-                    # cursor.execute(query, (row['user'],))
-                    query = "INSERT INTO user (firstname, lastname) VALUES (%s, %s)"
-                    cursor.execute(
-                        query,
-                        (
-                            row["firstname"],
-                            row["lastname"],
-                        ),
-                    )
+                    # Si l'utilisateur n'existe pas, l'insérer dans la table user
+                    query_insert_user = "INSERT INTO user (firstname, lastname) VALUES (%s, %s)"
+                    cursor.execute(query_insert_user, (row["firstname"], row["lastname"]))
                     conn.commit()  # Valider pour récupérer l'ID auto-incrémenté
                     id_user_auto = cursor.lastrowid  # Récupérer l'ID auto-incrémenté
                 else:
+                    # Si l'utilisateur existe déjà, récupérer son ID
                     id_user_auto = existing_user[0]
 
                 # Insérer des données dans la table organization
@@ -129,19 +113,19 @@ def import_data_from_csv():
 
                 if not existing_dataset:
                     # Insérer dataset
-                    query = "INSERT INTO dataset (organization_id, dataset_buid, title, description, url, created_at, last_update, slug, groupe_metier, nb_discussions, nb_followers, nb_reuses, nb_views) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+                    query = "INSERT INTO dataset (organization_id, dataset_buid, title, groupe_metier, description, url, created_at, last_modified_at, slug, nb_discussions, nb_followers, nb_reuses, nb_views) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
                     cursor.execute(
                         query,
                         (
                             id_organization_auto,
                             row["id_dataset"],
                             row["title_dataset"],
+                            row["groupe-metier"],
                             row["description_dataset"],
                             row["url_dataset"],
                             created_dataset_formatted,
-                            last_update_dataset_formatted,
+                            last_modified_dataset_formatted,
                             row["slug"],
-                            row["groupe_metier"],
                             row["nb_discussions"],
                             row["nb_followers"],
                             row["nb_reuses"],
