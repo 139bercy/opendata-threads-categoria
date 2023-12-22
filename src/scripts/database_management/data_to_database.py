@@ -57,8 +57,10 @@ def import_data_from_csv():
         conn.start_transaction()
 
         # Charger les données CSV dans un DataFrame
-        if os.path.exists("../../../data/raw/data_acquisition/merging_data/dataset_mefsin.csv"):
-            data = pd.read_csv("../../../data/raw/data_acquisition/merging_data/dataset_mefsin.csv")
+        #if os.path.exists("../../../data/raw/data_acquisition/merging_data/dataset_mefsin.csv"):
+        #    data = pd.read_csv("../../../data/raw/data_acquisition/merging_data/dataset_mefsin.csv")
+        if os.path.exists("../../../data/raw/inference/predicted_data_models.csv"):
+            data = pd.read_csv("../../../data/raw/inference/predicted_data_models.csv")
         else:
             raise Exception("Le fichier CSV n'existe pas...")
 
@@ -161,9 +163,9 @@ def import_data_from_csv():
                     id_discussion_auto = existing_discussion[0]
 
                 # Insérer des données dans la table message
-                query = "INSERT INTO message (discussion_id, user_id, message, created_at) VALUES (%s, %s, %s, %s)"
+                query = "INSERT INTO message (discussion_id, user_id, message, created_at, categorie, sous_categorie) VALUES (%s, %s, %s, %s, %s, %s)"
                 cursor.execute(
-                    query, (id_discussion_auto, id_user_auto, row["message"], discussion_posted_on_formatted)
+                    query, (id_discussion_auto, id_user_auto, row["message"], discussion_posted_on_formatted, row["predictions_motifs_label"], row["predictions_ssmotifs_label"])
                 )
                 conn.commit()
 

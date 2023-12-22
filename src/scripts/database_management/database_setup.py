@@ -108,6 +108,8 @@ def create_database_and_tables():
             user_id INT,
             message TEXT,
             created_at DATETIME,
+            categorie VARCHAR(200),
+            sous_categorie VARCHAR(200),
             FOREIGN KEY (discussion_id) REFERENCES discussion(pk),
             FOREIGN KEY (user_id) REFERENCES user(pk)
         )
