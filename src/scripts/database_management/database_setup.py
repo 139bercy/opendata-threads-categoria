@@ -117,17 +117,17 @@ def create_database_and_tables():
         )
         
         # TABLE PREDICTION "jouer avec l'IA"
-        #cursor.execute(
-        #    """
-        #CREATE TABLE IF NOT EXISTS prediction (
-        #    pk INT AUTO_INCREMENT PRIMARY KEY,
-        #    title VARCHAR(200) NOT NULL,
-        #    message VARCHAR(400) NOT NULL,
-        #    categorie VARCHAR(100) NOT NULL,
-        #    sous_categorie VARCHAR(100) NOT NULL
-        #)
-        #"""
-        #)
+        cursor.execute(
+            """
+        CREATE TABLE IF NOT EXISTS prediction (
+            pk INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(200) NOT NULL,
+            message VARCHAR(400) NOT NULL,
+            categorie VARCHAR(100) NOT NULL,
+            sous_categorie VARCHAR(100) NOT NULL
+        )
+        """
+        )
 
         conn.commit()
         # Fermeture du curseur
