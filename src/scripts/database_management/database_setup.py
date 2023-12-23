@@ -99,7 +99,6 @@ def create_database_and_tables():
         )
 
         # TABLE MESSAGE
-        # Table intermédiaire car relation (n,n)
         cursor.execute(
             """
         CREATE TABLE IF NOT EXISTS message (

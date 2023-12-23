@@ -165,7 +165,14 @@ def import_data_from_csv():
                 # Insérer des données dans la table message
                 query = "INSERT INTO message (discussion_id, user_id, message, created_at, categorie, sous_categorie) VALUES (%s, %s, %s, %s, %s, %s)"
                 cursor.execute(
-                    query, (id_discussion_auto, id_user_auto, row["message"], discussion_posted_on_formatted, row["predictions_motifs_label"], row["predictions_ssmotifs_label"])
+                    query, 
+                    (id_discussion_auto, 
+                     id_user_auto, 
+                     row["message"], 
+                     discussion_posted_on_formatted, 
+                     row["predictions_motifs_label"], 
+                     row["predictions_ssmotifs_label"]
+                     )
                 )
                 conn.commit()
 

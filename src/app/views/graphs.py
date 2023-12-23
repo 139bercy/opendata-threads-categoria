@@ -39,12 +39,12 @@ jdd_views = df.groupby("title_dataset")["nb_views"].first().sort_values(ascendin
 jdd_followers = df.groupby("title_dataset")["nb_followers"].first().sort_values(ascending=False)
 
 # Calculer le nombre de discussions ouvertes et fermées
-discussions_closes = pd.to_datetime(df["closed_discussion"], format="%d/%m/%Y", errors="coerce").count()
+discussions_closes = pd.to_datetime(df["closed_discussion"], format="%Y-%m-%dT%H:%M:%S.%f%z", errors="coerce").count()
 discussions_ouvertes = total_rows - discussions_closes
 
 # Calcul du temps de réponse d'un commentaire entre l'ouverture de la discussion et sa fermeture
-df["created"] = pd.to_datetime(df["created_discussion"], format="%d/%m/%Y", errors="coerce")
-df["closed"] = pd.to_datetime(df["closed_discussion"], format="%d/%m/%Y", errors="coerce")
+df["created"] = pd.to_datetime(df["created_discussion"], format="%Y-%m-%dT%H:%M:%S.%f%z", errors="coerce")
+df["closed"] = pd.to_datetime(df["closed_discussion"], format="%Y-%m-%dT%H:%M:%S.%f%z", errors="coerce")
 df["time_response"] = df["closed"] - df["created"]
 
 # Calculer la moyenne des temps de réponse par annotation
