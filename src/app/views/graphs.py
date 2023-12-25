@@ -55,12 +55,16 @@ total_discussions = total_rows
 
 # Calculer le temps de réponse moyen total
 mean_time_response_total = df["time_response"].mean()
+# Tronquer les ms dans la kpi-card
+mean_time_response_total_str = str(mean_time_response_total).split('.')[0]
 
 # Calculer la médiane des temps de réponse par annotation
 median_time_response = df.groupby("title_discussion")["time_response"].median().sort_values(ascending=False)
 
 # Calculer le temps de réponse moyen total
 median_time_response_total = df["time_response"].median()
+# Tronquer les ms dans la kpi-card
+median_time_response_total_str = str(median_time_response_total).split('.')[0]
 
 ############################################"FILTRES"##########################################################
 
@@ -294,7 +298,7 @@ kpi = html.Div(
                     dbc.CardHeader("Temps de réponses moyen", style={"background-color": "#5ba5c2", "color": "white"}),
                     dbc.CardBody(
                         [
-                            html.H4(str(mean_time_response_total), className="card-title")
+                            html.H4(str(mean_time_response_total_str), className="card-title")
                         ]
                     ),
                 ], className="kpi-card",
@@ -304,7 +308,7 @@ kpi = html.Div(
                     dbc.CardHeader("Temps de réponses médian", style={"background-color": "#0BA5BE", "color": "white"}),
                     dbc.CardBody(
                         [
-                            html.H4(str(median_time_response_total), className="card-title")
+                            html.H4(str(median_time_response_total_str), className="card-title")
                         ]
                     ),
                 ], className="kpi-card",
