@@ -7,9 +7,9 @@ import mysql.connector
 import pandas as pd
 from dateutil import parser
 
-sys.path.append("..")
-from logging_config import configure_logging
-
+#sys.path.append("..")
+#from logging_config import configure_logging
+from src.scripts.logging_config import configure_logging
 
 # Charger les informations de connexion depuis le fichier de configuration
 with open("../../../config.json") as config_file:

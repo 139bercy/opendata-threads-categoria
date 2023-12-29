@@ -4,9 +4,7 @@ import sys
 
 import mysql.connector
 
-sys.path.append("..")
-from logging_config import configure_logging
-
+from src.scripts.logging_config import configure_logging
 
 # Récupérer le host, le nom d'utilisateur et le mot de passe à partir des variables d'environnement situées dans le fichier de conf.
 def load_db_config():
