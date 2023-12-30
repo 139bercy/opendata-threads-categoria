@@ -51,7 +51,7 @@ layout = html.Div(
                             id="login-logout-container",
                             children=[
                                 html.I(id="login-logout-icon", className="fa fa-sign-in me-3"),
-                                html.Span(id="login-logout-text", children="Se connecter"),
+                                html.Span(id="login-logout-text", children=""),
                             ],
                         ),
                     ],

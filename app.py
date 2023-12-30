@@ -157,7 +157,7 @@ def check_login(n_clicks, username, password):
     try:
         session_token = user_login(repository=repository, username=username, password=password)
         token = str(session_token)
-        dash.callback_context.response.set_cookie("session-token", token)
+        dash.callback_context.response.set_cookie("session-token", token) #envoie le cookies au navigateur pour le stocker en mémoire
         return dcc.Location(pathname="/", id="homepage")
     except (LoginError, UsernameError, KeyError) as e:
         print(e)
@@ -215,10 +215,13 @@ def toggle_login_logout(n_clicks):
 
     if user_session_cookie:
         # L'utilisateur est connecté donc bouton deconnexion
-        return "fa fa-sign-out", "Se déconnecter", "/"
-
+        dash.callback_context.response.delete_cookie("session-token") #envoie le cookies au navigateur pour le stocker en mémoire
+        #return "fa fa-sign-out", "Se déconnecter", "/"
+        return "fa fa-sign-out", "", "/"
+    print("trace2")
     # L'utilisateur n'est pas connecté, donc connexion
-    return "fa fa-sign-in", "Se connecter", "/login"
+    #return "fa fa-sign-in", "Se connecter", "/login"
+    return "fa fa-sign-in", "", "/login"
 
 
 # Ajoutez la route pour le formulaire
