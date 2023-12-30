@@ -218,7 +218,7 @@ def toggle_login_logout(n_clicks):
         dash.callback_context.response.delete_cookie("session-token") #envoie le cookies au navigateur pour le stocker en mémoire
         #return "fa fa-sign-out", "Se déconnecter", "/"
         return "fa fa-sign-out", "", "/"
-    print("trace2")
+    
     # L'utilisateur n'est pas connecté, donc connexion
     #return "fa fa-sign-in", "Se connecter", "/login"
     return "fa fa-sign-in", "", "/login"
