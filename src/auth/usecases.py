@@ -21,11 +21,8 @@ def user_is_logged_in(repository: AbstractAccountRepository, username: str) -> b
 def login(repository: AbstractAccountRepository, username: str, password: str) -> str:
     """:returns base64 encoded string if authentication is successful"""
     account = repository.get_by_username(username=username)
-    print("yyyyyy")
     check_username(account=account, username=username, password=password)
-    print("as")
     is_authenticated = check_password(account=account, password=password)
-    print("ma")
     if is_authenticated:
         token = uuid4()
         cookie = encode_token(username=username, token=token)
@@ -43,11 +40,9 @@ def check_username(account: Account, username: str, password: str):
 def check_password(account: Account, password: str):
     try:
         hashed = sha256_hash_string(password)
-        print("test")
         assert account.password == hashed
         return True
     except AssertionError:
-        print("raise")
         raise LoginError
 
 

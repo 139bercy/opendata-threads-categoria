@@ -29,10 +29,47 @@ from wtforms import StringField, SubmitField, TextAreaField
 from src.scripts.inference import inference_script
 from src.app.views import sandbox
 
+from flask_sqlalchemy import SQLAlchemy
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
+
 # Initialiser le serveur Flask
 server = Flask(__name__, template_folder="src/app/templates")
 server.config["SECRET_KEY"] = "asma"
 server.config["WTF_CSRF_ENABLED"] = False
+
+# Database configuration
+server.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost:5432/app_db'
+server.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(server)
+
+# Flask-Admin configuration
+admin = Admin(server, name='Flask-Admin', template_mode='bootstrap3')
+
+
+# Example model:
+# Définir le modèle SQLAlchemy pour la classe Account
+class Account(db.Model):
+    __tablename__ = 'account'  # Nom de la table dans la base de données
+
+    pk = db.Column(db.Integer, primary_key=True)
+    sk = db.Column(db.String(36), unique=True, nullable=False)  # Remplacez par le type de données réel
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+    token = db.Column(db.String(255))
+
+    @property
+    def is_logged_in(self):
+        return self.token is not None
+
+    def token_is_valid(self, token):
+        return str(self.token) == str(token)
+
+# Ajouter le modèle à Flask-Admin
+admin.add_view(ModelView(Account, db.session))
+
 
 repository = PostgresqlAccountRepository()
 if os.environ["APP_ENV"] == "test":

@@ -8,6 +8,7 @@ from .graphs import (
     kpi,
     bar_chart_top_jdd_views,
     bar_chart_top_jdd_reuses,
+    second_treemap_fig
 )
 
 
@@ -62,6 +63,8 @@ def dashboard_layout():
                                 ],
                                 className="tendances-container",
                             ),
+                            # Ajouter le deuxième treemap
+                            html.Div([second_treemap_fig], className="second-treemap-container"),
                         ],
                         className="graphs-container",
                     ),

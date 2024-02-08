@@ -12,6 +12,16 @@ import dash_bootstrap_components as dbc
 
 from plotly.subplots import make_subplots
 
+import mysql.connector
+import json
+
+from src.scripts.logging_config import configure_logging
+
+# Récupérer le host, le nom d'utilisateur et le mot de passe à partir des variables d'environnement situées dans le fichier de conf.
+def load_db_config():
+    with open("config.json") as config_file:
+        return json.load(config_file)
+
 # Configuration de la localisation en français
 locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")
 
@@ -137,6 +147,73 @@ def generate_treemap(filtered_data):
 
 # Utilisation de cette fonction pour créer la figure initiale
 treemap_fig = generate_treemap(df)
+
+
+def extract_prediction_data():
+    config = load_db_config()
+
+    db_host = config["DB_HOST"]
+    db_user = config["DB_USER"]
+    db_name = config["DB_NAME"]
+
+
+    try:
+        # Connexion à MySQL avec les paramètres chargés depuis le fichier de configuration
+        conn = mysql.connector.connect(
+            host=db_host,
+            user=db_user,
+            database=db_name
+        )
+
+        # Extraction des données de la table "prediction"
+        query = "SELECT categorie, sous_categorie FROM prediction;"
+        prediction_data = pd.read_sql(query, conn)
+
+        return prediction_data
+
+    except Exception as e:
+        print(f"Erreur lors de l'extraction des données de la table 'prediction': {str(e)}")
+        return pd.DataFrame()
+
+    finally:
+        if conn.is_connected():
+            conn.close()
+
+# Charger les données de la table "prediction"
+prediction_df = extract_prediction_data()
+
+def generate_second_treemap(prediction_data):
+    fig = px.treemap(
+        prediction_data,
+        path=["categorie", "sous_categorie"],
+        width=None,
+        height=800,
+    )
+
+    fig.update_traces(
+        textinfo="label+value",
+        textposition="middle center",
+        insidetextfont={"size": 20},
+        hovertemplate="",
+    )
+
+    fig.update_layout(margin=dict(t=30, l=0, r=0, b=0))
+    fig.update_layout(
+        title_text="Deuxième Treemap : Visualisation des catégories et sous-catégories",
+        title_font=dict(color="black", size=18),
+        title_x=0.5,
+        title_y=0.987,
+    )
+
+    fig.update_xaxes(showticklabels=False)
+    fig.update_yaxes(showticklabels=False)
+    fig.update_traces(textfont_size=15, selector=dict(type="treemap"))
+
+    return dcc.Graph(figure=fig)
+
+# Utilisation de cette fonction pour créer le deuxième treemap
+second_treemap_fig = generate_second_treemap(prediction_df)
+
 
 # BARCHART
 
