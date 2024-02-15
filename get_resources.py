@@ -5,7 +5,7 @@ from src.core.infrastructure import PostgresThreadRepository
 from src.core.usecases import create_message
 
 repository = PostgresThreadRepository()
-
+        
 resources = ["datasets", "discussions", "catalog.json"]
 
 for resource in resources:
@@ -15,8 +15,13 @@ for resource in resources:
     )
     response = requests.get(url)
     data = json.dumps(response.json(), indent=2, ensure_ascii=False)
-    with open(f"data/{resource}.json", "w") as file:
+    
+    # Correction du nom de fichier pour la ressource "catalog.json"
+    filename = f"data/{resource}.json" if resource != "catalog.json" else "data/catalog.json"
+    
+    with open(filename, "w") as file:
         json.dump(response.json(), file, indent=2, ensure_ascii=False)
+
 
 with open("data/messages.json", "r") as file:
     data = json.load(file)
