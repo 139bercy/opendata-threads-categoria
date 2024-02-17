@@ -47,32 +47,36 @@ class APIDataFetcher:
             else:
                 print(f"Unsupported resource: {resource}")
 
+    # Import des données concernant le jeu de données en question
     def import_datasets(self, data, repository):
-        #for item in data:
-        pass
-    
-                        
-    """def import_discussions(self, data, repository):
-        for item in data:
-            for discussion in item["discussion"]:
-                create_message(
-                    repository = repository,
-                    dataset_id = item["subject"]["id"],
-                    thread_id = item["id"],
-                    #author_slug = discussion["posted_by"]["slug"],
-                    author = discussion["posted_by"]["first_name"] + ' ' + discussion["posted_by"]["last_name"],
-                    content = discussion["content"],
-                    posted_on = discussion["posted_on"],
-                    #
-                    created = item["created"],
-                    closed = item["closed"],
-                    title = item["title"],        
-                )"""          
-                
+        # Initialisation d'un compteur
+        dataset_count = 0
+        # Itération à travers les éléments
+        for dataset in data["data"]:
+            # Accédez aux champs spécifiés
+            print("title_dataset:", dataset["title"])
+            print("description_dataset:", dataset["description"])
+            print("organization:", dataset["organization"]["name"])
+            print("url_dataset:", dataset["page"])
+            print("nb_discussions:", dataset["metrics"]["discussions"])
+            print("nb_followers:", dataset["metrics"]["followers"])
+            print("nb_reuses:", dataset["metrics"]["reuses"])
+            print("nb_views:", dataset["metrics"]["views"])
+            #'remote_id': remote_id,
+            print("slug:", dataset["slug"])
+            print("created_dataset:", dataset["created_at"])
+            #"last_update_dataset": dataset_updated_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
+            print('\n')
+            dataset_count += 1
+            
+        # Imprimez le nombre total de données récupérées
+        print(f"Total datasets recupérés: {dataset_count}")
+            
+    # Import des données concernant les discussions                     
     def import_discussions(self, data, repository):
-        for item in data:
+        """for item in data:
             for discussion in item["discussion"]:
-                print("Dataset ID:", item["subject"]["id"])
+                print("Dataset_ID:", item["subject"]["id"])
                 print("Discussion_ID:", item["id"])
                 print("Author:", discussion["posted_by"]["first_name"] + ' ' + discussion["posted_by"]["last_name"])
                 print("Content:", discussion["content"])
@@ -81,18 +85,20 @@ class APIDataFetcher:
                 print("Discussion_Closed_On:", item["closed"])
                 print("Title_Discussion:", item["title"])
                 print("\n")
-
-                """create_message(
+                
+                create_message(
                     repository=repository,
                     dataset_id=item["subject"]["id"],
                     discussion_id=item["id"],
+                    #author_slug = discussion["posted_by"]["slug"],
                     author=discussion["posted_by"]["first_name"] + ' ' + discussion["posted_by"]["last_name"],
                     content=discussion["content"],
                     mesage_posted_on=discussion["posted_on"],
                     discussion_created=item["created"],
                     discussion_closed=item["closed"],
                     title=item["title"],
-                )"""
+                )""" 
+        pass
 
     def import_catalog(self, data, repository):
         pass
