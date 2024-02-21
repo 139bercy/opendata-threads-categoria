@@ -52,6 +52,7 @@ class APIDataFetcher:
         # Initialisation d'un compteur
         dataset_count = 0
         # Itération à travers les éléments
+        #for item in data["data"]:
         for dataset in data["data"]:
             # Accédez aux champs spécifiés
             print("title_dataset:", dataset["title"])
@@ -62,8 +63,8 @@ class APIDataFetcher:
             print("nb_followers:", dataset["metrics"]["followers"])
             print("nb_reuses:", dataset["metrics"]["reuses"])
             print("nb_views:", dataset["metrics"]["views"])
-            #'remote_id': remote_id,
-            print("slug:", dataset["slug"])
+            print("remote_id_dataEco:", dataset["harvest"]["remote_id"] if dataset['harvest'] and 'remote_id' in dataset['harvest'] else None)
+            print("slug_dataGouv:", dataset["slug"]) #slug sur data.gouv mais sur data.eco, l'équivalent est 'remote_id'
             print("created_dataset:", dataset["created_at"])
             #"last_update_dataset": dataset_updated_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
             print('\n')
