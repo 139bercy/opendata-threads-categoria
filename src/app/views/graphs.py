@@ -155,6 +155,7 @@ def extract_prediction_data():
     db_host = config["DB_HOST"]
     db_user = config["DB_USER"]
     db_name = config["DB_NAME"]
+    db_password = config["DB_PASSWORD"]
 
 
     try:
@@ -162,7 +163,8 @@ def extract_prediction_data():
         conn = mysql.connector.connect(
             host=db_host,
             user=db_user,
-            database=db_name
+            database=db_name,
+            password=db_password
         )
 
         # Extraction des données de la table "prediction"
