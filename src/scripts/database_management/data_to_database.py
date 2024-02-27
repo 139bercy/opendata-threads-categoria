@@ -7,9 +7,9 @@ import mysql.connector
 import pandas as pd
 from dateutil import parser
 
-#sys.path.append("..")
-#from logging_config import configure_logging
-from src.scripts.logging_config import configure_logging
+sys.path.append("..")
+from logging_config import configure_logging
+#from src.scripts.logging_config import configure_logging
 
 # Charger les informations de connexion depuis le fichier de configuration
 with open("../../../config.json") as config_file:
@@ -18,7 +18,7 @@ with open("../../../config.json") as config_file:
 # Utilisation des paramètres de connexion
 db_host = config["DB_HOST"]
 db_user = config["DB_USER"]
-# db_password = config['DB_PASSWORD']
+db_password = config['DB_PASSWORD']
 db_name = config["DB_NAME"]
 
 
@@ -40,8 +40,8 @@ def import_data_from_csv():
         conn = mysql.connector.connect(
             host=db_host,
             user=db_user,
-            # password= db_password,
-            database="database_discussions",
+            password= db_password,
+            database=db_name
         )
 
         if conn.is_connected():

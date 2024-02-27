@@ -18,7 +18,7 @@ with open("config.json") as config_file:
 # Utilisation des paramètres de connexion
 db_host = config["DB_HOST"]
 db_user = config["DB_USER"]
-#db_password = config["DB_PASSWORD"]  # Ajoutez cette ligne si votre fichier de configuration a cette variable
+db_password = config["DB_PASSWORD"]
 db_name = config["DB_NAME"]
 
 
@@ -57,8 +57,8 @@ def process_form(title, message):
         conn = mysql.connector.connect(
             host=db_host,
             user=db_user,
-            # password=db_password,
-            database="database_discussions"
+            password=db_password,
+            database=db_name
         )
         
         cursor = conn.cursor()
