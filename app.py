@@ -48,7 +48,6 @@ db = SQLAlchemy(server)
 admin = Admin(server, name='Flask-Admin', template_mode='bootstrap3')
 
 
-# Example model:
 # Définir le modèle SQLAlchemy pour la classe Account
 class Account(db.Model):
     __tablename__ = 'account'  # Nom de la table dans la base de données
