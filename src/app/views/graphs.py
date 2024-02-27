@@ -13,6 +13,7 @@ import dash_bootstrap_components as dbc
 from plotly.subplots import make_subplots
 
 import mysql.connector
+from sqlalchemy import create_engine
 import json
 
 from src.scripts.logging_config import configure_logging
@@ -158,7 +159,7 @@ def extract_prediction_data():
     db_password = config["DB_PASSWORD"]
 
 
-    try:
+    """try:
         # Connexion à MySQL avec les paramètres chargés depuis le fichier de configuration
         conn = mysql.connector.connect(
             host=db_host,
@@ -182,7 +183,28 @@ def extract_prediction_data():
             conn.close()
 
 # Charger les données de la table "prediction"
+prediction_df = extract_prediction_data()"""
+
+    try:
+        # Création d'une chaîne de connexion pour SQLAlchemy
+        db_uri = f"mysql+mysqlconnector://{db_user}:{db_password}@{db_host}/{db_name}"
+
+        # Création de l'objet moteur SQLAlchemy
+        engine = create_engine(db_uri)
+
+        # Extraction des données de la table "prediction"
+        query = "SELECT categorie, sous_categorie FROM prediction;"
+        prediction_data = pd.read_sql(query, engine)
+
+        return prediction_data
+
+    except Exception as e:
+        print(f"Erreur lors de l'extraction des données de la table 'prediction': {str(e)}")
+        return pd.DataFrame()
+
+# Charger les données de la table "prediction"
 prediction_df = extract_prediction_data()
+
 
 def generate_second_treemap(prediction_data):
     fig = px.treemap(
