@@ -1,6 +1,7 @@
 import base64
 import os
 import sys
+import io
 
 import dash
 import dash_bootstrap_components as dbc
@@ -9,7 +10,7 @@ import pandas as pd
 from dash import html, dcc
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
-from flask import Flask, render_template, request, make_response, jsonify
+from flask import Flask, render_template, request, make_response, jsonify, send_file
 
 from src.app.views import formulaire, dataset
 from src.app.views import sidebar, header, dashboard
@@ -87,6 +88,8 @@ app.config['suppress_callback_exceptions'] = True
 # Chargement des données depuis le fichier CSV (peut être placé dans app.py)
 df = pd.read_csv("data/raw/inference/predicted_data_models.csv")
 
+################## SRUCTURE DE LA PAGE ############################################################################
+
 app.layout = html.Div(
     [
         sidebar.layout,
@@ -97,7 +100,7 @@ app.layout = html.Div(
     ],
     className="flex-container",
 )
-
+################### FILTRES PAR DATE ###########################################################################
 
 # Callback function pour mettre à jour le graphique sunburst
 @app.callback(
@@ -132,6 +135,7 @@ def update_charts(selected_categories, start_date, end_date, timeline_value):
     except Exception as e:
         print(str(e))
 
+###################### FORMULAIRE D'INSCRIPTION #######################################################################
 
 # Routes
 @server.route("/form_traite", methods=["POST"])
@@ -141,7 +145,6 @@ def traiter_formulaire():
         nom = request.form.get("nom")
         prenom = request.form.get("prenom")
 
-        # Faites quelque chose avec les données (par exemple, les imprimer)
         print(f"Nom: {nom}, Prénom: {prenom}")
 
         # Ajoutez le code pour enregistrer les données dans la base de données
@@ -149,6 +152,27 @@ def traiter_formulaire():
 
         # Redirigez l'utilisateur vers une nouvelle page ou faites autre chose selon vos besoins
         return render_template("formulaire_traite.html", nom=nom, prenom=prenom)
+    
+##################### DATASET : TELECHARGER LE JDD EN .CSV (src/app/views/dataset.py) ######################################################################
+
+# Définition d'une route pour le téléchargement du dataset
+@server.route("/download-dataset")
+def download_dataset():
+    #On récupère le df à partir de la source de données + conversion en csv
+    df_download = df
+    csv_string = df_download.to_csv(index=False, encoding="utf-8")
+    
+    #io.BytesIO pour traiter les données binaires
+    csv_binary = io.BytesIO(csv_string.encode("utf-8"))
+    
+    # Flask send_file permet d'envoyer les données en tant que fichier téléchargeable
+    return send_file(
+        csv_binary,
+        mimetype="text/csv",
+        as_attachment=True,
+        download_name="dataset.csv",
+    )
+
 
 # Définir le callback pour mettre à jour le lien de téléchargement
 @app.callback(
@@ -156,6 +180,7 @@ def traiter_formulaire():
     [Input("download-link", "n_clicks")],
 )
 def update_download_link(n_clicks):
+    print(f"Nombre de clics : {n_clicks}")
     if n_clicks is None:
         raise dash.exceptions.PreventUpdate
 
@@ -165,10 +190,12 @@ def update_download_link(n_clicks):
 
     # Convertir en base64 et créer le lien de téléchargement
     csv_base64 = base64.b64encode(csv_string.encode("utf-8")).decode("utf-8")
-    href = f"data:text/csv;base64,{csv_base64}"
+    #href = f"data:text/csv;base64,{csv_base64}"
+    href = "/download-dataset"
 
     return href
 
+######################## CONNEXION ###################################################################
 
 @app.callback(Output("login-error", "children"), [Input("url", "pathname")], [State("url", "search")])
 def display_error(pathname, search):
@@ -257,6 +284,8 @@ def toggle_login_logout(n_clicks):
     return "fa fa-sign-in", "", "/login"
 
 
+##################### JOUER AVEC L'IA : FORMULAIRE #################################################################
+
 # Ajoutez la route pour le formulaire
 @server.route("/form", methods=["GET", "POST"])
 def sandbox_route():
@@ -268,6 +297,8 @@ def process_form():
     title = request.form.get("title")
     message = request.form.get("message")
     return sandbox.process_form(title, message)
+
+######################## ROUTES SIDEBAR #############################################################################
 
 # Callback pour afficher le contenu de la vue en fonction de l'URL
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
