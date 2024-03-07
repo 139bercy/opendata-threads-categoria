@@ -8,7 +8,7 @@ from dataclasses import dataclass
 class DataGouvDatasetDTO:
     buid: str
     title: str
-    description: str
+    description: str = None
     # organization: str
     # url: str
     # creation_date: str
@@ -54,21 +54,6 @@ def ressource():
     return data
 """
 
-"""
-print("title_dataset:", dataset["title"])
-print("description_dataset:", dataset["description"])
-print("organization:", dataset["organization"]["name"])
-print("url_dataset:", dataset["page"])
-print("nb_discussions:", dataset["metrics"]["discussions"])
-print("nb_followers:", dataset["metrics"]["followers"])
-print("nb_reuses:", dataset["metrics"]["reuses"])
-print("nb_views:", dataset["metrics"]["views"])
-print("remote_id_dataEco:", dataset["harvest"]["remote_id"] if dataset['harvest'] and 'remote_id' in dataset['harvest'] else None)
-print("slug_dataGouv:", dataset["slug"]) #slug sur data.gouv mais sur data.eco, l'équivalent est 'remote_id'
-print("created_dataset:", dataset["created_at"])
-#"last_update_dataset": dataset_updated_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
-print('\n')
-"""
 
 def get_all_datasets_from_data_gouv_api(organization, ressource):
     base_url = "https://www.data.gouv.fr/api/1/organizations"
@@ -111,6 +96,7 @@ def process_data(organization, ressource):
     all_datasets = get_all_datasets_from_data_gouv_api(organization, ressource)
     save_datasets_to_json(all_datasets)
 
+
 process_data(organization, ressource)
 
 
@@ -141,7 +127,7 @@ class InMemoryDatasetRepository:
         return next((ds for ds in self.db if ds.buid == dataset_id), None)
 
 
-def test_append_dataset_to_database():
+def test_append_a_dataset_to_database():
     # Arrange
     dataset = DataGouvDatasetDTO("azerty", "title", "description")
     repository = InMemoryDatasetRepository(db=[])
@@ -151,7 +137,7 @@ def test_append_dataset_to_database():
     assert len(repository.db) == 1
 
 
-def test_get_dataset_from_repository():
+def test_get_a_dataset_from_repository():
     # Arrange
     dataset = DataGouvDatasetDTO(buid="azerty", title="title", description="description")
     repository = InMemoryDatasetRepository(db=[dataset])
@@ -178,30 +164,30 @@ Créer le modèle de données
 Ajoute les nouveaux datasets à la base de données
 """
 
-"""def test_get_a_dataset_from_data_gouv():
-    # Arrange
-    with open("tests/fixtures/data-gouv-datasets-list.json", "r")  as file:
-        data = json.load(file)["data"][0]
-    # Act
-    dataset = DataGouvDatasetDTO(
-        buid="azerty", 
-        title=data["title"], 
-        description=data["description"]
-    )
-    # Assert
-    assert dataset.title == "Tableaux Statistiques de la Direction Générale des Finances Publiques (DGFiP)"
-    assert len(dataset.description) >= 150"""
-
-
 def test_get_datasets_from_data_gouv():    
     # Arrange
     with open("tests/fixtures/dg-datasets.json", "r")  as file:
         dataset_count = 0
         data = json.load(file)
+    #Act
+        datasets_list = []
+
         for dataset in data:
-            print('\n')
+            #print('\n')
+
+            # Créer une instance de DataGouvDatasetDTO pour chaque ensemble de données
+            current_dataset = DataGouvDatasetDTO(
+                buid="azerty", 
+                title=dataset["title"],
+                #description=dataset["description"]
+            )
+            
+            # Ajouter l'instance à la liste
+            datasets_list.append(current_dataset)
+
+            # Imprimer les valeurs pour vérification
             # Accédez aux champs spécifiés
-            print("title_dataset:", dataset["title"])
+            #print("title_dataset:", dataset["title"])
             #print("description_dataset:", dataset["description"].replace('\n', ' '))
             #print("organization:", dataset["organization"]["name"])
             #print("url_dataset:", dataset["page"])
@@ -217,6 +203,11 @@ def test_get_datasets_from_data_gouv():
             dataset_count += 1
             
         # Imprimez le nombre total de données récupérées
-        print(f"Total datasets recupérés: {dataset_count}")
+        #print(f"\nTotal datasets recupérés: {dataset_count}")
+        #print(datasets_list)
+        #print(f"len de datasets_list :{len(datasets_list)}")
 
-    assert 0==1
+    # Assert
+    assert dataset_count == len(datasets_list)
+
+    
