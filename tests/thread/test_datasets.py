@@ -31,14 +31,7 @@ class Discussion:
     discussion_closed: str
     title: str
 
-"""@pytest.fixture
-def organization():
-    return "ministere-de-leconomie-des-finances-et-de-la-souverainete-industrielle-et-numerique"
 
-@pytest.fixture
-def ressource():
-    return "datasets"
-"""
 
 """def get_datasets_from_data_gouv_api():    
     base_url = "https://www.data.gouv.fr/api/1/organizations"
@@ -122,6 +115,9 @@ class InMemoryDatasetRepository:
 
     def add(self, dataset: DataGouvDatasetDTO):
         self.db.append(dataset)
+
+    def add_all(self, datasets: list):
+        self.db.extend(datasets)
 
     def get(self, dataset_id):
         return next((ds for ds in self.db if ds.buid == dataset_id), None)
@@ -210,4 +206,36 @@ def test_get_datasets_from_data_gouv():
     # Assert
     assert dataset_count == len(datasets_list)
 
-    
+
+def test_append_datasets_to_database():
+    # Arrange
+    datasets = [
+        DataGouvDatasetDTO("azerty", "title1", "description1"),
+        DataGouvDatasetDTO("qwerty", "title2", "description2"),
+    ]
+    repository = InMemoryDatasetRepository(db=[])
+
+    # Act
+    repository.add_all(datasets)
+
+    # Assert
+    assert len(repository.db) == len(datasets)
+
+    # Additional assertions if needed
+    for dataset in datasets:
+        result = repository.get(dataset.buid)
+        assert result == dataset
+
+
+def test_get_datasets_from_repository():
+    # Arrange
+    datasets = [
+        DataGouvDatasetDTO(buid="azerty", title="title1", description="description1"),
+        DataGouvDatasetDTO(buid="qwerty", title="title2", description="description2"),
+    ]
+    repository = InMemoryDatasetRepository(db=datasets)
+
+    # Act and Assert
+    for dataset in datasets:
+        result = repository.get(dataset.buid)
+        assert result == dataset
