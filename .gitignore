@@ -99,3 +99,4 @@ src/scripts/data_acquisition/discuss.py
 src/scripts/data_acquisition/test.ipynb
 dev
 config.json
+tests/fixtures/
