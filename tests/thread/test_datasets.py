@@ -1,8 +1,12 @@
 import json
 import requests
 import pytest
+import psycopg2
+import os
 
 from dataclasses import dataclass
+
+from src.common.infrastructure import PostgresClient
 
 @dataclass
 class DataGouvDatasetDTO:
@@ -48,8 +52,8 @@ class Discussion:
 """
 
 
-def get_all_datasets_from_data_gouv_api(organization, ressource):
-    base_url = "https://www.data.gouv.fr/api/1/organizations"
+def get_all_datasets_from_data_gouv_api(base_url, organization, ressource):
+    #base_url = "https://www.data.gouv.fr/api/1/organizations"
     filtres = f"/{organization}/{ressource}"
     
     datasets = []
@@ -86,11 +90,11 @@ ressource = "datasets"
 
 def process_data(organization, ressource):
     # Appel à la fonction pour récupérer et enregistrer les données
-    all_datasets = get_all_datasets_from_data_gouv_api(organization, ressource)
+    all_datasets = get_all_datasets_from_data_gouv_api(base_url, organization, ressource)
     save_datasets_to_json(all_datasets)
 
 
-process_data(organization, ressource)
+#process_data(base_url, organization, ressource)
 
 
 def test_get_a_dataset_from_data_gouv():
@@ -239,3 +243,52 @@ def test_get_datasets_from_repository():
     for dataset in datasets:
         result = repository.get(dataset.buid)
         assert result == dataset
+
+
+def insert_datasets_into_postgres(datasets, postgres_client):
+    try:
+        for dataset in datasets:
+            query = (
+                "INSERT INTO datasets (buid, title, description) "
+                "VALUES (%s, %s, %s)"
+            )
+            params = (dataset.buid, dataset.title, dataset.description)
+            postgres_client.execute(query, params)
+
+    except Exception as e:
+        print(f"Error inserting data into PostgreSQL: {e}")
+
+    finally:
+        postgres_client.close_connection()
+
+
+"""def test_insert_datasets_into_postgres():
+    datasets = [
+        DataGouvDatasetDTO("azerty", "title1", "description1"),
+        DataGouvDatasetDTO("qwerty", "title2", "description2"),
+    ]
+
+    connection_string = "dbname=mydatabase user=myuser password=mypassword host=localhost port=5432"
+    
+    insert_datasets_into_postgres(datasets, connection_string)
+"""
+
+if __name__ == "__main__":
+
+    base_url = "https://www.data.gouv.fr/api/1/organizations"
+    organization = "ministere-de-leconomie-des-finances-et-de-la-souverainete-industrielle-et-numerique"
+    resource = "datasets"
+
+    process_data(base_url, organization, resource)
+
+    postgres_client = PostgresClient(
+        dbname=os.environ["DB_NAME"],
+        host=os.environ["DB_HOST"],
+        user=os.environ["DB_USER"],
+        port=os.environ["DB_PORT"],
+        password=os.environ["DB_PASSWORD"],
+    )
+    
+    # Insert datasets into PostgreSQL
+    insert_datasets_into_postgres(InMemoryDatasetRepository().db, postgres_client)
+
