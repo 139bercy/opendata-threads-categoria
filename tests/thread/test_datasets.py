@@ -3,10 +3,15 @@ import requests
 import pytest
 import psycopg2
 import os
+import dotenv
 
 from dataclasses import dataclass
+from src.core.models import Message, Thread, Dataset
 
 from src.common.infrastructure import PostgresClient
+from src.core.infrastructure import PostgresThreadRepository
+
+dotenv.load_dotenv()
 
 @dataclass
 class DataGouvDatasetDTO:
@@ -24,7 +29,7 @@ class DataGouvDatasetDTO:
     # slug_data_gouv: str
     # created_dataset: str
 
-@dataclass
+"""@dataclass
 class Discussion:
     dataset_id: str
     discussion_id: str
@@ -33,9 +38,24 @@ class Discussion:
     mesage_posted_on: str
     discussion_created: str
     discussion_closed: str
-    title: str
+    title: str"""
 
+@pytest.fixture
+def postgres_thread_repository():
+    # Create a PostgresClient using the environment variables
+    postgres_client = PostgresClient(
+        dbname=os.getenv("DB_NAME"),
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        port=os.getenv("DB_PORT"),
+        password=os.getenv("DB_PASSWORD"),
+    )
 
+    # Initialize the PostgresThreadRepository using the PostgresClient
+    repository = PostgresThreadRepository(postgres_client)
+
+    # Return the repository for the tests
+    return repository
 
 """def get_datasets_from_data_gouv_api():    
     base_url = "https://www.data.gouv.fr/api/1/organizations"
@@ -52,15 +72,13 @@ class Discussion:
 """
 
 
-def get_all_datasets_from_data_gouv_api(base_url, organization, ressource):
-    #base_url = "https://www.data.gouv.fr/api/1/organizations"
-    filtres = f"/{organization}/{ressource}"
-    
+def get_all_datasets_from_data_gouv_api(base_url, organization, resource):
+
     datasets = []
     page = 1
 
     while True:
-        url = f"{base_url}{filtres}?page={page}"
+        url = f"{base_url}/{organization}/{resource}?page={page}"
         response = requests.get(url)
         
         if response.status_code != 200:
@@ -72,7 +90,7 @@ def get_all_datasets_from_data_gouv_api(base_url, organization, ressource):
         if not data["data"]:
             break
 
-        # Ajouter les données de toutes les pages dans la même liste( j'ai choisi de ne pas prendre ne compte l'argument "data" retourné par l'API)
+        # Ajouter les données de toutes les pages dans la même liste( j'ai choisi de ne pas prendre en compte l'argument "data" retourné par l'API)
         datasets.extend(data["data"])
 
         page += 1
@@ -86,15 +104,15 @@ def save_datasets_to_json(datasets, filename="tests/fixtures/dg-datasets.json"):
 
 
 organization = "ministere-de-leconomie-des-finances-et-de-la-souverainete-industrielle-et-numerique"
-ressource = "datasets"
+resource = "datasets"
 
-def process_data(organization, ressource):
+def process_data(base_url, organization, resource):
     # Appel à la fonction pour récupérer et enregistrer les données
-    all_datasets = get_all_datasets_from_data_gouv_api(base_url, organization, ressource)
+    all_datasets = get_all_datasets_from_data_gouv_api(base_url, organization, resource)
     save_datasets_to_json(all_datasets)
 
 
-#process_data(base_url, organization, ressource)
+#process_data(base_url, organization, resource)
 
 
 def test_get_a_dataset_from_data_gouv():
@@ -125,6 +143,9 @@ class InMemoryDatasetRepository:
 
     def get(self, dataset_id):
         return next((ds for ds in self.db if ds.buid == dataset_id), None)
+    
+    def clear(self):
+        self.db = []
 
 
 def test_append_a_dataset_to_database():
@@ -146,7 +167,6 @@ def test_get_a_dataset_from_repository():
     result = repository.get(dataset_id)
     # Assert
     assert result == dataset
-
 
 """def test_get_dataset_with_wrong_id_from_repository_should_return_none():
     # Arrange
@@ -198,7 +218,7 @@ def test_get_datasets_from_data_gouv():
             #print("remote_id_dataEco:", dataset["harvest"]["remote_id"] if dataset['harvest'] and 'remote_id' in dataset['harvest'] else None)
             #print("slug_dataGouv:", dataset["slug"]) #slug sur data.gouv mais sur data.eco, l'équivalent est 'remote_id'
             #print("created_dataset:", dataset["created_at"])
-            #"last_update_dataset": dataset_updated_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
+            ##"last_update_dataset": dataset_updated_date.strftime("%Y-%m-%dT%H:%M:%S.%f%z"),
             
             dataset_count += 1
             
@@ -245,33 +265,104 @@ def test_get_datasets_from_repository():
         assert result == dataset
 
 
-def insert_datasets_into_postgres(datasets, postgres_client):
-    try:
-        for dataset in datasets:
-            query = (
-                "INSERT INTO datasets (buid, title, description) "
-                "VALUES (%s, %s, %s)"
-            )
-            params = (dataset.buid, dataset.title, dataset.description)
-            postgres_client.execute(query, params)
-
-    except Exception as e:
-        print(f"Error inserting data into PostgreSQL: {e}")
-
-    finally:
-        postgres_client.close_connection()
-
-
-"""def test_insert_datasets_into_postgres():
+def test_clear_database():
+    # Arrange
     datasets = [
         DataGouvDatasetDTO("azerty", "title1", "description1"),
         DataGouvDatasetDTO("qwerty", "title2", "description2"),
     ]
+    repository = InMemoryDatasetRepository(db=datasets)
 
-    connection_string = "dbname=mydatabase user=myuser password=mypassword host=localhost port=5432"
+    # Act
+    repository.clear()
+
+    # Assert
+    assert len(repository.db) == 0
+
+
+def create_table_dataset_in_database_postgres():
+    try:
+        # Connexion à la base de données PostgreSQL
+        connection = psycopg2.connect(
+            dbname=os.getenv("DB_NAME"),
+            host=os.getenv("DB_HOST"),
+            user=os.getenv("DB_USER"),
+            port=os.getenv("DB_PORT"),
+            password=os.getenv("DB_PASSWORD"),
+        )
+
+        # curseur pour exécuter les commandes SQL
+        cursor = connection.cursor()
+
+        # Création de la table dataset
+        create_table_dataset = """
+        CREATE TABLE IF NOT EXISTS dataset (
+            buid        TEXT PRIMARY KEY NOT NULL,
+            title       TEXT NOT NULL,
+            description TEXT
+        );
+        """
+
+        # Exécutez la commande SQL
+        cursor.execute(create_table_dataset)
+
+        # Validez les modifications dans la base de données
+        connection.commit()
+
+        # Fermez le curseur et la connexion
+        cursor.close()
+        connection.close()
+
+        print("Table dataset created successfully in PostgreSQL.")
+
+    except Exception as e:
+        print(f"Error creating table dataset: {e}")
+
+# Appelez la fonction pour créer la table dataset
+create_table_dataset_in_database_postgres()
+
+def test_create_table_dataset_in_database_postgres():
     
-    insert_datasets_into_postgres(datasets, connection_string)
-"""
+    # Appelez la fonction pour créer la table dataset
+    create_table_dataset_in_database_postgres()
+    
+    # Connectez-vous à la base de données PostgreSQL pour vérifier la table
+    connection = psycopg2.connect(
+        dbname=os.getenv("DB_NAME"),
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        port=os.getenv("DB_PORT"),
+        password=os.getenv("DB_PASSWORD"),
+    )
+
+    # Créez un objet curseur pour exécuter des commandes SQL
+    cursor = connection.cursor()
+
+    # Exécutez une requête pour vérifier si la table existe
+    cursor.execute("SELECT * FROM information_schema.tables WHERE table_name = 'dataset';")
+    result = cursor.fetchone()
+
+    # Fermez le curseur et la connexion
+    cursor.close()
+    connection.close()
+
+    # Assert pour vérifier si la table existe
+    assert result is not None
+
+
+def test_append_a_dataset_to_postgres_database(postgres_thread_repository):
+    # Arrange
+    dataset = Dataset(buid="azerty", title="title", description="description")
+
+    # Act
+    postgres_thread_repository.add_dataset(dataset)
+    print("Dataset added to the database")
+
+    # Assert
+    result = postgres_thread_repository.get_dataset_by_buid(dataset.buid)
+    #assert result == dataset
+    assert result is not None
+
 
 if __name__ == "__main__":
 
@@ -280,15 +371,3 @@ if __name__ == "__main__":
     resource = "datasets"
 
     process_data(base_url, organization, resource)
-
-    postgres_client = PostgresClient(
-        dbname=os.environ["DB_NAME"],
-        host=os.environ["DB_HOST"],
-        user=os.environ["DB_USER"],
-        port=os.environ["DB_PORT"],
-        password=os.environ["DB_PASSWORD"],
-    )
-    
-    # Insert datasets into PostgreSQL
-    insert_datasets_into_postgres(InMemoryDatasetRepository().db, postgres_client)
-
