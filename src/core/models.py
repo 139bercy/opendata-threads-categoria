@@ -1,29 +1,52 @@
 from __future__ import annotations
 from src.common.utils import sha256_hash_string
 
+
 class Dataset:
-    def __init__(self, buid: str, dataset_uid: str, dataset_id: str, title:str, description: str, publisher: str, created: str, updated: str,  pk: int=None) -> None:
-        #self.pk = pk #Dataset_id fourni par les sources des données (DataGouv et DataEco) 
-        self.buid = buid  #id généré par nous même (hash grâce à get_key() définie en dessous)
+    def __init__(
+        self,
+        buid: str,
+        dataset_uid: str,
+        dataset_id: str,
+        title: str,
+        description: str,
+        publisher: str,
+        created: str,
+        updated: str,
+        pk: int = None,
+    ) -> None:
+        # self.pk = pk #Dataset_id fourni par les sources des données (DataGouv et DataEco)
+        self.buid = buid  # id généré par nous même (hash grâce à get_key() définie en dessous)
         self.dataset_uid = dataset_uid
         self.dataset_id = dataset_id
         self.title = title
         self.description = description
         self.publisher = publisher
         self.created = created
-        self.updated = updated    
-        #self.published = published
-        #self.restricted = restricted
+        self.updated = updated
+        # self.published = published
+        # self.restricted = restricted
 
     @classmethod
-    def create_dataset(cls, dataset_uid:str, dataset_id: str, title: str, description: str, publisher: str, created: str, updated: str) -> Dataset:
+    def create_dataset(
+        cls, dataset_uid: str, dataset_id: str, title: str, description: str, publisher: str, created: str, updated: str
+    ) -> Dataset:
         """
         Crée une instance de Dataset avec une buid calculée à partir d'un hash du slug.
         """
-        buid = get_key(f"{title}")   # VOIR pour remplacer buid par f"{slug}"", trouver une id_unique pour le dataset
-        instance = cls(buid=buid, dataset_uid=dataset_uid, dataset_id=dataset_id, title=title, description=description, publisher=publisher, created=created, updated=updated)
+        buid = get_key(f"{title}")  # VOIR pour remplacer buid par f"{slug}"", trouver une id_unique pour le dataset
+        instance = cls(
+            buid=buid,
+            dataset_uid=dataset_uid,
+            dataset_id=dataset_id,
+            title=title,
+            description=description,
+            publisher=publisher,
+            created=created,
+            updated=updated,
+        )
         return instance
-    
+
 
 class Message:
     def __init__(self, sk: str, thread_id: str, author: str, content: str, posted_on: str, pk: int = None) -> None:
@@ -32,7 +55,7 @@ class Message:
         self.posted_on = posted_on
         self.author = author
         self.content = content
-        self.sk = sk  #buid (surogate key) hash
+        self.sk = sk  # buid (surogate key) hash
 
     @classmethod
     def create_message(cls, thread_id: str, author: str, content: str, posted_on: str) -> Message:

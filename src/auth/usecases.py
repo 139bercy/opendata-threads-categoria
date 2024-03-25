@@ -26,7 +26,9 @@ def login(repository: AbstractAccountRepository, username: str, password: str) -
     if is_authenticated:
         token = uuid4()
         cookie = encode_token(username=username, token=token)
-        update_account_with_token(repository=repository, username=username, token=token) #associe au username le token qui a été crée pour le stocker et pouvoir identifier l'utilisateur par la suite
+        update_account_with_token(
+            repository=repository, username=username, token=token
+        )  # associe au username le token qui a été crée pour le stocker et pouvoir identifier l'utilisateur par la suite
         return cookie
 
 

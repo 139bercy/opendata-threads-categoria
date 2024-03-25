@@ -29,5 +29,3 @@ class AbstractDatasetRepository(abc.ABC):
     @abc.abstractmethod
     def get_dataset_by_buid(self, buid: str) -> Dataset:
         pass  # pragma: no cover
-
-    

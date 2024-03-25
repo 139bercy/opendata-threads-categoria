@@ -18,10 +18,12 @@ import json
 
 from src.scripts.logging_config import configure_logging
 
+
 # Récupérer le host, le nom d'utilisateur et le mot de passe à partir des variables d'environnement situées dans le fichier de conf.
 def load_db_config():
     with open("config.json") as config_file:
         return json.load(config_file)
+
 
 # Configuration de la localisation en français
 locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")
@@ -67,7 +69,7 @@ total_discussions = total_rows
 # Calculer le temps de réponse moyen total
 mean_time_response_total = df["time_response"].mean()
 # Tronquer les ms dans la kpi-card
-mean_time_response_total_str = str(mean_time_response_total).split('.')[0]
+mean_time_response_total_str = str(mean_time_response_total).split(".")[0]
 
 # Calculer la médiane des temps de réponse par annotation
 median_time_response = df.groupby("title_discussion")["time_response"].median().sort_values(ascending=False)
@@ -75,7 +77,7 @@ median_time_response = df.groupby("title_discussion")["time_response"].median().
 # Calculer le temps de réponse moyen total
 median_time_response_total = df["time_response"].median()
 # Tronquer les ms dans la kpi-card
-median_time_response_total_str = str(median_time_response_total).split('.')[0]
+median_time_response_total_str = str(median_time_response_total).split(".")[0]
 
 ############################################"FILTRES"##########################################################
 
@@ -109,6 +111,7 @@ filtres = html.Div(
 )
 ############################################"GRAPHS"##########################################################
 # TREEMAP
+
 
 # Fonction pour générer la treemap en fonction des données filtrées
 def generate_treemap(filtered_data):
@@ -146,6 +149,7 @@ def generate_treemap(filtered_data):
 
     return dcc.Graph(figure=fig)
 
+
 # Utilisation de cette fonction pour créer la figure initiale
 treemap_fig = generate_treemap(df)
 
@@ -157,7 +161,6 @@ def extract_prediction_data():
     db_user = config["DB_USER"]
     db_name = config["DB_NAME"]
     db_password = config["DB_PASSWORD"]
-
 
     """try:
         # Connexion à MySQL avec les paramètres chargés depuis le fichier de configuration
@@ -202,6 +205,7 @@ prediction_df = extract_prediction_data()"""
         print(f"Erreur lors de l'extraction des données de la table 'prediction': {str(e)}")
         return pd.DataFrame()
 
+
 # Charger les données de la table "prediction"
 prediction_df = extract_prediction_data()
 
@@ -235,6 +239,7 @@ def generate_second_treemap(prediction_data):
 
     return dcc.Graph(figure=fig)
 
+
 # Utilisation de cette fonction pour créer le deuxième treemap
 second_treemap_fig = generate_second_treemap(prediction_df)
 
@@ -262,8 +267,9 @@ def generate_bar_chart_top_jdd(jdd_counts):
 # Utilisation de cette fonction pour créer le graphique en barres
 barchart = generate_bar_chart_top_jdd(jdd_counts)"""
 
+
 def generate_bar_chart_top_jdd(jdd_counts):
-    top_10_jdd_counts = jdd_counts.head(10) # Sélectionnez les 10 premières lignes
+    top_10_jdd_counts = jdd_counts.head(10)  # Sélectionnez les 10 premières lignes
     subplots = make_subplots(
         rows=len(top_10_jdd_counts),
         cols=1,
@@ -272,9 +278,9 @@ def generate_bar_chart_top_jdd(jdd_counts):
         print_grid=False,
         vertical_spacing=(0.45 / len(top_10_jdd_counts)),
     )
-    subplots['layout'].update(
+    subplots["layout"].update(
         width=800,
-        plot_bgcolor='#fff',
+        plot_bgcolor="#fff",
         title_text="Top 10 des jeux de données les plus discutés",
         title_font=dict(size=19),
         bargap=0.01,
@@ -282,47 +288,52 @@ def generate_bar_chart_top_jdd(jdd_counts):
 
     # add bars for the categories
     for k, (index, value) in enumerate(top_10_jdd_counts.items()):
-        subplots.add_trace(go.Bar(
-            y=[index],
-            x=[value],
-            orientation='h',
-            text=[str(value)],
-            hoverinfo='text',
-            textposition='auto',
-            marker=dict(color="#3ca2f4"),
-            textfont_color='white',
-        ), row=k+1, col=1)
+        subplots.add_trace(
+            go.Bar(
+                y=[index],
+                x=[value],
+                orientation="h",
+                text=[str(value)],
+                hoverinfo="text",
+                textposition="auto",
+                marker=dict(color="#3ca2f4"),
+                textfont_color="white",
+            ),
+            row=k + 1,
+            col=1,
+        )
 
     # update the layout
-    subplots['layout'].update(
+    subplots["layout"].update(
         showlegend=False,
     )
-    for x in subplots["layout"]['annotations']:
-        x['x'] = 0
-        x['xanchor'] = 'left'
-        x['align'] = 'left'
-        x['font'] = dict(
+    for x in subplots["layout"]["annotations"]:
+        x["x"] = 0
+        x["xanchor"] = "left"
+        x["align"] = "left"
+        x["font"] = dict(
             size=15,
         )
 
     # hide the axes
-    for axis in subplots['layout']:
-        if axis.startswith('yaxis') or axis.startswith('xaxis'):
-            subplots['layout'][axis]['visible'] = False
+    for axis in subplots["layout"]:
+        if axis.startswith("yaxis") or axis.startswith("xaxis"):
+            subplots["layout"][axis]["visible"] = False
 
     # update the margins and size
-    subplots['layout']['margin'] = {
-        'l': 0,
-        'r': 0,
-        't': 90,
-        'b': 15,
+    subplots["layout"]["margin"] = {
+        "l": 0,
+        "r": 0,
+        "t": 90,
+        "b": 15,
     }
     height_calc = 75 * len(top_10_jdd_counts)
     height_calc = max([height_calc, 550])
-    subplots['layout']['height'] = height_calc
-    subplots['layout']['width'] = None
+    subplots["layout"]["height"] = height_calc
+    subplots["layout"]["width"] = None
 
     return subplots
+
 
 barchart = generate_bar_chart_top_jdd(jdd_counts)
 
@@ -330,93 +341,91 @@ barchart = generate_bar_chart_top_jdd(jdd_counts)
 
 # Fonction pour générer le graphique circulaire (pie chart) pour la proportion de discussions ouvertes et fermées
 pie_chart = dcc.Graph(
-                id="pie-chart-discussions",
-                figure=px.pie(
-                    names=["Discussions Ouvertes", "Discussions Closes"],
-                    values=[discussions_ouvertes, discussions_closes],
-                    #title="Proportion de Discussions Ouvertes et Closes",
-                    color_discrete_sequence=["#ED4646", "#33BB5C"],
-                    hole=0.4,
-                ).update_traces(
-                    texttemplate="<b>%{percent:.0%}</b>",
-                    insidetextfont=dict(size=16),
-                ),
-            )
+    id="pie-chart-discussions",
+    figure=px.pie(
+        names=["Discussions Ouvertes", "Discussions Closes"],
+        values=[discussions_ouvertes, discussions_closes],
+        # title="Proportion de Discussions Ouvertes et Closes",
+        color_discrete_sequence=["#ED4646", "#33BB5C"],
+        hole=0.4,
+    ).update_traces(
+        texttemplate="<b>%{percent:.0%}</b>",
+        insidetextfont=dict(size=16),
+    ),
+)
 
 # JAUGE DISCUSSIONS CLAUSES
 jauge_disc_closes = dcc.Graph(
-                            id="jauge-discussions-closes",
-                            figure=go.Figure(
-                                go.Indicator(
-                                    mode="gauge+number",
-                                    value=discussions_closes,
-                                    title={"text": "Nombre de discussions Closes"},
-                                    domain={"x": [0, 1], "y": [0, 1]},
-                                    gauge={
-                                        "axis": {"range": [0, total_discussions]},
-                                        "bar": {"color": "darkgreen"},
-                                        "bgcolor": "white",
-                                        "borderwidth": 2,
-                                        "bordercolor": "gray",
-                                        "steps": [{"range": [0, discussions_closes], "color": "rgba(0, 100, 0, 0.350)"},
-                                                  {'range': [discussions_closes, total_discussions], 'color': "lightgray"}],
-                                        "threshold": {
-                                            "line": {"color": "red", "width": 4},
-                                            "thickness": 0.75,
-                                            "value": discussions_closes,
-                                        },
-                                    },
-                                )
-                            ))
+    id="jauge-discussions-closes",
+    figure=go.Figure(
+        go.Indicator(
+            mode="gauge+number",
+            value=discussions_closes,
+            title={"text": "Nombre de discussions Closes"},
+            domain={"x": [0, 1], "y": [0, 1]},
+            gauge={
+                "axis": {"range": [0, total_discussions]},
+                "bar": {"color": "darkgreen"},
+                "bgcolor": "white",
+                "borderwidth": 2,
+                "bordercolor": "gray",
+                "steps": [
+                    {"range": [0, discussions_closes], "color": "rgba(0, 100, 0, 0.350)"},
+                    {"range": [discussions_closes, total_discussions], "color": "lightgray"},
+                ],
+                "threshold": {
+                    "line": {"color": "red", "width": 4},
+                    "thickness": 0.75,
+                    "value": discussions_closes,
+                },
+            },
+        )
+    ),
+)
 
 # Ajout des KPIs
 kpi = html.Div(
     [
         html.H3("Statistiques de la plateforme :", className="title-kpi"),
-        html.Div([
-            dbc.Card(
-                [
-                    dbc.CardHeader("Total discussions", style={"background-color": "#015366", "color": "white"}),
-                    dbc.CardBody(
-                        [
-                            html.H4(total_discussions, className="card-title")
-                        ]
-                    ),
-                ], className="kpi-card",
-            ),
-            dbc.Card(
-                [
-                    dbc.CardHeader("Discussions ouvertes", style={"background-color": "#00718F", "color": "white"}),
-                    dbc.CardBody(
-                        [
-                            html.H4(discussions_ouvertes, className="card-title")
-                        ]
-                    ),
-                ], className="kpi-card",
-            ),
-            dbc.Card(
-                [
-                    dbc.CardHeader("Temps de réponses moyen", style={"background-color": "#5ba5c2", "color": "white"}),
-                    dbc.CardBody(
-                        [
-                            html.H4(str(mean_time_response_total_str), className="card-title")
-                        ]
-                    ),
-                ], className="kpi-card",
-            ),
-            dbc.Card(
-                [
-                    dbc.CardHeader("Temps de réponses médian", style={"background-color": "#0BA5BE", "color": "white"}),
-                    dbc.CardBody(
-                        [
-                            html.H4(str(median_time_response_total_str), className="card-title")
-                        ]
-                    ),
-                ], className="kpi-card",
-            ),
-            ], className="kpi-cards-container",
-        )
-    ], className="kpi-container container-fluid",
+        html.Div(
+            [
+                dbc.Card(
+                    [
+                        dbc.CardHeader("Total discussions", style={"background-color": "#015366", "color": "white"}),
+                        dbc.CardBody([html.H4(total_discussions, className="card-title")]),
+                    ],
+                    className="kpi-card",
+                ),
+                dbc.Card(
+                    [
+                        dbc.CardHeader("Discussions ouvertes", style={"background-color": "#00718F", "color": "white"}),
+                        dbc.CardBody([html.H4(discussions_ouvertes, className="card-title")]),
+                    ],
+                    className="kpi-card",
+                ),
+                dbc.Card(
+                    [
+                        dbc.CardHeader(
+                            "Temps de réponses moyen", style={"background-color": "#5ba5c2", "color": "white"}
+                        ),
+                        dbc.CardBody([html.H4(str(mean_time_response_total_str), className="card-title")]),
+                    ],
+                    className="kpi-card",
+                ),
+                dbc.Card(
+                    [
+                        dbc.CardHeader(
+                            "Temps de réponses médian", style={"background-color": "#0BA5BE", "color": "white"}
+                        ),
+                        dbc.CardBody([html.H4(str(median_time_response_total_str), className="card-title")]),
+                    ],
+                    className="kpi-card",
+                ),
+            ],
+            className="kpi-cards-container",
+        ),
+    ],
+    className="kpi-container container-fluid",
 )
 
 """# Fonction pour générer le graphique en barres des JDD les plus consultés
@@ -440,6 +449,7 @@ def generate_bar_chart_top_jdd_views(jdd_views):
 # Utilisation de cette fonction pour créer le graphique en barres
 barchart_views = generate_bar_chart_top_jdd_views(jdd_views)"""
 
+
 def generate_bar_chart_top_jdd_views(jdd_views):
     top_5_jdd_counts = jdd_views.head(5)
     subplots = make_subplots(
@@ -450,9 +460,9 @@ def generate_bar_chart_top_jdd_views(jdd_views):
         print_grid=False,
         vertical_spacing=(0.45 / len(top_5_jdd_counts)),
     )
-    subplots['layout'].update(
+    subplots["layout"].update(
         width=800,
-        plot_bgcolor='#fff',
+        plot_bgcolor="#fff",
         title_text="Top 5 des jeux de données les plus consultés",
         title_font=dict(size=19),
         bargap=0.01,
@@ -460,47 +470,52 @@ def generate_bar_chart_top_jdd_views(jdd_views):
 
     # add bars for the categories
     for k, (index, value) in enumerate(top_5_jdd_counts.items()):
-        subplots.add_trace(go.Bar(
-            y=[index],
-            x=[value],
-            orientation='h',
-            text=[str(value)],
-            hoverinfo='text',
-            textposition='auto',
-            marker=dict(color="#3ca2f4"),
-            textfont_color='white',
-        ), row=k+1, col=1)
+        subplots.add_trace(
+            go.Bar(
+                y=[index],
+                x=[value],
+                orientation="h",
+                text=[str(value)],
+                hoverinfo="text",
+                textposition="auto",
+                marker=dict(color="#3ca2f4"),
+                textfont_color="white",
+            ),
+            row=k + 1,
+            col=1,
+        )
 
     # update the layout
-    subplots['layout'].update(
+    subplots["layout"].update(
         showlegend=False,
     )
-    for x in subplots["layout"]['annotations']:
-        x['x'] = 0
-        x['xanchor'] = 'left'
-        x['align'] = 'left'
-        x['font'] = dict(
+    for x in subplots["layout"]["annotations"]:
+        x["x"] = 0
+        x["xanchor"] = "left"
+        x["align"] = "left"
+        x["font"] = dict(
             size=15,
         )
 
     # hide the axes
-    for axis in subplots['layout']:
-        if axis.startswith('yaxis') or axis.startswith('xaxis'):
-            subplots['layout'][axis]['visible'] = False
+    for axis in subplots["layout"]:
+        if axis.startswith("yaxis") or axis.startswith("xaxis"):
+            subplots["layout"][axis]["visible"] = False
 
     # update the margins and size
-    subplots['layout']['margin'] = {
-        'l': 0,
-        'r': 0,
-        't': 90,
-        'b': 15,
+    subplots["layout"]["margin"] = {
+        "l": 0,
+        "r": 0,
+        "t": 90,
+        "b": 15,
     }
     height_calc = 75 * len(top_5_jdd_counts)
-    height_calc = max([height_calc, 400]) # largeur bar
-    subplots['layout']['height'] = height_calc
-    subplots['layout']['width'] = None
+    height_calc = max([height_calc, 400])  # largeur bar
+    subplots["layout"]["height"] = height_calc
+    subplots["layout"]["width"] = None
 
     return subplots
+
 
 bar_chart_top_jdd_views = generate_bar_chart_top_jdd_views(jdd_views)
 
@@ -525,6 +540,7 @@ bar_chart_top_jdd_views = generate_bar_chart_top_jdd_views(jdd_views)
 # Utilisation de cette fonction pour créer le graphique en barres
 barchart_reuses = generate_bar_chart_top_jdd_reuses(jdd_reuses)"""
 
+
 def generate_bar_chart_top_jdd_reuses(jdd_reuses):
     top_5_jdd_counts = jdd_reuses.head(5)
     subplots = make_subplots(
@@ -535,9 +551,9 @@ def generate_bar_chart_top_jdd_reuses(jdd_reuses):
         print_grid=False,
         vertical_spacing=(0.45 / len(top_5_jdd_counts)),
     )
-    subplots['layout'].update(
+    subplots["layout"].update(
         width=800,
-        plot_bgcolor='#fff',
+        plot_bgcolor="#fff",
         title_text="Top 5 des jeux de données les plus réutilisés",
         title_font=dict(size=19),
         bargap=0.01,
@@ -545,47 +561,52 @@ def generate_bar_chart_top_jdd_reuses(jdd_reuses):
 
     # add bars for the categories
     for k, (index, value) in enumerate(top_5_jdd_counts.items()):
-        subplots.add_trace(go.Bar(
-            y=[index],
-            x=[value],
-            orientation='h',
-            text=[str(value)],
-            hoverinfo='text',
-            textposition='auto',
-            marker=dict(color="#3ca2f4"),
-            textfont_color='white',
-        ), row=k+1, col=1)
+        subplots.add_trace(
+            go.Bar(
+                y=[index],
+                x=[value],
+                orientation="h",
+                text=[str(value)],
+                hoverinfo="text",
+                textposition="auto",
+                marker=dict(color="#3ca2f4"),
+                textfont_color="white",
+            ),
+            row=k + 1,
+            col=1,
+        )
 
     # update the layout
-    subplots['layout'].update(
+    subplots["layout"].update(
         showlegend=False,
     )
-    for x in subplots["layout"]['annotations']:
-        x['x'] = 0
-        x['xanchor'] = 'left'
-        x['align'] = 'left'
-        x['font'] = dict(
+    for x in subplots["layout"]["annotations"]:
+        x["x"] = 0
+        x["xanchor"] = "left"
+        x["align"] = "left"
+        x["font"] = dict(
             size=15,
         )
 
     # hide the axes
-    for axis in subplots['layout']:
-        if axis.startswith('yaxis') or axis.startswith('xaxis'):
-            subplots['layout'][axis]['visible'] = False
+    for axis in subplots["layout"]:
+        if axis.startswith("yaxis") or axis.startswith("xaxis"):
+            subplots["layout"][axis]["visible"] = False
 
     # update the margins and size
-    subplots['layout']['margin'] = {
-        'l': 0,
-        'r': 0,
-        't': 90,
-        'b': 15,
+    subplots["layout"]["margin"] = {
+        "l": 0,
+        "r": 0,
+        "t": 90,
+        "b": 15,
     }
     height_calc = 75 * len(top_5_jdd_counts)
     height_calc = max([height_calc, 400])
-    subplots['layout']['height'] = height_calc
-    subplots['layout']['width'] = None
+    subplots["layout"]["height"] = height_calc
+    subplots["layout"]["width"] = None
 
     return subplots
+
 
 bar_chart_top_jdd_reuses = generate_bar_chart_top_jdd_reuses(jdd_reuses)
 

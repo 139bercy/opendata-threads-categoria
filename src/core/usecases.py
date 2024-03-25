@@ -10,6 +10,7 @@ from src.core.gateways import AbstractThreadRepository, AbstractDatasetRepositor
     return dataset
 """
 
+
 def create_dataset(repository: AbstractDatasetRepository, dataset: Dataset) -> Dataset:
     """
     Crée un jeu de données à partir des données provenant de DataGouv.
@@ -21,9 +22,9 @@ def create_dataset(repository: AbstractDatasetRepository, dataset: Dataset) -> D
         description=dataset.description,
         publisher=dataset.publisher,
         created=dataset.created,
-        updated=dataset.updated#,
-        #published=dataset.published,
-        #restricted=dataset.restricted
+        updated=dataset.updated,  # ,
+        # published=dataset.published,
+        # restricted=dataset.restricted
     )
     repository.create_dataset(dataset)
     return dataset

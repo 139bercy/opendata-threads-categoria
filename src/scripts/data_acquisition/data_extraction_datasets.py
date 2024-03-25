@@ -9,7 +9,8 @@ import requests
 
 sys.path.append("..")
 from logging_config import configure_logging
-#from src.scripts.logging_config import configure_logging
+
+# from src.scripts.logging_config import configure_logging
 
 """# Configuration de la journalisation
 def configure_logging(log_folder_path):

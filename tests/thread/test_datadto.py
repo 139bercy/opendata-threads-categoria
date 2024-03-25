@@ -8,25 +8,29 @@ from src.core.gateways import AbstractDatasetRepository
 from src.common.utils import sha256_hash_string
 from src.config import postgres_client
 
+
 def get_key(chain):
     """
     Utiliser les 8 premiers caractères d'un hash est à ce stade suffisamment discriminant pour éviter les collisions.
     """
     return sha256_hash_string(chain)[0:8]
+
+
 ################## DATASET ####################################################################################
+
 
 @dataclass
 class Dataset:
-    buid: str = None # id générée manuellement
+    buid: str = None  # id générée manuellement
     dataset_uid: str = None
     dataset_id: str = None
     title: str = None
     description: str = None
     publisher: str = None
-    #published: bool = None
+    # published: bool = None
     created: str = None
     updated: str = None
-    #restricted: bool = None
+    # restricted: bool = None
     # organization: str
     # url: str
     # creation_date: str
@@ -40,14 +44,25 @@ class Dataset:
 
     # Opérations CRUD : créer, récupérer, mettre à jour et supprimer un dataset dans la classe Dataset.
     @classmethod
-    def create(cls, dataset_uid: str, dataset_id: str, title: str, description: str, publisher: str, created: str, updated: str) -> 'Dataset':
+    def create(
+        cls, dataset_uid: str, dataset_id: str, title: str, description: str, publisher: str, created: str, updated: str
+    ) -> "Dataset":
         """
         Crée une instance de Dataset avec une buid calculée à partir d'un hash du slug.
         """
-        buid = get_key(f"{title}")   # VOIR pour remplacer buid par f"{slug}"", trouver une id_unique pour le dataset
-        instance = cls(buid=buid, dataset_uid=dataset_uid, dataset_id=dataset_id, title=title, description=description, publisher=publisher, created=created, updated=updated)
+        buid = get_key(f"{title}")  # VOIR pour remplacer buid par f"{slug}"", trouver une id_unique pour le dataset
+        instance = cls(
+            buid=buid,
+            dataset_uid=dataset_uid,
+            dataset_id=dataset_id,
+            title=title,
+            description=description,
+            publisher=publisher,
+            created=created,
+            updated=updated,
+        )
         return instance
-    
+
     def update(self, title: str, description: str) -> None:
         if title:
             self.title = title
@@ -65,13 +80,14 @@ class InMemoryDatasetRepository(AbstractDatasetRepository):
 
     """def get_dataset_by_buid(self, buid: str) -> Dataset:
         return next((Dataset(**data) for data in self.db if data["buid"] == buid), None)"""
-    
+
     def get_dataset_by_buid(self, buid: str) -> Dataset:
         for data in self.db:
             if data.buid == buid:
                 return data
         return None
-    
+
+
 """class InMemoryDatasetRepository:
     def __init__(self, db: list) -> None:
         self.db = db
@@ -88,7 +104,7 @@ class InMemoryDatasetRepository(AbstractDatasetRepository):
     def clear(self):
         self.db = []"""
 
-    
+
 class PostgresDatasetRepository(AbstractDatasetRepository):
     def __init__(self, postgres_client):
         self.postgres_client = postgres_client
@@ -98,9 +114,17 @@ class PostgresDatasetRepository(AbstractDatasetRepository):
             INSERT INTO dataset(buid, dataset_uid, dataset_id, title, description, publisher, created, updated)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
         """
-        values = (dataset.buid, dataset.dataset_uid, dataset.dataset_id, dataset.title, dataset.description, dataset.publisher, dataset.created, dataset.updated)
+        values = (
+            dataset.buid,
+            dataset.dataset_uid,
+            dataset.dataset_id,
+            dataset.title,
+            dataset.description,
+            dataset.publisher,
+            dataset.created,
+            dataset.updated,
+        )
         postgres_client.add_one(query, params=values)
-
 
     def get_dataset_by_buid(self, buid: str) -> Dataset:
         query = """
@@ -108,11 +132,13 @@ class PostgresDatasetRepository(AbstractDatasetRepository):
             FROM dataset
             WHERE buid = %s;
         """
-        result = postgres_client.fetch_one(query, params=(buid,))   # self.postgres_client.fetch_one(query, params=(buid,))
+        result = postgres_client.fetch_one(
+            query, params=(buid,)
+        )  # self.postgres_client.fetch_one(query, params=(buid,))
         if result:
             return Dataset(*result)
         return None
-    
+
     def delete(self, buid: str) -> None:
         """
         Supprime le dataset de la base de données en utilisant le buid comme identifiant.
@@ -123,8 +149,10 @@ class PostgresDatasetRepository(AbstractDatasetRepository):
         """
         postgres_client.execute(query, (buid,))
 
+
 ################## DATA GOUV DTO ####################################################################################
-    
+
+
 @dataclass
 class DataGouvDatasetDTO:
     buid: str
@@ -143,7 +171,7 @@ class DataGouvDatasetDTO:
 
     @staticmethod
     def fetch_data_from_datagouv(base_url: str, organization: str, resource: str, page: int = 1) -> dict:
-        """ 
+        """
         Récupère les données brutes à partir de l'API de data.gouv.fr
         """
         datasets = []
@@ -168,30 +196,34 @@ class DataGouvDatasetDTO:
             page += 1
 
         return datasets
-    
+
     @classmethod
-    def fetch_and_save_data_from_datagouv_to_json(cls, filename: str, base_url: str, organization: str, resource: str) -> None:
+    def fetch_and_save_data_from_datagouv_to_json(
+        cls, filename: str, base_url: str, organization: str, resource: str
+    ) -> None:
         """
-        Enregistre les données brutes récupérées de l'API dans un fichier JSON. 
+        Enregistre les données brutes récupérées de l'API dans un fichier JSON.
         """
         with open(filename, "w") as file:
-            json.dump(cls.fetch_data_from_datagouv(base_url, organization, resource), file, indent=2, ensure_ascii=False)
+            json.dump(
+                cls.fetch_data_from_datagouv(base_url, organization, resource), file, indent=2, ensure_ascii=False
+            )
 
     @classmethod
     def fetch_and_convert_data_to_datagouv_dto(cls, datasets) -> list:
         """
-        Méthode qui utilise la méthode fetch_data pour récupérer les données brutes de l'API, 
-        puis elle les convertit en objets de classe DataGouvDatasetDTO. 
+        Méthode qui utilise la méthode fetch_data pour récupérer les données brutes de l'API,
+        puis elle les convertit en objets de classe DataGouvDatasetDTO.
         Elle est responsable de convertir les données brutes en objets DTO.
         """
         dtos = []
         for data in datasets:
             # Nous allons extraire les valeurs nécessaires et les passer en tant qu'arguments
             dto = cls(
-                #buid=data['buid'],
+                # buid=data['buid'],
                 buid="test",
-                title=data['title'],
-                description=data['description']
+                title=data["title"],
+                description=data["description"],
             )
             dtos.append(dto)
         return dtos
@@ -202,7 +234,9 @@ class DataGouvDatasetDTO:
         """
         return Dataset(buid=self.buid, title=self.title, description=self.description)
 
+
 ################## DATA ECO DTO ####################################################################################
+
 
 @dataclass
 class DataEcoDatasetDTO:
@@ -211,19 +245,19 @@ class DataEcoDatasetDTO:
     title: str
     description: str
     publisher: str
-    #published: bool
+    # published: bool
     created: str
     updated: str
-    #restricted: bool
+    # restricted: bool
 
     @staticmethod
     def fetch_data_from_dataeco() -> list:
-        """ 
+        """
         Récupère les données brutes à partir de l'API de data.economie.gouv.fr
         """
         base_url = "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets"
         limit = 100  # Limite de pagination par défaut
-        offset = 0   # Offset initial
+        offset = 0  # Offset initial
 
         datasets = []
 
@@ -243,7 +277,7 @@ class DataEcoDatasetDTO:
                 break
 
         return datasets
-    
+
     """def fetch_data_from_dataeco() -> list:
         datasets = []
         page = 1
@@ -262,7 +296,7 @@ class DataEcoDatasetDTO:
     @classmethod
     def fetch_and_save_data_from_dataeco_to_json(cls, filename: str) -> None:
         """
-        Enregistre les données brutes récupérées de l'API dans un fichier JSON. 
+        Enregistre les données brutes récupérées de l'API dans un fichier JSON.
         """
         with open(filename, "w") as file:
             json.dump(cls.fetch_data_from_dataeco(), file, indent=2, ensure_ascii=False)
@@ -270,22 +304,23 @@ class DataEcoDatasetDTO:
     @classmethod
     def fetch_and_convert_data_to_dataeco_dto(cls, datasets) -> list:
         """
-        Méthode qui utilise la méthode fetch_data pour récupérer les données brutes de l'API, 
-        puis elle les convertit en objets de classe DataEcoDatasetDTO. 
+        Méthode qui utilise la méthode fetch_data pour récupérer les données brutes de l'API,
+        puis elle les convertit en objets de classe DataEcoDatasetDTO.
         Elle est responsable de convertir les données brutes en objets DTO.
         """
         dtos = []
         for data in datasets:
             # Nous allons extraire les valeurs nécessaires et les passer en tant qu'arguments
-            dto = cls(dataset_id=data['dataset_id'], 
-                      dataset_uid=data['dataset_uid'], 
-                      title=data['title'], 
-                      description=data['description'],
-                      publisher=data['publisher'], 
-                      #published=data['published'], 
-                      created=data['created'], 
-                      updated=data['updated']#, 
-                      #restricted=data['restricted']
+            dto = cls(
+                dataset_id=data["dataset_id"],
+                dataset_uid=data["dataset_uid"],
+                title=data["title"],
+                description=data["description"],
+                publisher=data["publisher"],
+                # published=data['published'],
+                created=data["created"],
+                updated=data["updated"],  # ,
+                # restricted=data['restricted']
             )
             dtos.append(dto)
         return dtos
@@ -294,10 +329,19 @@ class DataEcoDatasetDTO:
         """
         Cette méthode convertit un objet DTO (Data Transfer Object) en un objet de classe Dataset.
         """
-        return Dataset(dataset_id=self.dataset_id, dataset_uid=self.dataset_uid, title=self.title, description=self.description, publisher=self.publisher, created=self.created, updated=self.updated)
+        return Dataset(
+            dataset_id=self.dataset_id,
+            dataset_uid=self.dataset_uid,
+            title=self.title,
+            description=self.description,
+            publisher=self.publisher,
+            created=self.created,
+            updated=self.updated,
+        )
 
 
 ################## TESTS DATA GOUV ####################################################################################
+
 
 # Tests pour DataGouvDatasetDTO
 def test_get_a_dataset_from_data_gouv():
@@ -305,30 +349,29 @@ def test_get_a_dataset_from_data_gouv():
     base_url = "https://www.data.gouv.fr/api/1/organizations"
     organization = "ministere-de-leconomie-des-finances-et-de-la-souverainete-industrielle-et-numerique"
     resource = "datasets"
-    DataGouvDatasetDTO.fetch_and_save_data_from_datagouv_to_json('tests/fixtures/testgouv.json', base_url, organization, resource)
+    DataGouvDatasetDTO.fetch_and_save_data_from_datagouv_to_json(
+        "tests/fixtures/testgouv.json", base_url, organization, resource
+    )
 
-    with open("tests/fixtures/testgouv.json", "r")  as file:
-        #data = json.load(file)["data"][0]
+    with open("tests/fixtures/testgouv.json", "r") as file:
+        # data = json.load(file)["data"][0]
         data = json.load(file)[0]
     # Act
-    expected_data = DataGouvDatasetDTO(
-        buid="azerty", 
-        title=data["title"], 
-        description=data["description"]
-    )
+    expected_data = DataGouvDatasetDTO(buid="azerty", title=data["title"], description=data["description"])
     # Assert
     assert expected_data.title == "Tableaux Statistiques de la Direction Générale des Finances Publiques (DGFiP)"
     assert len(expected_data.description) >= 150
 
+
 def test_fetch_and_convert_datagouv_to_dto():
-    # Arrange    
+    # Arrange
     datasets = [
         {"buid": "azerty", "title": "Title 1", "description": "Description 1"},
-        {"buid": "qwerty", "title": "Title 2", "description": "Description 2"}
+        {"buid": "qwerty", "title": "Title 2", "description": "Description 2"},
     ]
 
     # Act
-    #datasets = DataGouvDatasetDTO.fetch_data(base_url, organization, resource)  # VOIR POUR BUID A GENERER !!!!!!!!!!!!!!!!!!!!!!
+    # datasets = DataGouvDatasetDTO.fetch_data(base_url, organization, resource)  # VOIR POUR BUID A GENERER !!!!!!!!!!!!!!!!!!!!!!
     dtos = DataGouvDatasetDTO.fetch_and_convert_data_to_datagouv_dto(datasets)
 
     # Assert
@@ -338,13 +381,14 @@ def test_fetch_and_convert_datagouv_to_dto():
         assert isinstance(dto, DataGouvDatasetDTO)
         assert dto.buid == "test"
 
+
 def test_convert_datagouv_dto_to_dataset():
     # Arrange
     dto = DataGouvDatasetDTO(buid="buid", title="title", description="description")
     # Act
     dataset = dto.convert_datagouv_dto_to_dataset()
     # Assert
-    assert isinstance(dataset, Dataset) 
+    assert isinstance(dataset, Dataset)
     assert dataset.buid == "buid"
     assert dataset.title == "title"
     assert dataset.description == "description"
@@ -352,44 +396,62 @@ def test_convert_datagouv_dto_to_dataset():
 
 ################## TESTS DATA ECO ####################################################################################
 
+
 # Tests pour DataEcoDatasetDTO
 def test_get_a_dataset_from_data_eco():
     # Arrange
-    DataEcoDatasetDTO.fetch_and_save_data_from_dataeco_to_json('tests/fixtures/testeco.json')
+    DataEcoDatasetDTO.fetch_and_save_data_from_dataeco_to_json("tests/fixtures/testeco.json")
 
-    with open("tests/fixtures/testeco.json", "r")  as file:
+    with open("tests/fixtures/testeco.json", "r") as file:
         data = json.load(file)[0]
-        #data = json.load(file)["results"][0]
+        # data = json.load(file)["results"][0]
     # Act
     expected_data = DataEcoDatasetDTO(
-        dataset_id = data["dataset_id"],
-        dataset_uid = data["dataset_uid"],
-        title = data["metas"]["default"]["title"],
-        description = data["metas"]["default"]["description"],
-        publisher = data["metas"]["default"]["publisher"],
-        #published = data["published"],
-        #editor = data["metas"]["custom"]["editeur"],
-        created = data["metas"]["custom"]["date-de-creation"],
-        updated = data["metas"]["default"]["modified"],
-        #restricted=data["restricted"]
+        dataset_id=data["dataset_id"],
+        dataset_uid=data["dataset_uid"],
+        title=data["metas"]["default"]["title"],
+        description=data["metas"]["default"]["description"],
+        publisher=data["metas"]["default"]["publisher"],
+        # published = data["published"],
+        # editor = data["metas"]["custom"]["editeur"],
+        created=data["metas"]["custom"]["date-de-creation"],
+        updated=data["metas"]["default"]["modified"],
+        # restricted=data["restricted"]
     )
     # Assert
     assert expected_data.dataset_id == "competences_fevrier2024"
     assert expected_data.title == "Fichier des compétences territoriales des services DGFIP- février 2024"
     assert len(expected_data.description) >= 150
 
+
 def test_fetch_and_convert_data_to_dataeco_dto():
-    # Arrange    
+    # Arrange
     """datasets = [
         {"dataset_id": "1", "dataset_uid": "azerty", "title": "Title 1", "description": "Description 1", "publisher": "Publisher 1", "published": True, "created": "2023-01-01", "updated": "2023-01-02", "restricted": False},
         {"dataset_id": "2", "dataset_uid": "qwerty", "title": "Title 2", "description": "Description 1", "publisher": "Publisher 2", "published": True, "created": "2023-02-01", "updated": "2023-02-02", "restricted": True}
     ]"""
     datasets = [
-        {"dataset_id": "1", "dataset_uid": "azerty", "title": "Title 1", "description": "Description 1", "publisher": "Publisher 1", "created": "2023-01-01", "updated": "2023-01-02"},
-        {"dataset_id": "2", "dataset_uid": "qwerty", "title": "Title 2", "description": "Description 1", "publisher": "Publisher 2", "created": "2023-02-01", "updated": "2023-02-02"}
+        {
+            "dataset_id": "1",
+            "dataset_uid": "azerty",
+            "title": "Title 1",
+            "description": "Description 1",
+            "publisher": "Publisher 1",
+            "created": "2023-01-01",
+            "updated": "2023-01-02",
+        },
+        {
+            "dataset_id": "2",
+            "dataset_uid": "qwerty",
+            "title": "Title 2",
+            "description": "Description 1",
+            "publisher": "Publisher 2",
+            "created": "2023-02-01",
+            "updated": "2023-02-02",
+        },
     ]
     # Act
-    #datasets = DataGouvDatasetDTO.fetch_data(base_url, organization, resource)  # VOIR POUR BUID A GENERER !!!!!!!!!!!!!!!!!!!!!!
+    # datasets = DataGouvDatasetDTO.fetch_data(base_url, organization, resource)  # VOIR POUR BUID A GENERER !!!!!!!!!!!!!!!!!!!!!!
     dtos = DataEcoDatasetDTO.fetch_and_convert_data_to_dataeco_dto(datasets)
     # Assert
     assert isinstance(dtos, list)
@@ -400,13 +462,22 @@ def test_fetch_and_convert_data_to_dataeco_dto():
         assert dto.dataset_id in ["1", "2"]
         assert dto.dataset_uid in ["azerty", "qwerty"]
 
+
 def test_convert_dataeco_dto_to_dataset():
     # Arrange
-    dto = DataEcoDatasetDTO(dataset_id="dataset_id", dataset_uid="azerty",  title="title", description = "description", publisher="publisher", created="created", updated="updated")
+    dto = DataEcoDatasetDTO(
+        dataset_id="dataset_id",
+        dataset_uid="azerty",
+        title="title",
+        description="description",
+        publisher="publisher",
+        created="created",
+        updated="updated",
+    )
     # Act
     dataset = dto.convert_dataeco_dto_to_dataset()
     # Assert
-    assert isinstance(dataset, Dataset) 
+    assert isinstance(dataset, Dataset)
     assert dataset.dataset_id == "dataset_id"
     assert dataset.dataset_uid == "azerty"
     assert dataset.title == "title"
@@ -417,6 +488,7 @@ def test_convert_dataeco_dto_to_dataset():
 
 
 ################## TESTS DATASET ####################################################################################
+
 
 def test_create_dataset():
     # Arrange
@@ -442,9 +514,19 @@ def test_create_dataset():
     assert dataset.created == created
     assert dataset.updated == updated
 
+
 def test_update_dataset():
     # Arrange
-    dataset = Dataset(buid="buid", dataset_uid="azerty", dataset_id="dataset_id", title="title", description="description", publisher="publisher", created="created", updated="updated")
+    dataset = Dataset(
+        buid="buid",
+        dataset_uid="azerty",
+        dataset_id="dataset_id",
+        title="title",
+        description="description",
+        publisher="publisher",
+        created="created",
+        updated="updated",
+    )
 
     # Act
     dataset.update(title="Updated Title", description="Updated Description")
@@ -452,6 +534,7 @@ def test_update_dataset():
     # Assert
     assert dataset.title == "Updated Title"
     assert dataset.description == "Updated Description"
+
 
 """def test_delete_Postgres_dataset():
     # Arrange
@@ -470,6 +553,7 @@ def test_update_dataset():
 
 
 ############## InMemoryDatasetRepository #####################################################################################
+
 
 def test_append_a_dataset_to_database():
     # Arrange
@@ -508,9 +592,10 @@ def test_get_dataset_with_wrong_id_from_repository_should_return_none():
 
 ################### POSTGRESDATASETREPOSITORY ########################################################
 
-def test_postgres_create_dataset_with_verification(db_fixture): 
-    # On utilise ici la fixture db_fixture définie dans conftest qui vient redéfinir une partie des 
-    # variables d'environnement afin d'initialiser la connexion à la base de données dans votre environnement de test et non de prod ! 
+
+def test_postgres_create_dataset_with_verification(db_fixture):
+    # On utilise ici la fixture db_fixture définie dans conftest qui vient redéfinir une partie des
+    # variables d'environnement afin d'initialiser la connexion à la base de données dans votre environnement de test et non de prod !
     # Arrange
     print("Database connection information before tests:")
     print(f"DB Name: {os.environ.get('DB_NAME')}")
@@ -526,7 +611,7 @@ def test_postgres_create_dataset_with_verification(db_fixture):
         description="Description",
         publisher="Publisher",
         created="2024-01-01",
-        updated="2024-01-02"
+        updated="2024-01-02",
     )
     repository = PostgresDatasetRepository(db_fixture)
 

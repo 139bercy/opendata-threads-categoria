@@ -4,9 +4,10 @@ import sys
 
 import mysql.connector
 
-#from src.scripts.logging_config import configure_logging
+# from src.scripts.logging_config import configure_logging
 sys.path.append("..")
 from logging_config import configure_logging
+
 
 # Récupérer le host, le nom d'utilisateur et le mot de passe à partir des variables d'environnement situées dans le fichier de conf.
 def load_db_config():
@@ -19,16 +20,12 @@ def create_database_and_tables():
 
     db_host = config["DB_HOST"]
     db_user = config["DB_USER"]
-    db_password = config['DB_PASSWORD']
-    db_name = config['DB_NAME']
+    db_password = config["DB_PASSWORD"]
+    db_name = config["DB_NAME"]
 
     try:
         # Connexion à MySQL avec les paramètres chargés depuis le fichier de configuration
-        conn = mysql.connector.connect(
-            host=db_host,
-            user=db_user,
-            password=db_password
-        )
+        conn = mysql.connector.connect(host=db_host, user=db_user, password=db_password)
 
         cursor = conn.cursor()
 
@@ -38,7 +35,7 @@ def create_database_and_tables():
         # Utilisation de la base de données nouvellement créée
         cursor.execute("USE discussions")
 
-        # Création de tables 
+        # Création de tables
         # TABLE USER
         cursor.execute(
             """
@@ -114,7 +111,7 @@ def create_database_and_tables():
         )
         """
         )
-        
+
         # TABLE PREDICTION "jouer avec l'IA"
         cursor.execute(
             """

@@ -6,6 +6,7 @@ import pandas as pd
 from src.scripts.inference import preprocess
 from src.scripts.inference.preprocess import preprocess_data
 
+
 # Test preprocess_data avec une seule entrée
 def test_preprocess_data():
     input_data = {

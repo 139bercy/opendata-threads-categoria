@@ -48,9 +48,11 @@ while 1 == 1:
                 dataset["dataset_id"],
                 dataset["is_restricted"],
                 dataset["is_published"],
-                dataset["metadata"]["admin"]["groupe-metier"]["value"][0]
-                if "admin" in dataset["metadata"] and "groupe-metier" in dataset["metadata"]["admin"]
-                else None,
+                (
+                    dataset["metadata"]["admin"]["groupe-metier"]["value"][0]
+                    if "admin" in dataset["metadata"] and "groupe-metier" in dataset["metadata"]["admin"]
+                    else None
+                ),
                 f"https://data.economie.gouv.fr/backoffice/catalog/datasets/{dataset['dataset_id']}/#information",
             ]
         )

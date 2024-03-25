@@ -27,10 +27,11 @@ class SandboxFormulaire(FlaskForm):
     message = TextAreaField("Message", validators=[DataRequired()])
     submit = SubmitField("Envoyer")
 
+
 def process_form(title, message):
     # Créez un DataFrame avec les colonnes correctes
     df = pd.DataFrame({"title_discussion": [title], "message": [message]})
-    
+
     # Obtenez le chemin du répertoire du script en cours d'exécution
     script_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -49,24 +50,19 @@ def process_form(title, message):
 
     categorie_predite = output_df_model2["predictions_motifs_label"].to_string(index=False)
     sous_categorie_predite = output_df_model2["predictions_ssmotifs_label"].to_string(index=False)
-    
+
     print("Les données ont été annotées avec succès !")
-    
+
     # Insérez les données dans la table 'prediction'
     try:
-        conn = mysql.connector.connect(
-            host=db_host,
-            user=db_user,
-            password=db_password,
-            database=db_name
-        )
-        
+        conn = mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name)
+
         cursor = conn.cursor()
 
         # Insérez les données dans la table 'prediction'
         query = "INSERT INTO prediction (title, message, categorie, sous_categorie) VALUES (%s, %s, %s, %s)"
         cursor.execute(query, (title, message, categorie_predite, sous_categorie_predite))
-        
+
         conn.commit()
         print("Données insérées avec succès dans la table 'prediction' !")
 
@@ -76,19 +72,20 @@ def process_form(title, message):
     finally:
         if conn:
             conn.close()  # Fermeture de la connexion
-            
+
     # Redirigez l'utilisateur vers une nouvelle page ou faites autre chose selon vos besoins
     return render_template("sandbox_result.html", categorie=categorie_predite, sscategorie=sous_categorie_predite)
 
+
 def sandbox():
     form = SandboxFormulaire()
-    
+
     if form.validate_on_submit():
         title = form.title.data
         message = form.message.data
 
         print(f"Titre: {title}, Message: {message}")
-        
+
         return process_form(title, message)
 
     return render_template("sandbox.html", form=form)

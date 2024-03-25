@@ -9,7 +9,8 @@ from dateutil import parser
 
 sys.path.append("..")
 from logging_config import configure_logging
-#from src.scripts.logging_config import configure_logging
+
+# from src.scripts.logging_config import configure_logging
 
 # Charger les informations de connexion depuis le fichier de configuration
 with open("../../../config.json") as config_file:
@@ -18,7 +19,7 @@ with open("../../../config.json") as config_file:
 # Utilisation des paramètres de connexion
 db_host = config["DB_HOST"]
 db_user = config["DB_USER"]
-db_password = config['DB_PASSWORD']
+db_password = config["DB_PASSWORD"]
 db_name = config["DB_NAME"]
 
 
@@ -37,12 +38,7 @@ def import_data_from_csv():
     conn = None
     try:
         # Connexion à la base de données
-        conn = mysql.connector.connect(
-            host=db_host,
-            user=db_user,
-            password= db_password,
-            database=db_name
-        )
+        conn = mysql.connector.connect(host=db_host, user=db_user, password=db_password, database=db_name)
 
         if conn.is_connected():
             print("Connecté à la base de données MySQL")
@@ -57,7 +53,7 @@ def import_data_from_csv():
         conn.start_transaction()
 
         # Charger les données CSV dans un DataFrame
-        #if os.path.exists("../../../data/raw/data_acquisition/merging_data/dataset_mefsin.csv"):
+        # if os.path.exists("../../../data/raw/data_acquisition/merging_data/dataset_mefsin.csv"):
         #    data = pd.read_csv("../../../data/raw/data_acquisition/merging_data/dataset_mefsin.csv")
         if os.path.exists("../../../data/raw/inference/predicted_data_models.csv"):
             data = pd.read_csv("../../../data/raw/inference/predicted_data_models.csv")
@@ -72,7 +68,7 @@ def import_data_from_csv():
             try:
                 # Reformater les dates avec fuseau horaire en format DATETIME AAAA-MM-DD HH:MI:SS
                 created_dataset_formatted = format_datetime_mysql(row["created_dataset"])
-                #last_update_script_formatted = format_datetime_mysql(row["last_update_script"])
+                # last_update_script_formatted = format_datetime_mysql(row["last_update_script"])
                 discussion_posted_on_formatted = format_datetime_mysql(row["discussion_posted_on"])
                 created_discussion_formatted = format_datetime_mysql(row["created_discussion"])
                 closed_discussion_formatted = format_datetime_mysql(row["closed_discussion"])
@@ -165,14 +161,15 @@ def import_data_from_csv():
                 # Insérer des données dans la table message
                 query = "INSERT INTO message (discussion_id, user_id, message, created_at, categorie, sous_categorie) VALUES (%s, %s, %s, %s, %s, %s)"
                 cursor.execute(
-                    query, 
-                    (id_discussion_auto, 
-                     id_user_auto, 
-                     row["message"], 
-                     discussion_posted_on_formatted, 
-                     row["predictions_motifs_label"], 
-                     row["predictions_ssmotifs_label"]
-                     )
+                    query,
+                    (
+                        id_discussion_auto,
+                        id_user_auto,
+                        row["message"],
+                        discussion_posted_on_formatted,
+                        row["predictions_motifs_label"],
+                        row["predictions_ssmotifs_label"],
+                    ),
                 )
                 conn.commit()
 

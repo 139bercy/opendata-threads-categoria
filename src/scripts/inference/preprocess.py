@@ -20,7 +20,7 @@ df_MEFSIN = pd.read_csv(os.path.join(csv_folder_path, "data_acquisition/merging_
 def preprocess_data(examples, is_second_preprocess=False):
     try:
         logging.info(f"Prétraitement des données en cours... {'(2)' if is_second_preprocess else '(1)'}")
-        
+
         if is_second_preprocess:
             combined_text = (
                 examples["predictions_motifs_label"] + " " + examples["title_discussion"] + " " + examples["message"]
@@ -38,7 +38,25 @@ def preprocess_data(examples, is_second_preprocess=False):
         # Supprimer les caractères de ponctuation sauf les apostrophes et les accents
         combined_text = [re.sub(r"[^\w\s'-.]", "", text) for text in combined_text]
         # Supprimer certains mots vides
-        words_to_remove = ["bonjour", "bonsoir", "bonne journée","cordialement","merci", "janvier", "février", "mars", "avril", "mai","juin","juillet","août","aout","septembre","octobre","novembre","décembre",
+        words_to_remove = [
+            "bonjour",
+            "bonsoir",
+            "bonne journée",
+            "cordialement",
+            "merci",
+            "janvier",
+            "février",
+            "mars",
+            "avril",
+            "mai",
+            "juin",
+            "juillet",
+            "août",
+            "aout",
+            "septembre",
+            "octobre",
+            "novembre",
+            "décembre",
         ]
         combined_text = [[word for word in text.split() if word not in words_to_remove] for text in combined_text]
         combined_text = [" ".join(text) for text in combined_text]

@@ -8,7 +8,7 @@ from .graphs import (
     kpi,
     bar_chart_top_jdd_views,
     bar_chart_top_jdd_reuses,
-    second_treemap_fig
+    second_treemap_fig,
 )
 
 

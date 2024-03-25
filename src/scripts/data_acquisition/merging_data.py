@@ -20,7 +20,9 @@ def load_and_merge_data():
         logging.info("Chargement des fichiers CSV en cours...")
         df_discussions = pd.read_csv(os.path.join(csv_folder_path, "extraction_discussions/discussions.csv"))
         df_datasets = pd.read_csv(os.path.join(csv_folder_path, "extraction_datasets/datasets.csv"))
-        df_grp_metiers = pd.read_csv(os.path.join(csv_folder_path, "extraction_groupes_metiers/datasets_groupes_metiers_20231030.csv"), sep=';')
+        df_grp_metiers = pd.read_csv(
+            os.path.join(csv_folder_path, "extraction_groupes_metiers/datasets_groupes_metiers_20231030.csv"), sep=";"
+        )
         logging.info("Fichiers CSV chargés avec succès.")
 
         # Fusionner les DataFrames en utilisant les colonnes 'id_subject' et 'id_dataset' comme clés de jointure

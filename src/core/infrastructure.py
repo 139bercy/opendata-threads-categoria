@@ -35,26 +35,26 @@ class InMemoryThreadRepository(AbstractThreadRepository):
 
 
 class PostgresThreadRepository(AbstractThreadRepository):
-    #ADD_ONE ET FETCH_ONE SONT DÉFINIENT DANS LA CLASSE POSTGRESCLIENT (SRC/COMMON/INFRASTRUCTURE)
+    # ADD_ONE ET FETCH_ONE SONT DÉFINIENT DANS LA CLASSE POSTGRESCLIENT (SRC/COMMON/INFRASTRUCTURE)
     def __init__(self, postgres_client):
         self.postgres_client = postgres_client
 
     def get_dataset_by_buid(self, buid) -> Dataset:
         query = f"SELECT * FROM dataset WHERE buid = %s;"
         result = postgres_client.fetch_one(query, (buid,))
-        
+
         if result:
             # Construire l'objet Dataset à partir des données récupérées
             dataset = Dataset(
-                buid=result['buid'],
-                dataset_uid=result['dataset_uid'],
-                dataset_id=result['dataset_id'],
-                title=result['title'],
-                description=result['description'],
-                publisher=result['publisher'],
-                created=result['created'],
-                updated=result['updated']
-                #pk=result['pk'],
+                buid=result["buid"],
+                dataset_uid=result["dataset_uid"],
+                dataset_id=result["dataset_id"],
+                title=result["title"],
+                description=result["description"],
+                publisher=result["publisher"],
+                created=result["created"],
+                updated=result["updated"],
+                # pk=result['pk'],
             )
             return dataset
         else:
@@ -71,8 +71,8 @@ class PostgresThreadRepository(AbstractThreadRepository):
         postgres_client.add_one(query=query)
 
     def create_thread(self, thread: Thread) -> None:
-        #query = f"""INSERT INTO thread(sk, title, created_on) VALUES ('{thread.sk}', '{thread.title}', '{thread.created_on}');"""
-        #self.client.add_one(query=query)
+        # query = f"""INSERT INTO thread(sk, title, created_on) VALUES ('{thread.sk}', '{thread.title}', '{thread.created_on}');"""
+        # self.client.add_one(query=query)
         pass
 
 
@@ -88,14 +88,15 @@ class PostgresDatasetRepository(AbstractDatasetRepository):
         values = (dataset.buid, dataset.title, dataset.description)
         postgres_client.add_one(query, params=values)
 
-
     def get_dataset_by_buid(self, buid: str) -> Dataset:
         query = """
             SELECT buid, dataset_uid, dataset_id, title, description, publisher, created, updated
             FROM dataset
             WHERE buid = %s;
         """
-        result = postgres_client.fetch_one(query, params=(buid,))   # self.postgres_client.fetch_one(query, params=(buid,))
+        result = postgres_client.fetch_one(
+            query, params=(buid,)
+        )  # self.postgres_client.fetch_one(query, params=(buid,))
         if result:
             return Dataset(*result)
         return None

@@ -23,6 +23,7 @@ from src.auth.usecases import login as user_login, check_token, decode_token
 
 # Importez FlaskForm du module wtforms
 from flask_wtf import FlaskForm
+
 # Importez TextAreaField pour traiter le champ de texte du formulaire
 from wtforms import StringField, SubmitField, TextAreaField
 
@@ -40,18 +41,18 @@ server.config["SECRET_KEY"] = "asma"
 server.config["WTF_CSRF_ENABLED"] = False
 
 # Database configuration
-server.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:password@localhost:5432/app_db'
-server.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+server.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:password@localhost:5432/app_db"
+server.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(server)
 
 # Flask-Admin configuration
-admin = Admin(server, name='Flask-Admin', template_mode='bootstrap3')
+admin = Admin(server, name="Flask-Admin", template_mode="bootstrap3")
 
 
 # Définir le modèle SQLAlchemy pour la classe Account
 class Account(db.Model):
-    __tablename__ = 'account'  # Nom de la table dans la base de données
+    __tablename__ = "account"  # Nom de la table dans la base de données
 
     pk = db.Column(db.Integer, primary_key=True)
     sk = db.Column(db.String(36), unique=True, nullable=False)  # Remplacez par le type de données réel
@@ -66,6 +67,7 @@ class Account(db.Model):
 
     def token_is_valid(self, token):
         return str(self.token) == str(token)
+
 
 # Ajouter le modèle à Flask-Admin
 admin.add_view(ModelView(Account, db.session))
@@ -83,7 +85,7 @@ app = dash.Dash(
     assets_folder="static",
 )
 # pour le formulaire flask !
-app.config['suppress_callback_exceptions'] = True
+app.config["suppress_callback_exceptions"] = True
 
 # Chargement des données depuis le fichier CSV (peut être placé dans app.py)
 df = pd.read_csv("data/raw/inference/predicted_data_models.csv")
@@ -101,6 +103,7 @@ app.layout = html.Div(
     className="flex-container",
 )
 ################### FILTRES PAR DATE ###########################################################################
+
 
 # Callback function pour mettre à jour le graphique sunburst
 @app.callback(
@@ -135,7 +138,9 @@ def update_charts(selected_categories, start_date, end_date, timeline_value):
     except Exception as e:
         print(str(e))
 
+
 ###################### FORMULAIRE D'INSCRIPTION #######################################################################
+
 
 # Routes
 @server.route("/form_traite", methods=["POST"])
@@ -152,19 +157,21 @@ def traiter_formulaire():
 
         # Redirigez l'utilisateur vers une nouvelle page ou faites autre chose selon vos besoins
         return render_template("formulaire_traite.html", nom=nom, prenom=prenom)
-    
+
+
 ##################### DATASET : TELECHARGER LE JDD EN .CSV (src/app/views/dataset.py) ######################################################################
+
 
 # Définition d'une route pour le téléchargement du dataset
 @server.route("/download-dataset")
 def download_dataset():
-    #On récupère le df à partir de la source de données + conversion en csv
+    # On récupère le df à partir de la source de données + conversion en csv
     df_download = df
     csv_string = df_download.to_csv(index=False, encoding="utf-8")
-    
-    #io.BytesIO pour traiter les données binaires
+
+    # io.BytesIO pour traiter les données binaires
     csv_binary = io.BytesIO(csv_string.encode("utf-8"))
-    
+
     # Flask send_file permet d'envoyer les données en tant que fichier téléchargeable
     return send_file(
         csv_binary,
@@ -190,12 +197,14 @@ def update_download_link(n_clicks):
 
     # Convertir en base64 et créer le lien de téléchargement
     csv_base64 = base64.b64encode(csv_string.encode("utf-8")).decode("utf-8")
-    #href = f"data:text/csv;base64,{csv_base64}"
+    # href = f"data:text/csv;base64,{csv_base64}"
     href = "/download-dataset"
 
     return href
 
+
 ######################## CONNEXION ###################################################################
+
 
 @app.callback(Output("login-error", "children"), [Input("url", "pathname")], [State("url", "search")])
 def display_error(pathname, search):
@@ -217,7 +226,9 @@ def check_login(n_clicks, username, password):
     try:
         session_token = user_login(repository=repository, username=username, password=password)
         token = str(session_token)
-        dash.callback_context.response.set_cookie("session-token", token) #envoie le cookies au navigateur pour le stocker en mémoire
+        dash.callback_context.response.set_cookie(
+            "session-token", token
+        )  # envoie le cookies au navigateur pour le stocker en mémoire
         return dcc.Location(pathname="/", id="homepage")
     except (LoginError, UsernameError, KeyError) as e:
         print(e)
@@ -275,21 +286,25 @@ def toggle_login_logout(n_clicks):
 
     if user_session_cookie:
         # L'utilisateur est connecté donc bouton deconnexion
-        dash.callback_context.response.delete_cookie("session-token") #envoie le cookies au navigateur pour le stocker en mémoire
-        #return "fa fa-sign-out", "Se déconnecter", "/"
+        dash.callback_context.response.delete_cookie(
+            "session-token"
+        )  # envoie le cookies au navigateur pour le stocker en mémoire
+        # return "fa fa-sign-out", "Se déconnecter", "/"
         return "fa fa-sign-out", "", "/"
-    
+
     # L'utilisateur n'est pas connecté, donc connexion
-    #return "fa fa-sign-in", "Se connecter", "/login"
+    # return "fa fa-sign-in", "Se connecter", "/login"
     return "fa fa-sign-in", "", "/login"
 
 
 ##################### JOUER AVEC L'IA : FORMULAIRE #################################################################
 
+
 # Ajoutez la route pour le formulaire
 @server.route("/form", methods=["GET", "POST"])
 def sandbox_route():
     return sandbox.sandbox()
+
 
 # Ajoutez une nouvelle route pour le résultat du formulaire
 @server.route("/form/result", methods=["POST"])
@@ -298,7 +313,9 @@ def process_form():
     message = request.form.get("message")
     return sandbox.process_form(title, message)
 
+
 ######################## ROUTES SIDEBAR #############################################################################
+
 
 # Callback pour afficher le contenu de la vue en fonction de l'URL
 @app.callback(Output("page-content", "children"), [Input("url", "pathname")])
@@ -307,9 +324,9 @@ def display_page(pathname):
         return login_required(repository, dashboard.dashboard_layout())
     elif pathname == "/login":
         return login.layout
-    #elif pathname == "/form":
-        #Appliquez le décorateur @login_required uniquement à la vue associée à '/form'
-        #return login_required(repository, formulaire.layout())
+    # elif pathname == "/form":
+    # Appliquez le décorateur @login_required uniquement à la vue associée à '/form'
+    # return login_required(repository, formulaire.layout())
     elif pathname == "/dataset":
         return dataset.dataset_layout()
     elif pathname == "/form":
