@@ -1,6 +1,6 @@
 import abc
 
-from src.core.models import Message, Thread
+from src.core.models import Message, Thread, Dataset
 
 
 class AbstractThreadRepository(abc.ABC):
@@ -13,9 +13,21 @@ class AbstractThreadRepository(abc.ABC):
         pass  # pragma: no cover
 
     @abc.abstractmethod
-    def create(self, message: Message) -> None:
+    def create_message(self, message: Message) -> None:
         pass  # pragma: no cover
 
     @abc.abstractmethod
     def create_thread(self, thread: Thread) -> None:
         pass  # pragma: no cover
+
+
+class AbstractDatasetRepository(abc.ABC):
+    @abc.abstractmethod
+    def create_dataset(self, dataset: Dataset) -> None:
+        pass  # pragma: no cover
+
+    @abc.abstractmethod
+    def get_dataset_by_buid(self, buid: str) -> Dataset:
+        pass  # pragma: no cover
+
+    
