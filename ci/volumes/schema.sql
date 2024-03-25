@@ -27,3 +27,19 @@ create table "message"
 
 -- Optionally, grant other privileges like SELECT, INSERT, UPDATE, DELETE, etc.
 -- GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO <username>;
+
+drop table if exists "dataset";
+create table "dataset"
+(
+    --pk              serial,
+    buid            text unique not null,
+    dataset_uid     text unique not null,
+    dataset_id      text unique not null,
+    title           text        not null,
+    description     text        not null,
+    publisher       text                ,
+    created         text                ,
+    updated         text                
+    --created         timestamp with time zone default current_timestamp,
+    --updated         timestamp with time zone default current_timestamp
+);
