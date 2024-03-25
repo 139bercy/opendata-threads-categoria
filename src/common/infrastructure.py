@@ -19,19 +19,22 @@ class PostgresClient:
         except Exception as e:
             print(e)
 
-    def add_one(self, query):
-        self.execute(query=query)
+    def add_one(self, query, params=None):
+        self.execute(query=query, params=params)
         self.conn.commit()
 
     def update(self, query):
         self.execute(query=query)
         self.conn.commit()
 
-    def fetch_one(self, query):
-        result = self.execute(query)
-        if not result:
-            raise ResourceDoesNotExist
-        return dict(result.fetchone())
+    def fetch_one(self, query, params=None):
+        try:
+            self.cursor.execute(query, params)
+            result = self.cursor.fetchone()
+            return result
+        except Exception as e:
+            print(f"Error executing fetch_one: {e}")
+            return None
 
     def fetch_all(self, table_name):
         query = f"SELECT * FROM {table_name};"
