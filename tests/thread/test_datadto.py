@@ -201,19 +201,15 @@ class DataGouvDatasetDTO:
         return datasets
 
     @classmethod
-    def fetch_and_save_data_from_datagouv_to_json(
-        cls, filename: str, base_url: str, organization: str, resource: str
-    ) -> None:
+    def save_data_from_datagouv_to_json(cls, filename: str, datasets: list) -> None:
         """
         Enregistre les données brutes récupérées de l'API dans un fichier JSON.
         """
         with open(filename, "w") as file:
-            json.dump(
-                cls.fetch_data_from_datagouv(base_url, organization, resource), file, indent=2, ensure_ascii=False
-            )
+            json.dump(datasets, file, indent=2, ensure_ascii=False)
     
     @classmethod
-    def fetch_and_convert_data_to_datagouv_dto(cls, datasets) -> list:
+    def retrieve_and_convert_data_to_datagouv_dto(cls, datasets) -> list:
         """
         Méthode qui utilise les données brutes récupérées de l'API,
         puis elle les convertit en objets de classe DataGouvDatasetDTO.
@@ -312,15 +308,15 @@ class DataEcoDatasetDTO:
         return soup.get_text()
 
     @classmethod
-    def fetch_and_save_data_from_dataeco_to_json(cls, filename: str) -> None:
+    def save_data_from_dataeco_to_json(cls, filename: str, datasets: list) -> None:
         """
         Enregistre les données brutes récupérées de l'API dans un fichier JSON.
         """
         with open(filename, "w") as file:
-            json.dump(cls.fetch_data_from_dataeco(), file, indent=2, ensure_ascii=False)
+            json.dump(datasets, file, indent=2, ensure_ascii=False)
 
     @classmethod
-    def fetch_and_convert_data_to_dataeco_dto(cls, datasets) -> list:
+    def retrieve_and_convert_data_to_dataeco_dto(cls, datasets) -> list:
         """
         Méthode qui utilise la méthode fetch_data pour récupérer les données brutes de l'API,
         puis elle les convertit en objets de classe DataEcoDatasetDTO.
@@ -376,12 +372,13 @@ class DataEcoDatasetDTO:
 # Tests pour DataGouvDatasetDTO
 def test_get_a_dataset_from_data_gouv():
     # Arrange
-    """base_url = "https://www.data.gouv.fr/api/1/organizations"
+    """# Fetch data from data.gouv API
+    base_url = "https://www.data.gouv.fr/api/1/organizations"
     organization = "ministere-de-leconomie-des-finances-et-de-la-souverainete-industrielle-et-numerique"
     resource = "datasets"
-    DataGouvDatasetDTO.fetch_and_save_data_from_datagouv_to_json(
-        "tests/fixtures/testgouv.json", base_url, organization, resource
-    )"""
+    data_gouv_datasets = DataGouvDatasetDTO.fetch_data_from_datagouv(base_url, organization, resource)
+    # Save data to a JSON file
+    DataGouvDatasetDTO.save_data_from_datagouv_to_json("tests/fixtures/testgouv.json", data_gouv_datasets)"""
 
     with open("tests/fixtures/testgouv.json", "r") as file:
         # data = json.load(file)["data"][0]
@@ -393,7 +390,7 @@ def test_get_a_dataset_from_data_gouv():
     assert len(expected_data.description) >= 150
 
 
-def test_fetch_and_convert_datagouv_to_dto():
+def test_retrieve_and_convert_datagouv_to_dto():
     # Arrange
     datasets = [
         {"title": "Title 1", "description": "Description 1"},
@@ -401,7 +398,7 @@ def test_fetch_and_convert_datagouv_to_dto():
     ]
 
     # Act
-    dtos = DataGouvDatasetDTO.fetch_and_convert_data_to_datagouv_dto(datasets)
+    dtos = DataGouvDatasetDTO.retrieve_and_convert_data_to_datagouv_dto(datasets)
 
     # Assert
     assert isinstance(dtos, list)
@@ -426,11 +423,13 @@ def test_convert_datagouv_dto_to_dataset():
 
 ################## TESTS DATA ECO ####################################################################################
 
-
 # Tests pour DataEcoDatasetDTO
 def test_get_a_dataset_from_data_eco():
     # Arrange
-    #DataEcoDatasetDTO.fetch_and_save_data_from_dataeco_to_json("tests/fixtures/testeco.json")
+    # Fetch data from data.economie API
+    #data_eco_datasets = DataEcoDatasetDTO.fetch_data_from_dataeco()
+    # Save data to a JSON file
+    #DataEcoDatasetDTO.save_data_from_dataeco_to_json("tests/fixtures/testeco.json", data_eco_datasets)
 
     with open("tests/fixtures/testeco.json", "r") as file:
         data = json.load(file)[0]
@@ -454,7 +453,7 @@ def test_get_a_dataset_from_data_eco():
     assert len(expected_data.description) >= 100
 
 
-def test_fetch_and_convert_data_to_dataeco_dto():
+def test_retrieve_and_convert_data_to_dataeco_dto():
     # Arrange
     datasets = [
         {
@@ -491,7 +490,7 @@ def test_fetch_and_convert_data_to_dataeco_dto():
 
     # Act
     # datasets = DataGouvDatasetDTO.fetch_data(base_url, organization, resource)  # VOIR POUR BUID A GENERER !!!!!!!!!!!!!!!!!!!!!!
-    dtos = DataEcoDatasetDTO.fetch_and_convert_data_to_dataeco_dto(datasets)
+    dtos = DataEcoDatasetDTO.retrieve_and_convert_data_to_dataeco_dto(datasets)
     # Assert
     assert isinstance(dtos, list)
     assert len(dtos) == 2
@@ -671,39 +670,19 @@ def test_postgres_create_dataset_with_verification(db_fixture):
     assert result.updated == dataset.updated
 
 
-
-"""# Récupérer les données brutes depuis data.economie.gouv.fr
-data_eco_datasets = DataEcoDatasetDTO.fetch_data_from_dataeco()
-
-# Convertir les données brutes en objets DataEcoDatasetDTO
-data_eco_dtos = DataEcoDatasetDTO.fetch_and_convert_data_to_dataeco_dto(data_eco_datasets[:5])
-
-# Convertir les objets DataEcoDatasetDTO en objets Dataset
-datasets = [dto.convert_dataeco_dto_to_dataset() for dto in data_eco_dtos]
-
-# Créer une instance de PostgresDatasetRepository
-repository = PostgresDatasetRepository(postgres_client)
-
-# Stocker les datasets en base de données
-for dataset in datasets:
-    repository.create_dataset(dataset)
-
-print("Les 5 premiers datasets de data.economie ont été stockés en base de données avec succès.")"""
-
-
 def test_fetch_and_store_datasets_in_database():
     # Step 1: Fetch data from data.economie API
     data_eco_datasets = DataEcoDatasetDTO.fetch_data_from_dataeco()
 
     # Step 2: Save raw data to a JSON file
-    DataEcoDatasetDTO.fetch_and_save_data_from_dataeco_to_json("tests/fixtures/data_eco_raw.json")
+    DataEcoDatasetDTO.save_data_from_dataeco_to_json("tests/fixtures/data_eco_raw.json", data_eco_datasets)
 
     # Step 3: Load data from the JSON file
     with open("tests/fixtures/data_eco_raw.json", "r") as file:
         data_eco_raw = json.load(file)
 
     # Step 4: Convert raw data to DTO objects
-    data_eco_dtos = DataEcoDatasetDTO.fetch_and_convert_data_to_dataeco_dto(data_eco_raw)
+    data_eco_dtos = DataEcoDatasetDTO.retrieve_and_convert_data_to_dataeco_dto(data_eco_raw)
 
     # Step 5: Convert DTO objects to Dataset objects
     datasets = []
